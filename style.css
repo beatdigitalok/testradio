@@ -1,0 +1,241 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-theme {
+    background-color: #333;
+    color: #f4f4f4;
+}
+
+header {
+    padding: 20px;
+    text-align: right;
+}
+
+#theme-toggle {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ddd;
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-theme #theme-toggle {
+    background-color: #555;
+    color: #ddd;
+}
+
+main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1080px;
+    margin-bottom: 20px;
+}
+
+.artist-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-size: cover;
+    background-position: center;
+}
+
+.song-title {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 1px 1px 2px #aaa;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+body.dark-theme .song-title {
+    color: #f4f4f4;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.controls button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #eee;
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-theme .controls button {
+    border-color: #555;
+    background-color: #444;
+    color: #eee;
+}
+
+#ranking {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-theme #ranking {
+    background-color: #444;
+    color: #eee;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#ranking h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+body.dark-theme #ranking h2 {
+    color: #ccc;
+}
+
+#ranking ol {
+    list-style-type: decimal;
+    padding-left: 0;
+}
+
+#ranking ol li {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    transition: border-color 0.3s ease;
+}
+
+body.dark-theme #ranking ol li {
+    border-bottom: 1px solid #555;
+}
+
+#ranking ol li:last-child {
+    border-bottom: none;
+}
+
+#ranking ol li span {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+    margin-left: 10px;
+    flex-grow: 1;
+}
+
+body.dark-theme #ranking ol li span {
+    color: #eee;
+}
+
+#ranking ol li span:hover {
+    text-decoration: underline;
+}
+
+#ranking ol li img {
+    width: 80px;
+    height: auto;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+#ranking ol li:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+body.dark-theme #ranking ol li:hover {
+    background-color: #555;
+}
+
+#news {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-theme #news {
+    background-color: #444;
+    color: #eee;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#news h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+body.dark-theme #news h2 {
+    color: #ccc;
+}
+
+#news ul {
+    list-style-type: none;
+    padding-left: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+#news ul li {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+body.dark-theme #news ul li {
+    background-color: #555;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#news ul li a {
+    color: inherit;
+    text-decoration: none;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#news ul li a h3 {
+    margin-t
