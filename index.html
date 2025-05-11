@@ -3,294 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beat Digital Radio Rosario</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-      .artist-image {
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        background-color: #ccc;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .artist-image img{
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        border-radius: 5px;
-      }
-    </style>
-</head>
+    <title>Tu Radio Online</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    </head>
 <body>
-    <header>
-        <button id="theme-toggle">Tema</button>
-    </header>
-    <main>
-        <section id="player">
-            <audio id="radio-stream" src="https://stream-57.zeno.fm/9s7nnwmknkhvv" preload="none"></audio>
-            <div class="artist-image">
-                <img id="cover-art" src="img/cover.png" alt="Carátula del artista">
+
+    <div id="player">
+        <div class="cover-album">
+            <div id="bgCover" style="background-image: url('/img/cover.png');"></div>
+            <div id="currentCoverArt" style="background-image: url('/img/cover.png');"></div>
+        </div>
+
+        <div class="player-controls">
+            <div class="info-song">
+                <h2 id="currentSong" class="text-uppercase">Cargando...</h2>
+                <h4 id="currentArtist" class="text-capitalize"></h4>
             </div>
-            <div class="song-title">Cargando...</div>
-            <div class="controls">
-                <button type="button" id="prev-btn" disabled>Anterior</button>
-                <button type="button" id="play-btn">Play</button>
-                <button type="button" id="pause-btn" disabled>Pausa</button>
-                <button type="button" id="next-btn" disabled>Siguiente</button>
+            <div class="buttons">
+                <button id="buttonPlay" onclick="togglePlay()">
+                    <i id="playerButton" class="fas fa-play"></i> <span>PLAY</span>
+                </button>
+                <div class="volume-control">
+                    <i class="fas fa-volume-down" onclick="volumeDown()"></i>
+                    <input type="range" id="volume" min="0" max="100" value="80">
+                    <i class="fas fa-volume-up" onclick="volumeUp()"></i>
+                    <span id="volIndicator">80</span>
+                    <i class="fas fa-volume-off" onclick="mute()"></i>
+                </div>
+                <button class="lyrics" data-toggle="modal" data-target="#modalLyrics">
+                    <i class="fas fa-lyrics"></i> <span>LETRA</span>
+                </button>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <div id="youtube-player" style="width: 100%; max-width: 640px; aspect-ratio: 16 / 9; margin: 20px auto; display: none;"></div>
+    <div class="historic">
+        <h3>Historial</h3>
+        <div id="historicSong">
+            <article>
+                <div class="cover-historic" style="background-image: url('/img/cover.png');"></div>
+                <div class="music-info">
+                    <span class="song"></span>
+                    <span class="artist"></span>
+                </div>
+            </article>
+            <article>
+                <div class="cover-historic" style="background-image: url('/img/cover.png');"></div>
+                <div class="music-info">
+                    <span class="song"></span>
+                    <span class="artist"></span>
+                </div>
+            </article>
+            <article>
+                <div class="cover-historic" style="background-image: url('/img/cover.png');"></div>
+                <div class="music-info">
+                    <span class="song"></span>
+                    <span class="artist"></span>
+                </div>
+            </article>
+            <article>
+                <div class="cover-historic" style="background-image: url('/img/cover.png');"></div>
+                <div class="music-info">
+                    <span class="song"></span>
+                    <span class="artist"></span>
+                </div>
+            </article>
+        </div>
+    </div>
 
-        <section id="ranking">
-            <h2>Ranking de Canciones</h2>
-            <ol id="ranking-list">
-                </ol>
-        </section>
+    <div class="modal fade" id="modalLyrics" tabindex="-1" role="dialog" aria-labelledby="lyricsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lyricsSong"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <pre id="lyric"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <section id="news">
-            <h2>Noticias</h2>
-            <ul id="news-list">
-                </ul>
-        </section>
+    <audio id="audioPlayer" src="https://stream-57.zeno.fm/9s7nnwmknkhvv"></audio>
 
-        <section id="contact">
-            <h2>Contacto</h2>
-            <form action="mailto:beatdigitalradiorosario@gmail.com" method="post" enctype="text/plain">
-                <label for="name">Nombre:</label>
-                <input type="text" id="name" name="name" placeholder="Tu nombre" required>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="Tu correo electrónico" required>
-                <label for="message">Mensaje:</label>
-                <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí" required></textarea>
-                <button type="submit">Enviar</button>
-            </form>
-        </section>
-    </main>
-    <footer>
-        <p>© 2025 Beat Digital Radio Rosario</p>
-    </footer>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          const themeToggle = document.getElementById('theme-toggle');
-          const body = document.body;
-          const currentTheme = localStorage.getItem('theme');
-
-          if (currentTheme === 'dark') {
-              body.classList.add('dark-theme');
-          }
-
-          themeToggle.addEventListener('click', function() {
-              body.classList.toggle('dark-theme');
-              const newTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
-              localStorage.setItem('theme', newTheme);
-          });
-
-          const radioStream = document.getElementById('radio-stream');
-          const playBtn = document.getElementById('play-btn');
-          const pauseBtn = document.getElementById('pause-btn');
-          const songTitleElement = document.querySelector('.song-title');
-          const artistImageElement = document.querySelector('.artist-image');
-          const coverArtElement = document.getElementById('cover-art');
-          const metadataUrl = 'https://api.zeno.fm/mounts/metadata/subscribe/9s7nnwmknkhvv';
-          const rankingList = document.getElementById('ranking-list');
-          const rankingSection = document.getElementById('ranking');
-          const youtubePlayerContainer = document.getElementById('youtube-player');
-          const mainSection = document.querySelector('main');
-          let currentVideoId = null;
-
-          const backToRankingBtn = document.createElement('button');
-          backToRankingBtn.type = 'button';
-          backToRankingBtn.textContent = 'Volver al Ranking';
-          backToRankingBtn.style.display = 'none';
-          backToRankingBtn.style.margin = '10px auto';
-          backToRankingBtn.style.padding = '8px 15px';
-          backToRankingBtn.style.borderRadius = '5px';
-          backToRankingBtn.style.cursor = 'pointer';
-          mainSection.insertBefore(backToRankingBtn, document.getElementById('news'));
-
-          backToRankingBtn.addEventListener('click', function() {
-              youtubePlayerContainer.style.display = 'none';
-              rankingSection.style.display = 'block';
-              backToRankingBtn.style.display = 'none';
-              currentVideoId = null;
-          });
-
-          playBtn.addEventListener('click', function() {
-              const playPromise = radioStream.play();
-              if (playPromise !== undefined) {
-                  playPromise.then(() => {
-                      playBtn.disabled = true;
-                      pauseBtn.disabled = false;
-                  }).catch(error => {
-                      console.error("Error de reproducción:", error);
-                      alert("La reproducción fue bloqueada por el navegador. Por favor, interactúa con la página.");
-                  });
-              } else {
-                  radioStream.play();
-                  playBtn.disabled = true;
-                  pauseBtn.disabled = false;
-              }
-          });
-
-          pauseBtn.addEventListener('click', function() {
-              radioStream.pause();
-              playBtn.disabled = false;
-              pauseBtn.disabled = true;
-          });
-
-        function fetchMetadata() {
-            fetch(metadataUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.metadata && data.metadata.title && data.metadata.artist && data.metadata.image) {
-                        const songTitle = data.metadata.title;
-                        const artistName = data.metadata.artist;
-                        const imageUrl = data.metadata.image;
-                        songTitleElement.textContent = `${artistName} - ${songTitle}`;
-                        coverArtElement.src = imageUrl;
-                    } else {
-                        songTitleElement.textContent = 'Información no disponible';
-                        coverArtElement.src = 'img/cover.png';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al obtener metadatos:', error);
-                    songTitleElement.textContent = 'Error al cargar la información';
-                    coverArtElement.src = 'img/cover.png';
-                });
-        }
-
-          fetchMetadata();
-          setInterval(fetchMetadata, 10000);
-
-          const videoMetadata = [
-            { title: 'Cazzu - Con Otra (Video Oficial)', id: 'dQobxZu60Lw', uploader: 'Cazzu' },
-            { title: 'Gordo - Olvidarte feat. Emilia [Ultra Records]', id: '9r70n4D-Y7k', uploader: 'Gordo' },
-            { title: 'Emanero, Valentino Merlo, Big One - Si Un Día Estás Sola | CROSSOVER #7', id: 'i3Jv11NoW_k', uploader: 'Emanero' },
-            { title: 'Yami Safdie, Luck Ra, Q\'Lokura - En Otra Vida (Versión Cuarteto)', id: 'gn4v7693H0M', uploader: 'Yami Safdie' },
-            { title: 'W Sound 05 "LA PLENA" - Beéle, Westcol, Ovy On The Drums', id: 'P4y5n_j7-rs', uploader: 'Beéle' },
-            { title: 'MIGRANTES x G SONY x RODRIGO TAPARI | LAS 5 (Official Video)', id: '49riPXW2d7M', uploader: 'MIGRANTES' },
-            { title: 'Emanero, Angela Leiva - Podés pedirme perdón (Official Video)', id: 'G640rF1J1yg', uploader: 'Emanero' },
-            { title: 'Emilia, Luísa Sonza - bunda 🍑 (Official Video)', id: 'l4J-91s0FJQ', uploader: 'Emilia' },
-            { title: 'KING SAVAGGE - A 200 ft. JAIRO VERA & BAYRON FIRE (VIDEO OFICIAL)', id: 'v44OhY7oF-c', uploader: 'KING SAVAGGE' },
-            { title: 'LA T Y LA M ft MALANDRO DE AMERICA - Amor de Vago', id: 'W09J-vY0464', uploader: 'LA T Y LA M' },
-            { title: 'Luck Ra || BZRP Music Sessions #61', id: 'NlF-aKF2o7k', uploader: 'BZRP' },
-            { title: 'TINI - el cielo (Official Video)', id: 'QjGpH0gozTc', uploader: 'TINI' },
-            { title: 'Jombriel, Alex Krack, Jøtta - Parte & Choke (Official Video)', id: 'L02B-P6z7yY', uploader: 'Jombriel' },
-            { title: 'KAROL G - Si Antes Te Hubiera Conocido | Coke Studio', id: 'm9ddc-5Y1o4', uploader: 'KAROL G' },
-            { title: 'Rauw Alejandro, Romeo Santos - Khé? (Official Video)', id: '4n35Lg4g5qQ', uploader: 'Rauw Alejandro' },
-            { title: 'MIGRANTES | La Más Amada del País [Official Video]', id: 'O4z-9s8_H8U', uploader: 'MIGRANTES' },
-            { title: 'Maria Becerra, Trueno, Big One - Cuando Te Vi | CROSSOVER #5', id: 'T40j1f5J51M', uploader: 'Maria Becerra' },
-            { title: 'Emilia, TINI, Nicki Nicole - blackout 🧊 (Official Video)', id: '9w1n05gc_7s', uploader: 'Emilia' },
-            { title: 'Bad Bunny - DtMF (Letra)', id: 'kk99_vjnz1c', uploader: 'Bad Bunny' },
-            { title: 'Maria Becerra - TATÚ (Official Video)', id: 'v5Z93X42c2Y', uploader: 'Maria Becerra' },
-            { title: 'Luck Ra - UN CLAVO', id: 'p7ImQy9ehhE', uploader: 'Luck Ra' },
-            { title: 'Luciano Pereyra, Ezequiel y La Clave, Un Poco de Ruido y Pinky SD - Si No Es Muy Tarde', id: 'xT17GC9qXdQ', uploader: 'Luciano Pereyra' },
-            { title: 'Luciano Pereyra, Emanero - Ahora Resulta', id: '34FwhQWq-mE', uploader: 'Luciano Pereyra' },
-            { title: 'Tiago PZK, Anitta, Emilia - Alegría (Video Oficial)', id: '64J94VwG-2s', uploader: 'Tiago PZK' },
-            { title: 'Luck Ra, Tiago PZK - FUE CULPA TUYA', id: 'Y7ar9Hj55wE', uploader: 'Luck Ra' },
-            { title: 'Tiago PZK, La Joaqui, Big One - Pa\' Que Te Acuerdes | CROSSOVER #8', id: '5yJ1JVaO-mE', uploader: 'Tiago PZK' },
-            { title: 'Paulo Londra, Luck Ra, Valentino Merlo - Princesa (Official Video)', id: 'vSvzYCmWsf4', uploader: 'Paulo Londra' },
-            { title: 'AIRBAG - Extrañas Intenciones', id: '5Yc7w4Pd-5w', uploader: 'AIRBAG' },
-            { title: 'Emilia - noviogangsta (Official Video)', id: '4yN6M91-E1o', uploader: 'Emilia' },
-            { title: 'Lali, Miranda! - MEJOR QUE VOS (Official Video)', id: 'peJTv-4_qWk', uploader: 'Lali' }
-          ];
-
-          rankingList.innerHTML = '';
-        
-          videoMetadata.forEach(video => {
-            const listItem = document.createElement('li');
-            const img = document.createElement('img');
-            img.src = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;  // Usar una imagen de calidad media
-            img.alt = `Miniatura de ${video.title}`;
-            img.style.width = '120px';  // Aumentar el tamaño de la miniatura
-            img.style.height = 'auto';
-            img.style.marginRight = '10px';
-            img.style.verticalAlign = 'middle';
-            img.style.cursor = 'pointer';
-      
-            const titleSpan = document.createElement('span');
-            titleSpan.textContent = video.title;
-            titleSpan.style.cursor = 'pointer';
-            titleSpan.style.flexGrow = '1';
-      
-            const uploaderSpan = document.createElement('span');
-            uploaderSpan.textContent = `Subido por: ${video.uploader}`;
-            uploaderSpan.style.fontSize = '0.8em';  // Reducir el tamaño de la fuente del nombre del uploader
-            uploaderSpan.style.display = 'block'; // Mostrar el nombre del uploader en una línea separada
-            uploaderSpan.style.color = '#666'; // Añadir color grisáceo
-      
-            const containerDiv = document.createElement('div');
-            containerDiv.style.display = 'flex';
-            containerDiv.style.flexDirection = 'column';
-            containerDiv.style.alignItems = 'flex-start'; // Alinear el texto a la izquierda
-            containerDiv.appendChild(titleSpan);
-            containerDiv.appendChild(uploaderSpan);
-      
-            listItem.appendChild(img);
-            listItem.appendChild(containerDiv); // Agregar el contenedor de texto al listItem
-            rankingList.appendChild(listItem);
-      
-            listItem.addEventListener('click', function() {
-                const videoId = video.id;
-                currentVideoId = videoId;
-                youtubePlayerContainer.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-                youtubePlayerContainer.style.display = 'block';
-                rankingSection.style.display = 'none';
-                backToRankingBtn.style.display = 'block';
-            });
-        });
-
-          const newsSection = document.getElementById('news-list');
-          const rssFeedUrl = 'https://www.blogger.com/feeds/3101225953970770773/posts/default';
-
-          fetch(rssFeedUrl)
-              .then(response => response.text())
-              .then(xmlText => {
-                  const parser = new DOMParser();
-                  const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-                  const items = xmlDoc.querySelectorAll('item');
-                  const newsList = document.createElement('ul');
-
-                  items.forEach(item => {
-                      const title = item.querySelector('title').textContent;
-                      const pubDate = new Date(item.querySelector('pubDate').textContent).toLocaleDateString();
-                      const link = item.querySelector('link').textContent;
-
-                      const listItem = document.createElement('li');
-                      const articleLink = document.createElement('a');
-                      articleLink.href = link;
-                      articleLink.target = '_blank';
-
-                      const titleHeading = document.createElement('h3');
-                      titleHeading.textContent = title;
-
-                      const detailsDiv = document.createElement('div');
-                      detailsDiv.classList.add('news-details');
-                      const dateSpan = document.createElement('span');
-                      dateSpan.textContent = pubDate;
-
-                      articleLink.appendChild(titleHeading);
-                      listItem.appendChild(articleLink);
-                      detailsDiv.appendChild(dateSpan);
-                      listItem.appendChild(detailsDiv);
-                      newsList.appendChild(listItem);
-                  });
-
-                  newsSection.appendChild(newsList);
-              })
-              .catch(error => {
-                  console.error('Error al cargar las noticias:', error);
-                  newsSection.innerHTML = '<p>No se pudieron cargar las noticias.</p>';
-              });
-      });
-    </script>
-</body>
+    <script src="/js/script.js"></script>
+    </body>
 </html>
