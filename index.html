@@ -14,7 +14,7 @@
         margin-bottom: 10px;
         background-size: cover;
         background-position: center;
-        display: flex; /* Para centrar el contenido, por si acaso */
+        display: flex;
         justify-content: center;
         align-items: center;
       }
@@ -97,7 +97,7 @@
           const pauseBtn = document.getElementById('pause-btn');
           const songTitleElement = document.querySelector('.song-title');
           const artistImageElement = document.querySelector('.artist-image');
-          const coverArtElement = document.getElementById('cover-art'); // Nuevo
+          const coverArtElement = document.getElementById('cover-art');
           const metadataUrl = 'https://api.zeno.fm/mounts/metadata/subscribe/9s7nnwmknkhvv';
           const deezerApiUrl = 'https://api.deezer.com/search?q=';
           const deezerCallback = 'handleDeezerResponse';
@@ -147,34 +147,37 @@
               pauseBtn.disabled = true;
           });
 
-          function fetchMetadata() {
-              fetch(metadataUrl)
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data && data.metadata && data.metadata.title && data.metadata.artist) {
-                          const songTitle = data.metadata.title;
-                          const artistName = data.metadata.artist;
-                          songTitleElement.textContent = `${artistName} - ${songTitle}`;
-                          fetchCoverArt(songTitle, artistName);
-                      } else {
-                          songTitleElement.textContent = 'Información no disponible';
-                          coverArtElement.src = 'img/cover.png';
-                      }
-                  })
-                  .catch(error => {
-                      console.error('Error al obtener metadatos:', error);
-                      songTitleElement.textContent = 'Error al cargar la información';
-                      coverArtElement.src = 'img/cover.png';
-                  });
-          }
+        function fetchMetadata() {
+            fetch(metadataUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.metadata && data.metadata.title && data.metadata.artist) {
+                        const songTitle = data.metadata.title;
+                        const artistName = data.metadata.artist;
+                        songTitleElement.textContent = `${artistName} - ${songTitle}`;
+                        fetchCoverArt(songTitle, artistName);
+                    } else {
+                        songTitleElement.textContent = 'Información no disponible';
+                        coverArtElement.src = 'img/cover.png';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener metadatos:', error);
+                    songTitleElement.textContent = 'Error al cargar la información';
+                    coverArtElement.src = 'img/cover.png';
+                });
+        }
 
         function fetchCoverArt(song, artist) {
             const script = document.createElement('script');
             script.src = `${deezerApiUrl}${encodeURIComponent(artist)} ${encodeURIComponent(song)}&output=jsonp&callback=${deezerCallback}`;
-            document.body.appendChild(script);
+            script.onload = function() {
+                // La lógica para mostrar la carátula se maneja en handleDeezerResponse
+            };
             script.onerror = function() {
                 coverArtElement.src = 'img/cover.png';
             };
+            document.body.appendChild(script);
         }
 
         window.handleDeezerResponse = function(data) {
@@ -228,7 +231,7 @@
           videoMetadata.forEach(video => {
               const listItem = document.createElement('li');
               const img = document.createElement('img');
-              img.src = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
+              img.src = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
               img.alt = `Miniatura de ${video.title}`;
               img.style.width = '80px';
               img.style.height = 'auto';
