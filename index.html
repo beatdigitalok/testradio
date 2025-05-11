@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beat Digital Radio Rosario</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+      .artist-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background-color: #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        background-size: cover;
+        background-position: center;
+        display: flex; /* Para centrar el contenido, por si acaso */
+        justify-content: center;
+        align-items: center;
+      }
+      .artist-image img{
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 5px;
+      }
+    </style>
 </head>
 <body>
     <header>
@@ -13,13 +33,15 @@
     <main>
         <section id="player">
             <audio id="radio-stream" src="https://stream-57.zeno.fm/9s7nnwmknkhvv" preload="none"></audio>
-            <div class="artist-image"></div>
+            <div class="artist-image">
+                <img id="cover-art" src="img/cover.png" alt="Carátula del artista">
+            </div>
             <div class="song-title">Cargando...</div>
             <div class="controls">
-                <button id="prev-btn" disabled>Anterior</button>
-                <button id="play-btn">Play</button>
-                <button id="pause-btn" disabled>Pausa</button>
-                <button id="next-btn" disabled>Siguiente</button>
+                <button type="button" id="prev-btn" disabled>Anterior</button>
+                <button type="button" id="play-btn">Play</button>
+                <button type="button" id="pause-btn" disabled>Pausa</button>
+                <button type="button" id="next-btn" disabled>Siguiente</button>
             </div>
         </section>
 
@@ -40,9 +62,12 @@
         <section id="contact">
             <h2>Contacto</h2>
             <form action="mailto:beatdigitalradiorosario@gmail.com" method="post" enctype="text/plain">
-                <input type="text" name="name" placeholder="Nombre" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <textarea name="message" placeholder="Mensaje" required></textarea>
+                <label for="name">Nombre:</label>
+                <input type="text" id="name" name="name" placeholder="Tu nombre" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Tu correo electrónico" required>
+                <label for="message">Mensaje:</label>
+                <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí" required></textarea>
                 <button type="submit">Enviar</button>
             </form>
         </section>
@@ -52,227 +77,227 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const themeToggle = document.getElementById('theme-toggle');
-            const body = document.body;
-            const currentTheme = localStorage.getItem('theme');
+      document.addEventListener('DOMContentLoaded', function() {
+          const themeToggle = document.getElementById('theme-toggle');
+          const body = document.body;
+          const currentTheme = localStorage.getItem('theme');
 
-            if (currentTheme === 'dark') {
-                body.classList.add('dark-theme');
-            }
+          if (currentTheme === 'dark') {
+              body.classList.add('dark-theme');
+          }
 
-            themeToggle.addEventListener('click', function() {
-                body.classList.toggle('dark-theme');
-                const newTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-            });
+          themeToggle.addEventListener('click', function() {
+              body.classList.toggle('dark-theme');
+              const newTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
+              localStorage.setItem('theme', newTheme);
+          });
 
-            const radioStream = document.getElementById('radio-stream');
-            const playBtn = document.getElementById('play-btn');
-            const pauseBtn = document.getElementById('pause-btn');
-            const songTitleElement = document.querySelector('.song-title');
-            const artistImageElement = document.querySelector('.artist-image');
-            const metadataUrl = 'https://api.zeno.fm/mounts/metadata/subscribe/9s7nnwmknkhvv';
-            const deezerApiUrl = 'https://api.deezer.com/search?q=';
-            const deezerCallback = 'handleDeezerResponse';
-            const rankingList = document.getElementById('ranking-list');
-            const rankingSection = document.getElementById('ranking');
-            const youtubePlayerContainer = document.getElementById('youtube-player');
-            const mainSection = document.querySelector('main');
-            let currentVideoId = null;
+          const radioStream = document.getElementById('radio-stream');
+          const playBtn = document.getElementById('play-btn');
+          const pauseBtn = document.getElementById('pause-btn');
+          const songTitleElement = document.querySelector('.song-title');
+          const artistImageElement = document.querySelector('.artist-image');
+          const coverArtElement = document.getElementById('cover-art'); // Nuevo
+          const metadataUrl = 'https://api.zeno.fm/mounts/metadata/subscribe/9s7nnwmknkhvv';
+          const deezerApiUrl = 'https://api.deezer.com/search?q=';
+          const deezerCallback = 'handleDeezerResponse';
+          const rankingList = document.getElementById('ranking-list');
+          const rankingSection = document.getElementById('ranking');
+          const youtubePlayerContainer = document.getElementById('youtube-player');
+          const mainSection = document.querySelector('main');
+          let currentVideoId = null;
 
-            const backToRankingBtn = document.createElement('button');
-            backToRankingBtn.textContent = 'Volver al Ranking';
-            backToRankingBtn.style.display = 'none';
-            backToRankingBtn.style.margin = '10px auto';
-            backToRankingBtn.style.padding = '8px 15px';
-            backToRankingBtn.style.borderRadius = '5px';
-            backToRankingBtn.style.cursor = 'pointer';
-            mainSection.insertBefore(backToRankingBtn, document.getElementById('news'));
+          const backToRankingBtn = document.createElement('button');
+          backToRankingBtn.type = 'button';
+          backToRankingBtn.textContent = 'Volver al Ranking';
+          backToRankingBtn.style.display = 'none';
+          backToRankingBtn.style.margin = '10px auto';
+          backToRankingBtn.style.padding = '8px 15px';
+          backToRankingBtn.style.borderRadius = '5px';
+          backToRankingBtn.style.cursor = 'pointer';
+          mainSection.insertBefore(backToRankingBtn, document.getElementById('news'));
 
-            backToRankingBtn.addEventListener('click', function() {
-                youtubePlayerContainer.style.display = 'none';
-                rankingSection.style.display = 'block';
-                backToRankingBtn.style.display = 'none';
-                currentVideoId = null;
-            });
+          backToRankingBtn.addEventListener('click', function() {
+              youtubePlayerContainer.style.display = 'none';
+              rankingSection.style.display = 'block';
+              backToRankingBtn.style.display = 'none';
+              currentVideoId = null;
+          });
 
-            playBtn.addEventListener('click', function() {
-                const playPromise = radioStream.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        playBtn.disabled = true;
-                        pauseBtn.disabled = false;
-                    }).catch(error => {
-                        console.error("Error de reproducción:", error);
-                        alert("La reproducción fue bloqueada por el navegador. Por favor, interactúa con la página.");
-                    });
-                } else {
-                    radioStream.play();
-                    playBtn.disabled = true;
-                    pauseBtn.disabled = false;
-                }
-            });
+          playBtn.addEventListener('click', function() {
+              const playPromise = radioStream.play();
+              if (playPromise !== undefined) {
+                  playPromise.then(() => {
+                      playBtn.disabled = true;
+                      pauseBtn.disabled = false;
+                  }).catch(error => {
+                      console.error("Error de reproducción:", error);
+                      alert("La reproducción fue bloqueada por el navegador. Por favor, interactúa con la página.");
+                  });
+              } else {
+                  radioStream.play();
+                  playBtn.disabled = true;
+                  pauseBtn.disabled = false;
+              }
+          });
 
-            pauseBtn.addEventListener('click', function() {
-                radioStream.pause();
-                playBtn.disabled = false;
-                pauseBtn.disabled = true;
-            });
+          pauseBtn.addEventListener('click', function() {
+              radioStream.pause();
+              playBtn.disabled = false;
+              pauseBtn.disabled = true;
+          });
 
-            function fetchMetadata() {
-                fetch(metadataUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.metadata && data.metadata.title && data.metadata.artist) {
-                            const songTitle = data.metadata.title;
-                            const artistName = data.metadata.artist;
-                            songTitleElement.textContent = `${artistName} - ${songTitle}`;
-                            fetchCoverArt(songTitle, artistName);
-                        } else {
-                            songTitleElement.textContent = 'Información no disponible';
-                            artistImageElement.style.backgroundImage = 'url("img/cover.png")';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al obtener metadatos:', error);
-                        songTitleElement.textContent = 'Error al cargar la información';
-                        artistImageElement.style.backgroundImage = 'url("img/cover.png")';
-                    });
-            }
+          function fetchMetadata() {
+              fetch(metadataUrl)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data && data.metadata && data.metadata.title && data.metadata.artist) {
+                          const songTitle = data.metadata.title;
+                          const artistName = data.metadata.artist;
+                          songTitleElement.textContent = `${artistName} - ${songTitle}`;
+                          fetchCoverArt(songTitle, artistName);
+                      } else {
+                          songTitleElement.textContent = 'Información no disponible';
+                          coverArtElement.src = 'img/cover.png';
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Error al obtener metadatos:', error);
+                      songTitleElement.textContent = 'Error al cargar la información';
+                      coverArtElement.src = 'img/cover.png';
+                  });
+          }
 
-            function fetchCoverArt(song, artist) {
-                const script = document.createElement('script');
-                script.src = `<span class="math-inline">\{deezerApiUrl\}</span>{encodeURIComponent(artist)} <span class="math-inline">\{encodeURIComponent\(song\)\}&output\=jsonp&callback\=</span>{deezerCallback}`;
-                document.body.appendChild(script);
-                script.onerror = function() {
-                    artistImageElement.style.backgroundImage = 'url("img/cover.png")';
-                };
-            }
-
-            window.handleDeezerResponse = function(data) {
-                if (data && data.data && data.data.length > 0 && data.data[0].album && data.data[0].album.cover_medium) {
-                    artistImageElement.style.backgroundImage = `url("${data.data[0].album.cover_medium}")`;
-                    artistImageElement.style.backgroundSize = 'cover';
-                    artistImageElement.style.backgroundPosition = 'center';
-                } else {
-                    artistImageElement.style.backgroundImage = 'url("img/cover.png")';
-                }
-                const scripts = document.querySelectorAll(`script[src^="${deezerApiUrl}"]`);
-                scripts.forEach(script => script.remove());
+        function fetchCoverArt(song, artist) {
+            const script = document.createElement('script');
+            script.src = `${deezerApiUrl}${encodeURIComponent(artist)} ${encodeURIComponent(song)}&output=jsonp&callback=${deezerCallback}`;
+            document.body.appendChild(script);
+            script.onerror = function() {
+                coverArtElement.src = 'img/cover.png';
             };
+        }
 
-            fetchMetadata();
-            setInterval(fetchMetadata, 10000);
+        window.handleDeezerResponse = function(data) {
+            if (data && data.data && data.data.length > 0 && data.data[0].album && data.data[0].album.cover_medium) {
+                coverArtElement.src = data.data[0].album.cover_medium;
+            } else {
+                coverArtElement.src = 'img/cover.png';
+            }
+            const scripts = document.querySelectorAll(`script[src^="${deezerApiUrl}"]`);
+            scripts.forEach(script => script.remove());
+        };
 
-            const videoMetadata = [
-                {title: 'Cazzu - Con Otra (Video Oficial)', url: 'http://www.youtube.com/watch?v=OA3KsYPhZbw', id: 'dQobxZu60Lw'},
-                {title: 'Gordo - Olvidarte feat. Emilia [Ultra Records]', url: 'http://www.youtube.com/watch?v=dRNraA5KBfE', id: '9r70n4D-Y7k'},
-                {title: 'Emanero, Valentino Merlo, Big One - Si Un Día Estás Sola | CROSSOVER #7', url: 'http://www.youtube.com/watch?v=cixeHdsARSw', id: 'i3Jv11NoW_k'},
-                {title: 'Yami Safdie, Luck Ra, Q\'Lokura - En Otra Vida (Versión Cuarteto)', url: 'http://www.youtube.com/watch?v=LhV6SOYks1Q', id: 'gn4v7693H0M'},
-                {title: 'W Sound 05 "LA PLENA" - Beéle, Westcol, Ovy On The Drums', url: 'http://www.youtube.com/watch?v=F1_aOX0acbY', id: 'P4y5n_j7-rs'},
-                {title: 'MIGRANTES x G SONY x RODRIGO TAPARI | LAS 5 (Official Video)', url: 'http://www.youtube.com/watch?v=zzEb1CUihXw', id: '49riPXW2d7M'},
-                {title: 'Emanero, Angela Leiva - Podés pedirme perdón (Official Video)', url: 'http://www.youtube.com/watch?v=6NqUdz1Kbak', id: 'G640rF1J1yg'},
-                {title: 'Emilia, Luísa Sonza - bunda 🍑 (Official Video)', url: 'http://www.youtube.com/watch?v=GpefTFZLknk', id: 'l4J-91s0FJQ'},
-                {title: 'KING SAVAGGE - A 200 ft. JAIRO VERA & BAYRON FIRE (VIDEO OFICIAL)', url: 'http://www.youtube.com/watch?v=-BjM99sQ0Rg', id: 'v44OhY7oF-c'},
-                {title: 'LA T Y LA M ft MALANDRO DE AMERICA - Amor de Vago', url: 'http://www.youtube.com/watch?v=wRPCDOFebHQ', id: 'W09J-vY0464'},
-                {title: 'Luck Ra || BZRP Music Sessions #61', url: 'http://www.youtube.com/watch?v=GJtrE-SLtZA', id: 'NlF-aKF2o7k'},
-                {title: 'TINI - el cielo (Official Video)', url: 'http://www.youtube.com/watch?v=972fadykbJA', id: 'QjGpH0gozTc'},
-                {title: 'Jombriel, Alex Krack, Jøtta - Parte & Choke (Official Video)', url: 'http://www.youtube.com/watch?v=EJnMW5BIsbg', id: 'L02B-P6z7yY'},
-                {title: 'KAROL G - Si Antes Te Hubiera Conocido | Coke Studio', url: 'http://www.youtube.com/watch?v=QCZZwZQ4qNs', id: 'm9ddc-5Y1o4'},
-                {title: 'Rauw Alejandro, Romeo Santos - Khé? (Official Video)', url: 'http://www.youtube.com/watch?v=J8U9czVT7tM', id: '4n35Lg4g5qQ'},
-                {title: 'MIGRANTES | La Más Amada del País [Official Video]', url: 'http://www.youtube.com/watch?v=ZOcefFBNaDs', id: 'O4z-9s8_H8U'},
-                {title: 'Maria Becerra, Trueno, Big One - Cuando Te Vi | CROSSOVER #5', url: 'http://www.youtube.com/watch?v=auDMCMqiW8U', id: 'T40j1f5J51M'},
-                {title: 'Emilia, TINI, Nicki Nicole - blackout 🧊 (Official Video)', url: 'http://www.youtube.com/watch?v=WMfOaOSz0R4', id: '9w1n05gc_7s'},
-                {title: 'Bad Bunny - DtMF (Letra)', url: 'http://www.youtube.com/watch?v=4X4uckVyk9o', id: 'kk99_vjnz1c'},
-                {title: 'Maria Becerra - TATÚ (Official Video)', url: 'http://www.youtube.com/watch?v=iD6B1BTGKdY', id: 'v5Z93X42c2Y'},
-                {title: 'Luck Ra - UN CLAVO', url: 'http://www.youtube.com/watch?v=ZkmCU61TNpg', id: 'p7ImQy9ehhE'},
-                {title: 'Luciano Pereyra, Ezequiel y La Clave, Un Poco de Ruido y Pinky SD - Si No Es Muy Tarde', url: 'http://www.youtube.com/watch?v=P5iXvjML0hg', id: 'xT17GC9qXdQ'},
-                {title: 'Luciano Pereyra, Emanero - Ahora Resulta', url: 'http://www.youtube.com/watch?v=L4rI1OfsMLA', id: '34FwhQWq-mE'},
-                {title: 'Tiago PZK, Anitta, Emilia - Alegría (Video Oficial)', url: 'http://www.youtube.com/watch?v=6-YPVUgAO3I', id: '64J94VwG-2s'},
-                {title: 'Luck Ra, Tiago PZK - FUE CULPA TUYA', url: 'http://www.youtube.com/watch?v=VR_Yc2Ar5hs', id: 'Y7ar9Hj55wE'},
-                {title: 'Tiago PZK, La Joaqui, Big One - Pa\' Que Te Acuerdes | CROSSOVER #8', url: 'http://www.youtube.com/watch?v=1_6-HqpIRSg', id: '5yJ1JVaO-mE'},
-                {title: 'Paulo Londra, Luck Ra, Valentino Merlo - Princesa (Official Video)', url: 'http://www.youtube.com/watch?v=FcDse8S8i1Y', id: 'vSvzYCmWsf4'},
-                {title: 'AIRBAG - Extrañas Intenciones', url: 'http://www.youtube.com/watch?v=qhDvHdWC-rY', id: '5Yc7w4Pd-5w'},
-                {title: 'Emilia - noviogangsta (Official Video)', url: 'http://www.youtube.com/watch?v=8ypetyyf-rQ', id: '4yN6M91-E1o'},
-                {title: 'Lali, Miranda! - MEJOR QUE VOS (Official Video)', url: 'http://www.youtube.com/watch?v=Y0tagYoz1Ws', id: 'peJTv-4_qWk'}
-            ];
+          fetchMetadata();
+          setInterval(fetchMetadata, 10000);
 
-            rankingList.innerHTML = '';
+          const videoMetadata = [
+              { title: 'Cazzu - Con Otra (Video Oficial)', id: 'dQobxZu60Lw' },
+              { title: 'Gordo - Olvidarte feat. Emilia [Ultra Records]', id: '9r70n4D-Y7k' },
+              { title: 'Emanero, Valentino Merlo, Big One - Si Un Día Estás Sola | CROSSOVER #7', id: 'i3Jv11NoW_k' },
+              { title: 'Yami Safdie, Luck Ra, Q\'Lokura - En Otra Vida (Versión Cuarteto)', id: 'gn4v7693H0M' },
+              { title: 'W Sound 05 "LA PLENA" - Beéle, Westcol, Ovy On The Drums', id: 'P4y5n_j7-rs' },
+              { title: 'MIGRANTES x G SONY x RODRIGO TAPARI | LAS 5 (Official Video)', id: '49riPXW2d7M' },
+              { title: 'Emanero, Angela Leiva - Podés pedirme perdón (Official Video)', id: 'G640rF1J1yg' },
+              { title: 'Emilia, Luísa Sonza - bunda 🍑 (Official Video)', id: 'l4J-91s0FJQ' },
+              { title: 'KING SAVAGGE - A 200 ft. JAIRO VERA & BAYRON FIRE (VIDEO OFICIAL)', id: 'v44OhY7oF-c' },
+              { title: 'LA T Y LA M ft MALANDRO DE AMERICA - Amor de Vago', id: 'W09J-vY0464' },
+              { title: 'Luck Ra || BZRP Music Sessions #61', id: 'NlF-aKF2o7k' },
+              { title: 'TINI - el cielo (Official Video)', id: 'QjGpH0gozTc' },
+              { title: 'Jombriel, Alex Krack, Jøtta - Parte & Choke (Official Video)', id: 'L02B-P6z7yY' },
+              { title: 'KAROL G - Si Antes Te Hubiera Conocido | Coke Studio', id: 'm9ddc-5Y1o4' },
+              { title: 'Rauw Alejandro, Romeo Santos - Khé? (Official Video)', id: '4n35Lg4g5qQ' },
+              { title: 'MIGRANTES | La Más Amada del País [Official Video]', id: 'O4z-9s8_H8U' },
+              { title: 'Maria Becerra, Trueno, Big One - Cuando Te Vi | CROSSOVER #5', id: 'T40j1f5J51M' },
+              { title: 'Emilia, TINI, Nicki Nicole - blackout 🧊 (Official Video)', id: '9w1n05gc_7s' },
+              { title: 'Bad Bunny - DtMF (Letra)', id: 'kk99_vjnz1c' },
+              { title: 'Maria Becerra - TATÚ (Official Video)', id: 'v5Z93X42c2Y' },
+              { title: 'Luck Ra - UN CLAVO', id: 'p7ImQy9ehhE' },
+              { title: 'Luciano Pereyra, Ezequiel y La Clave, Un Poco de Ruido y Pinky SD - Si No Es Muy Tarde', id: 'xT17GC9qXdQ' },
+              { title: 'Luciano Pereyra, Emanero - Ahora Resulta', id: '34FwhQWq-mE' },
+              { title: 'Tiago PZK, Anitta, Emilia - Alegría (Video Oficial)', id: '64J94VwG-2s' },
+              { title: 'Luck Ra, Tiago PZK - FUE CULPA TUYA', id: 'Y7ar9Hj55wE' },
+              { title: 'Tiago PZK, La Joaqui, Big One - Pa\' Que Te Acuerdes | CROSSOVER #8', id: '5yJ1JVaO-mE' },
+              { title: 'Paulo Londra, Luck Ra, Valentino Merlo - Princesa (Official Video)', id: 'vSvzYCmWsf4' },
+              { title: 'AIRBAG - Extrañas Intenciones', id: '5Yc7w4Pd-5w' },
+              { title: 'Emilia - noviogangsta (Official Video)', id: '4yN6M91-E1o' },
+              { title: 'Lali, Miranda! - MEJOR QUE VOS (Official Video)', id: 'peJTv-4_qWk' }
+          ];
 
-            videoMetadata.forEach(video => {
-                const listItem = document.createElement('li');
-                const img = document.createElement('img');
-                img.src = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
-                img.alt = `Miniatura de ${video.title}`;
-                img.style.width = '80px';
-                img.style.height = 'auto';
-                img.style.marginRight = '10px';
-                img.style.verticalAlign = 'middle';
-                img.style.cursor = 'pointer';
+          rankingList.innerHTML = '';
 
-                const titleSpan = document.createElement('span');
-                titleSpan.textContent = video.title;
-                titleSpan.style.cursor = 'pointer';
-                titleSpan.style.flexGrow = '1';
+          videoMetadata.forEach(video => {
+              const listItem = document.createElement('li');
+              const img = document.createElement('img');
+              img.src = `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
+              img.alt = `Miniatura de ${video.title}`;
+              img.style.width = '80px';
+              img.style.height = 'auto';
+              img.style.marginRight = '10px';
+              img.style.verticalAlign = 'middle';
+              img.style.cursor = 'pointer';
 
-                listItem.appendChild(img);
-                listItem.appendChild(titleSpan);
-                rankingList.appendChild(listItem);
+              const titleSpan = document.createElement('span');
+              titleSpan.textContent = video.title;
+              titleSpan.style.cursor = 'pointer';
+              titleSpan.style.flexGrow = '1';
 
-                listItem.addEventListener('click', function() {
-                    const videoId = video.id;
-                    currentVideoId = videoId;
-                    youtubePlayerContainer.innerHTML = `<iframe width="100%" height="100%" src="http://www.youtube.com/playlist?list=PLXaH20eIS38ZSMVRyw884D8rKtFxht8lG0{videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-                    youtubePlayerContainer.style.display = 'block';
-                    rankingSection.style.display = 'none';
-                    backToRankingBtn.style.display = 'block';
-                });
-            });
+              listItem.appendChild(img);
+              listItem.appendChild(titleSpan);
+              rankingList.appendChild(listItem);
 
-            const newsSection = document.getElementById('news-list');
-            const rssFeedUrl = 'https://www.blogger.com/feeds/3101225953970770773/posts/default';
+              listItem.addEventListener('click', function() {
+                  const videoId = video.id;
+                  currentVideoId = videoId;
+                  youtubePlayerContainer.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+                  youtubePlayerContainer.style.display = 'block';
+                  rankingSection.style.display = 'none';
+                  backToRankingBtn.style.display = 'block';
+              });
+          });
 
-            fetch(rssFeedUrl)
-                .then(response => response.text())
-                .then(xmlText => {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-                    const items = xmlDoc.querySelectorAll('item');
-                    const newsList = document.createElement('ul');
+          const newsSection = document.getElementById('news-list');
+          const rssFeedUrl = 'https://www.blogger.com/feeds/3101225953970770773/posts/default';
 
-                    items.forEach(item => {
-                        const title = item.querySelector('title').textContent;
-                        const pubDate = new Date(item.querySelector('pubDate').textContent).toLocaleDateString();
-                        const link = item.querySelector('link').textContent;
+          fetch(rssFeedUrl)
+              .then(response => response.text())
+              .then(xmlText => {
+                  const parser = new DOMParser();
+                  const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                  const items = xmlDoc.querySelectorAll('item');
+                  const newsList = document.createElement('ul');
 
-                        const listItem = document.createElement('li');
-                        const articleLink = document.createElement('a');
-                        articleLink.href = link;
-                        articleLink.target = '_blank';
+                  items.forEach(item => {
+                      const title = item.querySelector('title').textContent;
+                      const pubDate = new Date(item.querySelector('pubDate').textContent).toLocaleDateString();
+                      const link = item.querySelector('link').textContent;
 
-                        const titleHeading = document.createElement('h3');
-                        titleHeading.textContent = title;
+                      const listItem = document.createElement('li');
+                      const articleLink = document.createElement('a');
+                      articleLink.href = link;
+                      articleLink.target = '_blank';
 
-                        const detailsDiv = document.createElement('div');
-                        detailsDiv.classList.add('news-details');
-                        const dateSpan = document.createElement('span');
-                        dateSpan.textContent = pubDate;
+                      const titleHeading = document.createElement('h3');
+                      titleHeading.textContent = title;
 
-                        articleLink.appendChild(titleHeading);
-                        listItem.appendChild(articleLink);
-                        detailsDiv.appendChild(dateSpan);
-                        listItem.appendChild(detailsDiv);
-                        newsList.appendChild(listItem);
-                    });
+                      const detailsDiv = document.createElement('div');
+                      detailsDiv.classList.add('news-details');
+                      const dateSpan = document.createElement('span');
+                      dateSpan.textContent = pubDate;
 
-                    newsSection.appendChild(newsList);
-                })
-                .catch(error => {
-                    console.error('Error al cargar las noticias:', error);
-                    newsSection.innerHTML = '<p>No se pudieron cargar las noticias.</p>';
-                });
-        });
+                      articleLink.appendChild(titleHeading);
+                      listItem.appendChild(articleLink);
+                      detailsDiv.appendChild(dateSpan);
+                      listItem.appendChild(detailsDiv);
+                      newsList.appendChild(listItem);
+                  });
+
+                  newsSection.appendChild(newsList);
+              })
+              .catch(error => {
+                  console.error('Error al cargar las noticias:', error);
+                  newsSection.innerHTML = '<p>No se pudieron cargar las noticias.</p>';
+              });
+      });
     </script>
 </body>
 </html>
