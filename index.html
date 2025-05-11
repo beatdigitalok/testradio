@@ -99,8 +99,6 @@
           const artistImageElement = document.querySelector('.artist-image');
           const coverArtElement = document.getElementById('cover-art');
           const metadataUrl = 'https://api.zeno.fm/mounts/metadata/subscribe/9s7nnwmknkhvv';
-          const deezerApiUrl = 'https://api.deezer.com/search?q=';
-          const deezerCallback = 'handleDeezerResponse';
           const rankingList = document.getElementById('ranking-list');
           const rankingSection = document.getElementById('ranking');
           const youtubePlayerContainer = document.getElementById('youtube-player');
@@ -151,11 +149,12 @@
             fetch(metadataUrl)
                 .then(response => response.json())
                 .then(data => {
-                    if (data && data.metadata && data.metadata.title && data.metadata.artist) {
+                    if (data && data.metadata && data.metadata.title && data.metadata.artist && data.metadata.image) {
                         const songTitle = data.metadata.title;
                         const artistName = data.metadata.artist;
+                        const imageUrl = data.metadata.image;
                         songTitleElement.textContent = `${artistName} - ${songTitle}`;
-                        fetchCoverArt(songTitle, artistName);
+                        coverArtElement.src = imageUrl;
                     } else {
                         songTitleElement.textContent = 'Información no disponible';
                         coverArtElement.src = 'img/cover.png';
@@ -168,95 +167,86 @@
                 });
         }
 
-        function fetchCoverArt(song, artist) {
-            const script = document.createElement('script');
-            script.src = `${deezerApiUrl}${encodeURIComponent(artist)} ${encodeURIComponent(song)}&output=jsonp&callback=${deezerCallback}`;
-            script.onload = function() {
-                // La lógica para mostrar la carátula se maneja en handleDeezerResponse
-            };
-            script.onerror = function() {
-                coverArtElement.src = 'img/cover.png';
-            };
-            document.body.appendChild(script);
-        }
-
-        window.handleDeezerResponse = function(data) {
-            if (data && data.data && data.data.length > 0 && data.data[0].album && data.data[0].album.cover_medium) {
-                coverArtElement.src = data.data[0].album.cover_medium;
-            } else {
-                coverArtElement.src = 'img/cover.png';
-            }
-            const scripts = document.querySelectorAll(`script[src^="${deezerApiUrl}"]`);
-            scripts.forEach(script => script.remove());
-        };
-
           fetchMetadata();
           setInterval(fetchMetadata, 10000);
 
           const videoMetadata = [
-              { title: 'Cazzu - Con Otra (Video Oficial)', id: 'dQobxZu60Lw' },
-              { title: 'Gordo - Olvidarte feat. Emilia [Ultra Records]', id: '9r70n4D-Y7k' },
-              { title: 'Emanero, Valentino Merlo, Big One - Si Un Día Estás Sola | CROSSOVER #7', id: 'i3Jv11NoW_k' },
-              { title: 'Yami Safdie, Luck Ra, Q\'Lokura - En Otra Vida (Versión Cuarteto)', id: 'gn4v7693H0M' },
-              { title: 'W Sound 05 "LA PLENA" - Beéle, Westcol, Ovy On The Drums', id: 'P4y5n_j7-rs' },
-              { title: 'MIGRANTES x G SONY x RODRIGO TAPARI | LAS 5 (Official Video)', id: '49riPXW2d7M' },
-              { title: 'Emanero, Angela Leiva - Podés pedirme perdón (Official Video)', id: 'G640rF1J1yg' },
-              { title: 'Emilia, Luísa Sonza - bunda 🍑 (Official Video)', id: 'l4J-91s0FJQ' },
-              { title: 'KING SAVAGGE - A 200 ft. JAIRO VERA & BAYRON FIRE (VIDEO OFICIAL)', id: 'v44OhY7oF-c' },
-              { title: 'LA T Y LA M ft MALANDRO DE AMERICA - Amor de Vago', id: 'W09J-vY0464' },
-              { title: 'Luck Ra || BZRP Music Sessions #61', id: 'NlF-aKF2o7k' },
-              { title: 'TINI - el cielo (Official Video)', id: 'QjGpH0gozTc' },
-              { title: 'Jombriel, Alex Krack, Jøtta - Parte & Choke (Official Video)', id: 'L02B-P6z7yY' },
-              { title: 'KAROL G - Si Antes Te Hubiera Conocido | Coke Studio', id: 'm9ddc-5Y1o4' },
-              { title: 'Rauw Alejandro, Romeo Santos - Khé? (Official Video)', id: '4n35Lg4g5qQ' },
-              { title: 'MIGRANTES | La Más Amada del País [Official Video]', id: 'O4z-9s8_H8U' },
-              { title: 'Maria Becerra, Trueno, Big One - Cuando Te Vi | CROSSOVER #5', id: 'T40j1f5J51M' },
-              { title: 'Emilia, TINI, Nicki Nicole - blackout 🧊 (Official Video)', id: '9w1n05gc_7s' },
-              { title: 'Bad Bunny - DtMF (Letra)', id: 'kk99_vjnz1c' },
-              { title: 'Maria Becerra - TATÚ (Official Video)', id: 'v5Z93X42c2Y' },
-              { title: 'Luck Ra - UN CLAVO', id: 'p7ImQy9ehhE' },
-              { title: 'Luciano Pereyra, Ezequiel y La Clave, Un Poco de Ruido y Pinky SD - Si No Es Muy Tarde', id: 'xT17GC9qXdQ' },
-              { title: 'Luciano Pereyra, Emanero - Ahora Resulta', id: '34FwhQWq-mE' },
-              { title: 'Tiago PZK, Anitta, Emilia - Alegría (Video Oficial)', id: '64J94VwG-2s' },
-              { title: 'Luck Ra, Tiago PZK - FUE CULPA TUYA', id: 'Y7ar9Hj55wE' },
-              { title: 'Tiago PZK, La Joaqui, Big One - Pa\' Que Te Acuerdes | CROSSOVER #8', id: '5yJ1JVaO-mE' },
-              { title: 'Paulo Londra, Luck Ra, Valentino Merlo - Princesa (Official Video)', id: 'vSvzYCmWsf4' },
-              { title: 'AIRBAG - Extrañas Intenciones', id: '5Yc7w4Pd-5w' },
-              { title: 'Emilia - noviogangsta (Official Video)', id: '4yN6M91-E1o' },
-              { title: 'Lali, Miranda! - MEJOR QUE VOS (Official Video)', id: 'peJTv-4_qWk' }
+            { title: 'Cazzu - Con Otra (Video Oficial)', id: 'dQobxZu60Lw', uploader: 'Cazzu' },
+            { title: 'Gordo - Olvidarte feat. Emilia [Ultra Records]', id: '9r70n4D-Y7k', uploader: 'Gordo' },
+            { title: 'Emanero, Valentino Merlo, Big One - Si Un Día Estás Sola | CROSSOVER #7', id: 'i3Jv11NoW_k', uploader: 'Emanero' },
+            { title: 'Yami Safdie, Luck Ra, Q\'Lokura - En Otra Vida (Versión Cuarteto)', id: 'gn4v7693H0M', uploader: 'Yami Safdie' },
+            { title: 'W Sound 05 "LA PLENA" - Beéle, Westcol, Ovy On The Drums', id: 'P4y5n_j7-rs', uploader: 'Beéle' },
+            { title: 'MIGRANTES x G SONY x RODRIGO TAPARI | LAS 5 (Official Video)', id: '49riPXW2d7M', uploader: 'MIGRANTES' },
+            { title: 'Emanero, Angela Leiva - Podés pedirme perdón (Official Video)', id: 'G640rF1J1yg', uploader: 'Emanero' },
+            { title: 'Emilia, Luísa Sonza - bunda 🍑 (Official Video)', id: 'l4J-91s0FJQ', uploader: 'Emilia' },
+            { title: 'KING SAVAGGE - A 200 ft. JAIRO VERA & BAYRON FIRE (VIDEO OFICIAL)', id: 'v44OhY7oF-c', uploader: 'KING SAVAGGE' },
+            { title: 'LA T Y LA M ft MALANDRO DE AMERICA - Amor de Vago', id: 'W09J-vY0464', uploader: 'LA T Y LA M' },
+            { title: 'Luck Ra || BZRP Music Sessions #61', id: 'NlF-aKF2o7k', uploader: 'BZRP' },
+            { title: 'TINI - el cielo (Official Video)', id: 'QjGpH0gozTc', uploader: 'TINI' },
+            { title: 'Jombriel, Alex Krack, Jøtta - Parte & Choke (Official Video)', id: 'L02B-P6z7yY', uploader: 'Jombriel' },
+            { title: 'KAROL G - Si Antes Te Hubiera Conocido | Coke Studio', id: 'm9ddc-5Y1o4', uploader: 'KAROL G' },
+            { title: 'Rauw Alejandro, Romeo Santos - Khé? (Official Video)', id: '4n35Lg4g5qQ', uploader: 'Rauw Alejandro' },
+            { title: 'MIGRANTES | La Más Amada del País [Official Video]', id: 'O4z-9s8_H8U', uploader: 'MIGRANTES' },
+            { title: 'Maria Becerra, Trueno, Big One - Cuando Te Vi | CROSSOVER #5', id: 'T40j1f5J51M', uploader: 'Maria Becerra' },
+            { title: 'Emilia, TINI, Nicki Nicole - blackout 🧊 (Official Video)', id: '9w1n05gc_7s', uploader: 'Emilia' },
+            { title: 'Bad Bunny - DtMF (Letra)', id: 'kk99_vjnz1c', uploader: 'Bad Bunny' },
+            { title: 'Maria Becerra - TATÚ (Official Video)', id: 'v5Z93X42c2Y', uploader: 'Maria Becerra' },
+            { title: 'Luck Ra - UN CLAVO', id: 'p7ImQy9ehhE', uploader: 'Luck Ra' },
+            { title: 'Luciano Pereyra, Ezequiel y La Clave, Un Poco de Ruido y Pinky SD - Si No Es Muy Tarde', id: 'xT17GC9qXdQ', uploader: 'Luciano Pereyra' },
+            { title: 'Luciano Pereyra, Emanero - Ahora Resulta', id: '34FwhQWq-mE', uploader: 'Luciano Pereyra' },
+            { title: 'Tiago PZK, Anitta, Emilia - Alegría (Video Oficial)', id: '64J94VwG-2s', uploader: 'Tiago PZK' },
+            { title: 'Luck Ra, Tiago PZK - FUE CULPA TUYA', id: 'Y7ar9Hj55wE', uploader: 'Luck Ra' },
+            { title: 'Tiago PZK, La Joaqui, Big One - Pa\' Que Te Acuerdes | CROSSOVER #8', id: '5yJ1JVaO-mE', uploader: 'Tiago PZK' },
+            { title: 'Paulo Londra, Luck Ra, Valentino Merlo - Princesa (Official Video)', id: 'vSvzYCmWsf4', uploader: 'Paulo Londra' },
+            { title: 'AIRBAG - Extrañas Intenciones', id: '5Yc7w4Pd-5w', uploader: 'AIRBAG' },
+            { title: 'Emilia - noviogangsta (Official Video)', id: '4yN6M91-E1o', uploader: 'Emilia' },
+            { title: 'Lali, Miranda! - MEJOR QUE VOS (Official Video)', id: 'peJTv-4_qWk', uploader: 'Lali' }
           ];
 
           rankingList.innerHTML = '';
-
+        
           videoMetadata.forEach(video => {
-              const listItem = document.createElement('li');
-              const img = document.createElement('img');
-              img.src = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
-              img.alt = `Miniatura de ${video.title}`;
-              img.style.width = '80px';
-              img.style.height = 'auto';
-              img.style.marginRight = '10px';
-              img.style.verticalAlign = 'middle';
-              img.style.cursor = 'pointer';
-
-              const titleSpan = document.createElement('span');
-              titleSpan.textContent = video.title;
-              titleSpan.style.cursor = 'pointer';
-              titleSpan.style.flexGrow = '1';
-
-              listItem.appendChild(img);
-              listItem.appendChild(titleSpan);
-              rankingList.appendChild(listItem);
-
-              listItem.addEventListener('click', function() {
-                  const videoId = video.id;
-                  currentVideoId = videoId;
-                  youtubePlayerContainer.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-                  youtubePlayerContainer.style.display = 'block';
-                  rankingSection.style.display = 'none';
-                  backToRankingBtn.style.display = 'block';
-              });
-          });
+            const listItem = document.createElement('li');
+            const img = document.createElement('img');
+            img.src = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;  // Usar una imagen de calidad media
+            img.alt = `Miniatura de ${video.title}`;
+            img.style.width = '120px';  // Aumentar el tamaño de la miniatura
+            img.style.height = 'auto';
+            img.style.marginRight = '10px';
+            img.style.verticalAlign = 'middle';
+            img.style.cursor = 'pointer';
+      
+            const titleSpan = document.createElement('span');
+            titleSpan.textContent = video.title;
+            titleSpan.style.cursor = 'pointer';
+            titleSpan.style.flexGrow = '1';
+      
+            const uploaderSpan = document.createElement('span');
+            uploaderSpan.textContent = `Subido por: ${video.uploader}`;
+            uploaderSpan.style.fontSize = '0.8em';  // Reducir el tamaño de la fuente del nombre del uploader
+            uploaderSpan.style.display = 'block'; // Mostrar el nombre del uploader en una línea separada
+            uploaderSpan.style.color = '#666'; // Añadir color grisáceo
+      
+            const containerDiv = document.createElement('div');
+            containerDiv.style.display = 'flex';
+            containerDiv.style.flexDirection = 'column';
+            containerDiv.style.alignItems = 'flex-start'; // Alinear el texto a la izquierda
+            containerDiv.appendChild(titleSpan);
+            containerDiv.appendChild(uploaderSpan);
+      
+            listItem.appendChild(img);
+            listItem.appendChild(containerDiv); // Agregar el contenedor de texto al listItem
+            rankingList.appendChild(listItem);
+      
+            listItem.addEventListener('click', function() {
+                const videoId = video.id;
+                currentVideoId = videoId;
+                youtubePlayerContainer.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+                youtubePlayerContainer.style.display = 'block';
+                rankingSection.style.display = 'none';
+                backToRankingBtn.style.display = 'block';
+            });
+        });
 
           const newsSection = document.getElementById('news-list');
           const rssFeedUrl = 'https://www.blogger.com/feeds/3101225953970770773/posts/default';
