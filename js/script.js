@@ -1,7 +1,7 @@
-const RADIO_NAME = 'Tu Radio Online'; // Cambia el nombre de tu radio
+const RADIO_NAME = 'Beat Digital Radio'; // Cambia el nombre de tu radio
 const URL_STREAMING = 'https://stream-57.zeno.fm/9s7nnwmknkhvv';
 const url = 'https://api.zeno.fm/mounts/metadata/subscribe/9s7nnwmknkhvv';
-const API_KEY = "TU_API_KEY_VAGALUME"; // Reemplaza con tu API key de Vagalume (opcional)
+const API_KEY = "18fe07917957c289983464588aabddfb"; // Reemplaza con tu API key de Vagalume (opcional)
 let showHistory = true;
 
 window.onload = function () {
