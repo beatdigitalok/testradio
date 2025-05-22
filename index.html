@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sintonizador TV en vivo ARTV</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="arindice.css" type="text/css">
+    
+    <script type="text/javascript" src="arindice.js"></script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4ZN0R0F7M4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4ZN0R0F7M4');
+    </script>
+
+    <style>
+        /* Estilo personalizado para la fuente Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilos para las clases de tu código original, complementando Tailwind */
+        .LC11 {
+            display: block;
+            padding: 4px 0;
+            color: #3B82F6; /* Tailwind blue-500 */
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+            font-weight: 600; /* Negrita */
+        }
+        .LC11:hover {
+            color: #1D4ED8; /* Tailwind blue-700 */
+            text-decoration: underline;
+        }
+        .TNC { /* Título de la sección de canales */
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 700; /* font-bold */
+            color: #e2e8f0; /* text-gray-200 */
+            display: block;
+            margin-bottom: 1rem;
+        }
+        .texto { /* Para las columnas de "CTV" */
+            color: #a0aec0; /* text-gray-400 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .selec { /* Para los nombres de los canales */
+            color: #cbd5e0; /* text-gray-300 */
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .selec:hover {
+            text-decoration: underline;
+            color: #fff;
+        }
+        /* Las imágenes como ic----nv.gif e ic---dfp.gif necesitarán estar en la misma carpeta o ajustar la ruta */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 flex justify-center items-center min-h-screen p-4">
+
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-5xl flex flex-col lg:flex-row overflow-hidden">
+        
+        <aside class="w-full lg:w-1/3 bg-gray-700 p-6 flex flex-col justify-between overflow-y-auto max-h-[80vh]">
+            <h2 class="text-2xl font-bold text-white mb-6">
+                Directorio de TV en vivo
+            </h2>
+            <p class="text-gray-300 text-sm mb-6">
+                El más completo y actualizado listado de Medios de Argentina y más.
+            </p>
+
+            <div id="dynamic-content-area" class="flex-grow">
+                <div id="province-list-area" class="">
+                    <div class="flex flex-wrap -mx-2 mb-6">
+                        <div class="w-1/2 px-2">
+                            <h3 class="text-lg font-semibold text-gray-200 mb-2">Argentina</h3>
+                            <ul class="text-sm">
+                                <li><a class="LC11" onclick="MosTV('TV01')" href="javascript:void(0)">Buenos Aires</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV02')" href="javascript:void(0)">Catamarca</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV03')" href="javascript:void(0)">Cordoba</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV04')" href="javascript:void(0)">Corrientes</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV05')" href="javascript:void(0)">Chaco</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV06')" href="javascript:void(0)">Chubut</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV07')" href="javascript:void(0)">Entre Rios</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV08')" href="javascript:void(0)">Formosa</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV09')" href="javascript:void(0)">Jujuy</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV10')" href="javascript:void(0)">La Pampa</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV11')" href="javascript:void(0)">La Rioja</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV12')" href="javascript:void(0)">Mendoza</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV13')" href="javascript:void(0)">Misiones</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV14')" href="javascript:void(0)">Neuquen</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV15')" href="javascript:void(0)">Rio Negro</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV28')" href="javascript:void(0)">San Juan</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV29')" href="javascript:void(0)">San Luis</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV30')" href="javascript:void(0)">Santa Fe1</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV31')" href="javascript:void(0)">Santa Fe2</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV32')" href="javascript:void(0)">Tierra del Fuego</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV33')" href="javascript:void(0)">Tucumán</a></li>
+                            </ul>
+                        </div>
+                        <div class="w-1/2 px-2">
+                            <h3 class="text-lg font-semibold text-gray-200 mb-2">Otros</h3>
+                            <ul class="text-sm">
+                                <li><a class="LC11" onclick="MosTV('TV16')" href="javascript:void(0)">Uruguay</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV17')" href="javascript:void(0)">Chile</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV18')" href="javascript:void(0)">España</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV19')" href="javascript:void(0)">América1</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV20')" href="javascript:void(0)">América2</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV21')" href="javascript:void(0)">América3</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV22')" href="javascript:void(0)">América4</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV23')" href="javascript:void(0)">América5</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV24')" href="javascript:void(0)">América6</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV25')" href="javascript:void(0)">América7</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV26')" href="javascript:void(0)">América8</a></li>
+                                <li><a class="LC11" onclick="MosTV('TV27')" href="javascript:void(0)">América9</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="back-to-provinces" onclick="MosTV('province-list')" 
+                        class="hidden mb-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200 ease-in-out">
+                    ← Volver a Provincias
+                </button>
+
+                <div id="TV01" class="channel-list-area hidden">
+                    <table width=100% border=0 cellspacing=0 cellpadding=0 class="mb-4">
+                        <tr><td align=center class="py-2"><a class="TNC">Cd Aut Bs As1</a></td></tr>
+                    </table>
+                    <div class="max-h-96 overflow-y-auto pr-2">
+                        <table width=100% border=0 cellspacing=0 cellpadding=0 class="text-sm">
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('AMC','CTV','CABA TV Cable','Cd Aut Bs As','VI---AMC','https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.amctv.la/')" href="javascript:void(0)">AMC</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://stream1.sersat.com/hls/argentinisima.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Argentinisima','CTV','CABA TV Cable','Cd Aut Bs As','VI-ARGTV','https://stream1.sersat.com/hls/argentinisima.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.argentinisimatv.com.ar/')" href="javascript:void(0)">Argentinisima</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://newidco-babysharktv-1-us.roku.wurl.tv/playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Baby Shark','CTV','CABA TV Cable','Cd Aut Bs As','VIBSHARK','https://newidco-babysharktv-1-us.roku.wurl.tv/playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.pinkfong.com/en/')" href="javascript:void(0)">Baby Shark</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://bloomberg.com/media-manifest/streams/us.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Bloomberg','CTV','CABA TV Cable','Cd Aut Bs As','VIBLOOMB','https://bloomberg.com/media-manifest/streams/us.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.bloomberg.com/')" href="javascript:void(0)">Bloomberg</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://g5.proy-hor.transport.edge-access.net/a06/ngrp:gcba_video4-100042_all/Playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Canal de la Ciudad','CTV','CABA TV Cable','Cd Aut Bs As','VICDADAB','https://g5.proy-hor.transport.edge-access.net/a06/ngrp:gcba_video4-100042_all/Playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.buenosaires.gob.ar/canaldelaciudad')" href="javascript:void(0)">Canal de la Ciudad</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://g4.proy-slo.transport.edge-access.net/b08/ngrp:CM_CanaldelaMusica-100044_all/CM_CanaldelaMusica-100044_720p.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Canal de la Musica','CTV','CABA TV Cable','Cd Aut Bs As','VI----CM','https://g4.proy-slo.transport.edge-access.net/b08/ngrp:CM_CanaldelaMusica-100044_all/CM_CanaldelaMusica-100044_720p.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('http://www.cmmusica.com.ar/')" href="javascript:void(0)">Canal de la Musica</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://news.cgtn.com/resource/live/espanol/cgtn-e.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('CGTN Español','CTV','CABA TV Cable','Cd Aut Bs As','VI--CGTN','https://news.cgtn.com/resource/live/espanol/cgtn-e.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://espanol.cgtn.com/')" href="javascript:void(0)">CGTN Español</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Ciudad Magazine','CTV','CABA TV Cable','Cd Aut Bs As','VIMAGAZI','https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('http://www.ciudad.com.ar/')" href="javascript:void(0)">Ciudad Magazine</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/index.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('DW Español','CTV','CABA TV Cable','Cd Aut Bs As','VI----DW','https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/index.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('http://www.dw.com/es/')" href="javascript:void(0)">DW Español</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00567-estrellamedia-estrellagames-estrellamedia/playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Estrella Games','CTV','CABA TV Cable','Cd Aut Bs As','VI-ESTRE','https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00567-estrellamedia-estrellagames-estrellamedia/playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://estrellatv.com/')" href="javascript:void(0)">Estrella Games</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00567-estrellamedia-estrellanews-estrellamedia/playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Estrella News','CTV','CABA TV Cable','Cd Aut Bs As','VI-ESTRE','https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00567-estrellamedia-estrellanews-estrellamedia/playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://estrellatv.com/')" href="javascript:void(0)">Estrella News</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00567-estrellamedia-estrellatv-estrellamedia/playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Estrella TV','CTV','CABA TV Cable','Cd Aut Bs As','VI-ESTRE','https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg00567-estrellamedia-estrellatv-estrellamedia/playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://estrellatv.com/')" href="javascript:void(0)">Estrella TV</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://youtube.com/channel/UCyoGb3SMlTlB8CLGVH4c8Rw/live','600','400" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="PopupPlayer('https://youtube.com/channel/UCyoGb3SMlTlB8CLGVH4c8Rw/live','600','400')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://es.euronews.com/')" href="javascript:void(0)">Euronews</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://fashiontv-fashiontv-5-es.lg.wurl.tv/playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Fashion TV','CTV','CABA TV Cable','Cd Aut Bs As','VI---FTV','https://fashiontv-fashiontv-5-es.lg.wurl.tv/playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://fashiontv.com/')" href="javascript:void(0)">Fashion TV</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://tvpass.org/live/FoxNewsChannel/hd" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('FOX News','CTV','CABA TV Cable','Cd Aut Bs As','VI--FOXN','https://tvpass.org/live/FoxNewsChannel/hd')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.foxnews.com/')" href="javascript:void(0)">FOX News</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://livetv-fa.tubi.video/fox-weather/index.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('FOX Weather','CTV','CABA TV Cable','Cd Aut Bs As','VI--FOXW','https://livetv-fa.tubi.video/fox-weather/index.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.foxweather.com/')" href="javascript:void(0)">FOX Weather</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://youtube.com/france24english/live','600','400" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="PopupPlayer('https://youtube.com/france24english/live','600','400')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('http://www.france24.com/en/')" href="javascript:void(0)">France24 English</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://crtvg-america.flumotion.cloud/playlist.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Galicia TV','CTV','CABA TV Cable','Cd Aut Bs As','VIGALICI','https://crtvg-america.flumotion.cloud/playlist.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.crtvg.es/tvg')" href="javascript:void(0)">Galicia TV</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://stream1.sersat.com/hls/garagetv.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Garage TV','CTV','CABA TV Cable','Cd Aut Bs As','VIGARAGE','https://stream1.sersat.com/hls/garagetv.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('http://www.elgarage.com/')" href="javascript:void(0)">Garage TV</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://live.presstv.ir/hls/hispantv.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Hispan TV','CTV','CABA TV Cable','Cd Aut Bs As','VIHISPAN','https://live.presstv.ir/hls/hispantv.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('http://www.hispantv.com/')" href="javascript:void(0)">Hispan TV</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://youtube.com/channel/UC5BMQOsAB8hKUyHu9KI6yig/live','600','400" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="PopupPlayer('https://youtube.com/channel/UC5BMQOsAB8hKUyHu9KI6yig/live','600','400')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://world.kbs.co.kr/service/index.htm?lang=e')" href="javascript:void(0)">KBS K-Pop</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://youtube.com/watch?v=OxQQsIvJTTU','600','400" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="PopupPlayer('https://youtube.com/watch?v=OxQQsIvJTTU','600','400')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://world.kbs.co.kr/service/index.htm?lang=e')" href="javascript:void(0)">KBS World</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://stream-gtlc.telecentro.net.ar/hls/musictophls/main.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('Musictop','CTV','CABA TV Cable','Cd Aut Bs As','VIMUSTOP','https://stream-gtlc.telecentro.net.ar/hls/musictophls/main.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.canal26.com/musictop')" href="javascript:void(0)">Musictop</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="CLabreTV('NHK World','CTV','CABA TV Cable','Cd Aut Bs As','VI---NHK','https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('http://www3.nhk.or.jp/nhkworld/en/live/')" href="javascript:void(0)">NHK World</a></td>
+                            </tr>
+                            <tr class="h-10 border-b border-gray-600">
+                                <td align=right width=30 class="pr-2">
+                                    <a href="arcltv.html?var1=https://youtube.com/channel/UC_-fqnv3Rp8k9VJ06_aDIHg/live','600','400" target="_blank">
+                                        <img alt="Nueva Ventana" src="ic----nv.gif" class="h-4 w-4 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=50 class="pr-2">
+                                    <a onClick="PopupPlayer('https://youtube.com/channel/UC_-fqnv3Rp8k9VJ06_aDIHg/live','600','400')" href="javascript:void(0)">
+                                        <img alt="Escuchar" width=40 height=13 src="ic---dfp.gif" class="h-auto w-10 border-0 inline-block">
+                                    </a>
+                                </td>
+                                <td align=right width=60 class="text-gray-400 pr-2">CTV</td>
+                                <td align=left width=150><a class="selec" onClick="abrePAGINA('https://www.qmusica.tv/')" href="javascript:void(0)">Quiero Musica</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="TV02" class="channel-list-area hidden">
+                    <table width=100% border=0 cellspacing=0 cellpadding=0 class="mb-4">
+                        <tr><td align=center class="py-2"><a class="TNC">Canales de Catamarca (TV02)</a></td></tr>
+                    </table>
+                    <p class="text-gray-400 text-sm">Aquí irían los canales de Catamarca. Por favor, asegúrate de aplicar el patrón correcto para ambos tipos de enlaces.</p>
+                </div>
+                <div id="TV03" class="channel-list-area hidden">
+                    <table width=100% border=0 cellspacing=0 cellpadding=0 class="mb-4">
+                        <tr><td align=center class="py-2"><a class="TNC">Canales de Cordoba (TV03)</a></td></tr>
+                    </table>
+                    <p class="text-gray-400 text-sm">Aquí irían los canales de Cordoba. Por favor, asegúrate de aplicar el patrón correcto para ambos tipos de enlaces.</p>
+                </div>
+                </div>
+        </aside>
+
+        <main class="w-full lg:w-2/3 p-6 bg-gray-800 flex flex-col justify-center items-center">
+            <h2 class="text-xl md:text-2xl font-semibold text-white mb-4">
+                Sintonizador de TV
+            </h2>
+            <p class="text-gray-400 text-sm mb-6">
+                Selecciona una provincia o país a la izquierda para ver la transmisión en vivo.
+            </p>
+            
+            <div class="w-full h-80 bg-black rounded-lg overflow-hidden relative" style="max-width: 800px; aspect-ratio: 16/9;">
+                <iframe 
+                    name="vivotv" 
+                    id="vivotvIframe" 
+                    class="w-full h-full absolute top-0 left-0" 
+                    scrolling="no" 
+                    marginwidth="0" 
+                    marginheight="0" 
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <p class="text-xs text-gray-500 mt-4">
+                La disponibilidad de los canales depende de las transmisiones en vivo y de la plataforma original.
+            </p>
+        </main>
+    </div>
+</body>
+</html>
