@@ -1,0 +1,345 @@
+/* arindice.css - Estilos CSS para un diseño moderno */
+
+body {
+    background-color: #1a1a2e; /* Dark background */
+    color: #e0e0e0; /* Light gray text */
+    margin: 0;
+    padding: 20px;
+    font-family: 'Arial', sans-serif; /* Puedes cambiar a 'Inter' si lo importas */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box; /* Incluye padding y border en el tamaño del elemento */
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px; /* Ancho máximo para el contenedor principal */
+    height: 600px; /* Altura fija para el contenedor, puedes ajustar */
+    display: flex;
+    background-color: #1f4068; /* Darker blue */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    position: relative; /* Para posicionar elementos internos si es necesario */
+}
+
+/* Sidebar (Panel Izquierdo) */
+.sidebar {
+    width: 320px; /* Ancho del panel izquierdo */
+    background-color: #1b2845; /* Even darker blue */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.sidebar-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 2px solid #5a7d9a;
+    padding-bottom: 10px;
+}
+
+.sidebar-description {
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    margin-bottom: 25px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.dynamic-content-wrapper {
+    flex-grow: 1;
+    overflow-y: auto; /* Permite scroll solo en el contenido dinámico */
+    padding-right: 10px; /* Espacio para la barra de scroll */
+}
+
+/* Scrollbar styling (for webkit browsers) */
+.dynamic-content-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dynamic-content-wrapper::-webkit-scrollbar-track {
+    background: #1b2845;
+}
+
+.dynamic-content-wrapper::-webkit-scrollbar-thumb {
+    background-color: #5a7d9a;
+    border-radius: 4px;
+    border: 2px solid #1b2845;
+}
+
+/* Province List */
+.province-list-container {
+    padding-bottom: 15px; /* Espacio al final de la lista de provincias */
+}
+
+.province-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Espacio entre columnas si se envuelven */
+}
+
+.province-column {
+    width: calc(50% - 5px); /* Dos columnas con un pequeño espacio entre ellas */
+    box-sizing: border-box;
+}
+
+.list-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #a0a0a0;
+    margin-bottom: 10px;
+    padding-left: 5px;
+}
+
+.province-list-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-item {
+    display: block;
+    padding: 6px 8px;
+    color: #ADD8E6; /* Light blue */
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+.list-item:hover {
+    background-color: #2a527a; /* Darker blue on hover */
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+/* Channel List Area */
+.channel-list-area {
+    padding-top: 15px;
+}
+
+.channel-section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e0e0e0;
+    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.channel-list-table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.channel-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Línea divisoria sutil */
+}
+.channel-row:last-child {
+    border-bottom: none;
+}
+
+.channel-icon-col {
+    width: 30px; /* Ancho fijo para los iconos de acción */
+    text-align: center;
+    padding: 0 5px;
+}
+
+.channel-icon {
+    width: 18px; /* Tamaño más pequeño para el icono de nueva ventana */
+    height: auto;
+    display: block; /* Para centrar */
+    margin: 0 auto;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+.channel-icon:hover {
+    opacity: 1;
+}
+
+.channel-icon-play {
+    width: 40px; /* Tamaño del icono de reproducción */
+    height: 13px; /* Mantener la proporción original si es necesario */
+    display: block;
+    margin: 0 auto;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+.channel-icon-play:hover {
+    opacity: 1;
+}
+
+.channel-type-col {
+    width: 60px; /* Ancho fijo para la columna "CTV" */
+    text-align: right;
+    color: #909090; /* Gris más oscuro para el texto "CTV" */
+    font-size: 0.8rem;
+    padding-right: 10px;
+}
+
+.channel-name-col {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding-left: 5px;
+}
+
+.channel-name-link {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 0.9rem;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+.channel-name-link:hover {
+    color: #ADD8E6; /* Light blue on hover */
+    text-decoration: underline;
+}
+
+/* Botón de volver */
+.back-button {
+    background-color: #3b82f6; /* Azul más vibrante */
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    align-self: flex-start; /* Alinea a la izquierda en flex-column */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.back-button:hover {
+    background-color: #2563eb; /* Azul más oscuro al pasar el ratón */
+    transform: translateY(-1px);
+}
+.back-button:active {
+    transform: translateY(0);
+}
+
+/* Contenido Principal (Reproductor) */
+.main-content {
+    flex-grow: 1;
+    background-color: #0b1c2b; /* Azul oscuro casi negro */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.player-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.player-description {
+    font-size: 1rem;
+    color: #a0a0a0;
+    margin-bottom: 25px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.video-player-container {
+    width: 100%;
+    max-width: 640px; /* Ancho máximo para el reproductor 16:9 */
+    aspect-ratio: 16 / 9; /* Mantener relación de aspecto 16:9 */
+    background-color: #000000;
+    border: 2px solid #5a7d9a;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative; /* Para asegurar que el iframe ocupe el 100% */
+}
+
+.video-player-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block; /* Elimina espacio extra debajo del iframe */
+}
+
+.footer-note {
+    font-size: 0.75rem;
+    color: #707070;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Utilidad para ocultar elementos */
+.hidden {
+    display: none;
+}
+
+/* Media Queries para Responsive Design */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        max-width: 95%;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto; /* Altura automática en pantallas pequeñas */
+        max-height: 400px; /* Altura máxima para el scroll del sidebar */
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    .main-content {
+        height: auto;
+        padding-top: 20px;
+    }
+
+    .video-player-container {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    .sidebar-title {
+        font-size: 1.5rem;
+    }
+    .player-title {
+        font-size: 1.7rem;
+    }
+    .province-column {
+        width: 100%; /* Una sola columna para las provincias en móviles */
+    }
+    .channel-icon-col {
+        width: 25px;
+    }
+    .channel-icon {
+        width: 16px;
+    }
+    .channel-icon-play {
+        width: 35px;
+        height: 11px;
+    }
+    .channel-type-col {
+        width: 50px;
+        font-size: 0.75rem;
+    }
+    .channel-name-link {
+        font-size: 0.85rem;
+    }
+}

@@ -1,0 +1,181 @@
+{
+  "provinces": [
+    {
+      "id": "buenos-aires",
+      "name": "Buenos Aires (Capital Federal)",
+      "channels": [
+        { "name": "C5N", "type": "CTV", "streamUrl": "https://cn5.live/stream/c5n.m3u8", "pageUrl": "https://www.c5n.com/" },
+        { "name": "Crónica TV", "type": "CTV", "streamUrl": "https://cronicatv.live/stream/cronica.m3u8", "pageUrl": "https://www.cronica.com.ar/" },
+        { "name": "La Nación+", "type": "CTV", "streamUrl": "https://lnplus.live/stream/ln+.m3u8", "pageUrl": "https://www.lanacion.com.ar/lnmas/" },
+        { "name": "Todo Noticias (TN)", "type": "CTV", "streamUrl": "https://tn.live/stream/tn.m3u8", "pageUrl": "https://tn.com.ar/" },
+        { "name": "Televisión Pública", "type": "CTV", "streamUrl": "https://cdn.jwplayer.com/libraries/d6a3T0q0.js", "pageUrl": "https://www.tvpublica.com.ar/" },
+        { "name": "Canal 26", "type": "CTV", "streamUrl": "https://dge001.wplay.live/hls/canal26.m3u8", "pageUrl": "https://www.canal26.com/" },
+        { "name": "IP Noticias", "type": "CTV", "streamUrl": "https://dge001.wplay.live/hls/ipnoticias.m3u8", "pageUrl": "https://www.ip.digital/" },
+        { "name": "Canal de la Ciudad", "type": "CTV", "streamUrl": "https://cdigital.wplay.live/hls/cweb.m3u8", "pageUrl": "https://www.canaldelaciudad.gob.ar/" },
+        { "name": "DeporTV", "type": "CTV", "streamUrl": "https://cdn.jwplayer.com/libraries/d6a3T0q0.js", "pageUrl": "https://deportv.gov.ar/" },
+        { "name": "TV Pública (Encuentro/PakaPaka/etc)", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/gS26F4j_w1Y", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "catamarca",
+      "name": "Catamarca",
+      "channels": [
+        { "name": "TV Pública Catamarca", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/yF2iN0N5mH4", "pageUrl": "" },
+        { "name": "Canal 7 Catamarca", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/N-03N_9q6uQ", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "chaco",
+      "name": "Chaco",
+      "channels": [
+        { "name": "Chaco TV", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/N-03N_9q6uQ", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "chubut",
+      "name": "Chubut",
+      "channels": [
+        { "name": "Canal 7 Rawson", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/q0e-r2Wz-X0", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "cordoba",
+      "name": "Córdoba",
+      "channels": [
+        { "name": "Canal 10 Córdoba", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/XqE-3jM1K-Q", "pageUrl": "" },
+        { "name": "Telefe Córdoba", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/9gY-2yW3I-Q", "pageUrl": "" },
+        { "name": "El Doce TV", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/L1d-1wR7Y-Q", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "corrientes",
+      "name": "Corrientes",
+      "channels": [
+        { "name": "Canal 9 Corrientes", "type": "CTV", "streamUrl": "httpswww.youtube.com/embed/c0t-8jK9P-Q", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "entre-rios",
+      "name": "Entre Ríos",
+      "channels": [
+        { "name": "Canal 9 Litoral", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/zC-1rR5gQ-A", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "formosa",
+      "name": "Formosa",
+      "channels": [
+        { "name": "Lapacho Canal 11", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/V6d-1rR5gQ-A", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "jujuy",
+      "name": "Jujuy",
+      "channels": [
+        { "name": "Canal 7 Jujuy", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/P2-1pQ3uW-A", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "la-pampa",
+      "name": "La Pampa",
+      "channels": [
+        { "name": "Canal 3 La Pampa", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/K7-1gQ3uW-A", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "la-rioja",
+      "name": "La Rioja",
+      "channels": [
+        { "name": "Canal 9 La Rioja", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/J9-1hR5gQ-A", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "mendoza",
+      "name": "Mendoza",
+      "channels": [
+        { "name": "Canal 9 Mendoza", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/Q4-1tT5gQ-A", "pageUrl": "" },
+        { "name": "Canal Acequia", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/R5-1uU6hR-B", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "misiones",
+      "name": "Misiones",
+      "channels": [
+        { "name": "Canal 12 Misiones", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/M1-1rR5gQ-A", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "neuquen",
+      "name": "Neuquén",
+      "channels": [
+        { "name": "Canal 7 Neuquén", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/O8-1pQ3uW-A", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "rio-negro",
+      "name": "Río Negro",
+      "channels": [
+        { "name": "Canal 10 Río Negro", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/R2-1sS4hX-C", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "salta",
+      "name": "Salta",
+      "channels": [
+        { "name": "Canal 9 Salta", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/S3-1tT5gQ-A", "pageUrl": "" },
+        { "name": "Canal 11 Salta", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/T4-1uU6hR-B", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "san-juan",
+      "name": "San Juan",
+      "channels": [
+        { "name": "Canal 8 San Juan", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/U5-1vV7iS-C", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "san-luis",
+      "name": "San Luis",
+      "channels": [
+        { "name": "Canal 13 San Luis", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/V6-1wW8jT-D", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "santa-cruz",
+      "name": "Santa Cruz",
+      "channels": [
+        { "name": "Canal 9 Santa Cruz", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/X7-1xX9kW-E", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "santa-fe",
+      "name": "Santa Fe",
+      "channels": [
+        { "name": "Telefe Santa Fe", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/Y8-1yY0lX-F", "pageUrl": "" },
+        { "name": "Canal 5 Rosario", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/Z9-1zZ1mY-G", "pageUrl": "" },
+        { "name": "LT83 TV (Canal 13 Santa Fe)", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/A0-2aA2nZ-H", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "santiago-del-estero",
+      "name": "Santiago del Estero",
+      "channels": [
+        { "name": "Canal 7 Santiago del Estero", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/B1-2bB3oA-I", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "tierra-del-fuego",
+      "name": "Tierra del Fuego",
+      "channels": [
+        { "name": "Canal 13 Ushuaia", "type": "CTV", "streamUrl": "https://www.youtube.com/embed/C2-2cC4pB-J", "pageUrl": "" }
+      ]
+    },
+    {
+      "id": "tucuman",
+      "name": "Tucumán",
+      "channels": [
+        { "name": "Canal 10 Tucumán", "type": "CTV", "streamUrl": "https://cdn.jwplayer.com/libraries/d6a3T0q0.js", "pageUrl": "https://www.canal10tucuman.com.ar/" }
+      ]
+    }
+  ]
+}

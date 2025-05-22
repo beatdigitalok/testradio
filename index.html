@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+    <title>Sintonizador TV en vivo ARTV</title>
+    <meta charset="iso-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="StyleSheet" href="arindice.css" type="text/css">
+
+    <script type="text/javascript" src="arindice.js"></script>
+    <script type="text/javascript" src="arplayer.js"></script>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4ZN0R0F7M4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-4ZN0R0F7M4');
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Directorio de TV en vivo</h2>
+            <p class="sidebar-description">
+                El más completo y actualizado listado de Medios de Argentina y más.
+            </p>
+
+            <div id="dynamic-content-area" class="dynamic-content-wrapper">
+                <div id="province-list-area" class="province-list-container">
+                    <h3 class="list-title">Seleccionar Provincia</h3>
+                    <ul id="provinces-ul">
+                        </ul>
+                </div>
+
+                <div id="channels-by-province-area" class="channel-list-area hidden">
+                    <h3 class="list-title" id="channels-list-title"></h3>
+                    <ul id="channels-ul">
+                        </ul>
+                    <div class="back-button-container">
+                        <button id="back-to-provinces" class="back-button hidden" onclick="showProvinces()">Volver a Provincias</button>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h2 class="player-title">Sintonizador de TV</h2>
+            <p class="player-description">
+                Selecciona una provincia o país a la izquierda para ver la transmisión en vivo.
+            </p>
+            
+            <div class="video-player-container">
+                <iframe 
+                    name="vivotv" 
+                    id="vivotv" 
+                    scrolling="no" 
+                    marginwidth="0" 
+                    marginheight="0" 
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <p class="footer-note">
+                La disponibilidad de los canales depende de las transmisiones en vivo y de la plataforma original.
+            </p>
+        </main>
+    </div>
+</body>
+</html>
