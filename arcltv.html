@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de TV</title>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Evita barras de desplazamiento en el iframe */
+            background-color: #000; /* Fondo negro para el reproductor */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Asegura que ocupe todo el viewport del iframe */
+            width: 100vw; /* Asegura que ocupe todo el ancho del iframe */
+        }
+        .video-js {
+            width: 100%;
+            height: 100%;
+        }
+        /* Opcional: Estilo para un mensaje si no carga */
+        #error-message {
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 1.2em;
+            text-align: center;
+            padding: 20px;
+            display: none; /* Oculto por defecto */
+        }
+    </style>
+</head>
+<body>
+    <video
+        id="my-video"
+        class="video-js vjs-default-skin"
+        controls
+        preload="auto"
+        data-setup='{}'>
+    </video>
+
+    <div id="error-message"></div>
+
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="https://vjs.zencdn.net/8.10.0/dist/videojs-http-streaming.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const streamUrl = params.get('url'); // Obtiene la URL del stream del parámetro 'url'
+            const videoElement = document.getElementById('my-video');
+            const errorMessageDiv = document.getElementById('error-message');
+
+            if (streamUrl) {
+                // Initialize Video.js player
+                const player = videojs(videoElement, {
+                    controls: true,
+                    autoplay: true, // Auto-reproducir al cargar (puede ser bloqueado por el navegador)
+                    preload: 'auto',
+                    fluid: true // Hace que el reproductor se adapte al tamaño del contenedor
+                });
+
+                // Determina el tipo de stream y asigna la fuente
+                if (streamUrl.includes('.m3u8')) {
+                    player.src({
+                        src: streamUrl,
+                        type: 'application/x-mpegURL' // Tipo MIME para HLS
+                    });
+                } else if (streamUrl.includes('.mp4')) {
+                    player.src({
+                        src: streamUrl,
+                        type: 'video/mp4'
+                    });
+                } else {
+                    // Para URLs de YouTube o tipos desconocidos que Video.js podría no manejar por defecto.
+                    // Si tienes el plugin de YouTube para Video.js, esto podría funcionar.
+                    // Si no, o si es una URL que el navegador no puede manejar directamente en un <video> tag,
+                    // podría mostrarse un error.
+                    player.src({
+                        src: streamUrl,
+                        // type: 'video/youtube' // Descomentar si usas videojs-youtube y la URL es de embed de YouTube
+                    });
+                    errorMessageDiv.textContent = "Formato de stream desconocido o no compatible con el reproductor interno. Puede que necesite un plugin adicional.";
+                    errorMessageDiv.style.display = 'block';
+                }
+
+                player.load(); // Carga la nueva fuente
+                player.play(); // Intenta reproducir
+
+                // Opcional: Escuchar eventos de error para depuración y mensajes al usuario
+                player.on('error', function() {
+                    const error = player.error();
+                    if (error) {
+                        console.error('Error de Video.js:', error.code, error.message, error.stack);
+                        let userMessage = "Hubo un error al cargar el canal. Puede que la señal no esté disponible o haya problemas de red.";
+                        if (error.code === 2) { // NETWORK_ERR
+                            userMessage = "Problema de red. Asegúrate de estar conectado a internet.";
+                        } else if (error.code === 4) { // MEDIA_ERR_SRC_NOT_SUPPORTED
+                            userMessage = "Formato de video no compatible o URL de stream inválida.";
+                        } else if (error.code === 3) { // MEDIA_ERR_DECODE
+                            userMessage = "Error de decodificación. El video podría estar dañado o ser incompatible.";
+                        }
+                        errorMessageDiv.textContent = userMessage + " (Código: " + error.code + ") Si el problema persiste, prueba el 'Stream Externo'.";
+                        errorMessageDiv.style.display = 'block';
+                        player.dispose(); // Limpia el reproductor en caso de error grave
+                    }
+                });
+
+                player.on('loadeddata', function() {
+                    // Una vez que los datos del video se han cargado, ocultar mensaje de error si existía
+                    errorMessageDiv.style.display = 'none';
+                    console.log('Video cargado exitosamente.');
+                });
+
+                player.on('play', function() {
+                    errorMessageDiv.style.display = 'none'; // Oculta errores si se reproduce después de un problema
+                });
+
+            } else {
+                errorMessageDiv.textContent = "Selecciona un canal para comenzar a reproducir.";
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

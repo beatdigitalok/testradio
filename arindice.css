@@ -1,0 +1,302 @@
+/* arindice.css - Estilos CSS para un diseño moderno y responsivo */
+
+/* Estilos Generales y del Cuerpo */
+body {
+    background-color: #1a1a2e; /* Fondo oscuro principal */
+    color: #e0e0e0; /* Color de texto general */
+    margin: 0;
+    padding: 20px; /* Un poco de padding alrededor del contenedor principal */
+    font-family: 'Arial', sans-serif; /* Fuente estándar, puedes importar otra si quieres */
+    display: flex; /* Para centrar el contenedor principal */
+    justify-content: center;
+    align-items: flex-start; /* Alinea arriba, no al centro vertical si el contenido es largo */
+    min-height: 100vh; /* Ocupa al menos toda la altura de la ventana */
+    box-sizing: border-box; /* Incluye padding y border en el tamaño total del elemento */
+    overflow-x: hidden; /* Evita scroll horizontal no deseado */
+}
+
+/* Contenedor Principal (sidebar y main-content) */
+.container {
+    width: 100%;
+    max-width: 1000px; /* Ancho máximo para el layout de dos columnas */
+    min-height: 600px; /* Altura mínima, se expandirá si el contenido es mayor */
+    display: flex; /* Para layout de dos columnas (sidebar y main-content) */
+    background-color: #1f4068; /* Fondo del contenedor */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    overflow: hidden; /* Para que los bordes redondeados funcionen bien con el contenido */
+}
+
+/* Sidebar (Panel Izquierdo: Provincias y Canales) */
+.sidebar {
+    width: 350px; /* Ancho fijo del sidebar */
+    background-color: #1b2845; /* Fondo del sidebar */
+    padding: 20px;
+    border-right: 1px solid rgba(0, 0, 0, 0.2); /* Separador visual */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Scroll vertical si el contenido es demasiado largo */
+}
+
+.sidebar-title {
+    color: #8be9fd; /* Azul claro para títulos */
+    font-size: 1.6rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-description {
+    font-size: 0.85rem;
+    color: #b0b0b0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Área de contenido dinámico (contiene province-list-area y channel-list-area) */
+.dynamic-content-wrapper {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    display: flex;
+    flex-direction: column;
+}
+
+.list-title {
+    color: #f8f8f2; /* Blanco para títulos de listas */
+    font-size: 1.4rem;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Lista de Provincias */
+.province-list-container {
+    padding-bottom: 20px; /* Espacio para el scroll */
+}
+
+#provinces-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#provinces-ul li {
+    margin-bottom: 8px;
+}
+
+.province-link {
+    display: block;
+    padding: 10px 15px;
+    background-color: #283a5e; /* Fondo de cada elemento de la lista */
+    color: #e0e0e0;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.province-link:hover {
+    background-color: #3e5c76; /* Hover más oscuro */
+    color: #8be9fd;
+}
+
+/* Secciones de Canales por Provincia */
+.channel-list-area {
+    padding-bottom: 20px; /* Espacio para el scroll */
+}
+
+.channels-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.channel-row {
+    display: flex; /* Para alinear ícono, tipo y nombre en una fila */
+    align-items: center;
+    padding: 8px 15px;
+    margin-bottom: 6px;
+    background-color: #283a5e;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.channel-row:hover {
+    background-color: #3e5c76;
+}
+
+.channel-icon-col {
+    flex-shrink: 0; /* No permite que el icono se encoja */
+    margin-right: 10px;
+}
+
+.channel-icon-play {
+    width: 20px; /* Tamaño del icono de play */
+    height: 20px;
+    vertical-align: middle;
+    filter: invert(1); /* Para que el icono sea blanco o claro sobre fondo oscuro */
+}
+
+.channel-type-col {
+    flex-shrink: 0;
+    font-size: 0.8em;
+    color: #ffb86c; /* Color para el tipo (CTV) */
+    width: 35px; /* Ancho fijo para "CTV" */
+    text-align: center;
+    margin-right: 10px;
+}
+
+.channel-name-col {
+    flex-grow: 1; /* Ocupa el espacio restante */
+}
+
+.channel-name-link {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: normal;
+    display: block; /* Para que ocupe todo el ancho disponible */
+}
+
+.channel-name-link:hover {
+    color: #8be9fd;
+}
+
+/* Botón "Volver a Provincias" */
+.back-button-container {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.back-button {
+    background-color: #6272a4; /* Un tono de púrpura/azul */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: #445479;
+}
+
+/* Main Content (Panel Derecho: Reproductor de Video) */
+.main-content {
+    flex-grow: 1; /* Ocupa el espacio restante horizontalmente */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el contenido horizontalmente */
+    justify-content: flex-start; /* Alinea el contenido al inicio verticalmente */
+}
+
+.player-title {
+    color: #f8f8f2;
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.player-description {
+    font-size: 0.9rem;
+    color: #b0b0b0;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.video-player-container {
+    width: 100%;
+    /* Utiliza un truco para mantener la relación de aspecto 16:9 para el video */
+    padding-bottom: 56.25%; /* 9 / 16 = 0.5625 */
+    position: relative;
+    background-color: #000; /* Fondo negro para el reproductor */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.video-player-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none; /* Elimina el borde del iframe */
+    display: block; /* Elimina espacio extra debajo del iframe */
+}
+
+.footer-note {
+    font-size: 0.75rem;
+    color: #707070;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Utilidad para ocultar elementos (usada por JavaScript) */
+.hidden {
+    display: none !important; /* !important asegura que sobrescriba otros estilos */
+}
+
+/* Media Queries para Responsive Design */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column; /* Apila el sidebar y el contenido principal */
+        height: auto; /* La altura se ajusta automáticamente */
+        max-width: 95%; /* Un poco más de margen en pantallas pequeñas */
+        min-height: auto; /* Reinicia la altura mínima */
+    }
+
+    .sidebar {
+        width: 100%; /* El sidebar ocupa todo el ancho */
+        height: auto;
+        max-height: 350px; /* Altura máxima para el scroll del sidebar en móvil */
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Borde inferior en lugar de derecho */
+    }
+
+    .main-content {
+        width: 100%; /* El contenido principal ocupa todo el ancho */
+        height: auto;
+        padding-top: 20px; /* Espacio superior */
+    }
+
+    .video-player-container {
+        max-width: 100%; /* Asegura que el reproductor no se salga */
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px; /* Menos padding en pantallas muy pequeñas */
+    }
+    .sidebar-title {
+        font-size: 1.4rem;
+    }
+    .player-title {
+        font-size: 1.6rem;
+    }
+    .province-link, .channel-name-link {
+        font-size: 0.95rem;
+    }
+    .back-button {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+}
+
+/* Icono de Play (play-icon.svg) */
+/* Asegúrate de tener este archivo 'play-icon.svg' en la misma carpeta que tu index.html */
+/* Puedes descargarlo de un sitio de iconos o crear uno simple. */
+/* Ejemplo de SVG simple para 'play-icon.svg':
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+    <path d="M8 5v14l11-7z"/>
+</svg>
+*/
