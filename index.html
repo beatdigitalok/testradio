@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mi OTT</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi OTT - Estilo DistroTV</title>
   <link rel="stylesheet" href="https://vjs.zencdn.net/7.20.3/video-js.css"/>
   <link rel="stylesheet" href="assets/style.css"/>
 </head>
@@ -13,47 +12,26 @@
   <header>
     <h1>Mi OTT</h1>
     <nav>
-      <a href="index.html">Inicio</a>
-      <a href="live.html">En Vivo</a>
-      <a href="vod.html">OnDemand</a>
+      <a href="index.html">En Vivo</a>
+      <a href="#">OnDemand</a>
     </nav>
   </header>
 
-  <!-- Carrusel -->
-  <div class="swiper mySwiper">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" onclick="openPlayer('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
-        <img src="assets/img/demo1.jpg" alt="demo1"/>
-        <p>Contenido 1</p>
-      </div>
-      <div class="swiper-slide" onclick="openPlayer('https://mojan.com/canal.m3u8')">
-        <img src="assets/img/demo2.jpg" alt="demo2"/>
-        <p>Contenido 2</p>
-      </div>
-      <div class="swiper-slide" onclick="openPlayer('https://mi-servidor.com/live.m3u8')">
-        <img src="assets/img/demo3.jpg" alt="demo3"/>
-        <p>Contenido 3</p>
-      </div>
-    </div>
+  <!-- Player -->
+  <div id="player-container">
+    <video id="videoPlayer" class="video-js vjs-big-play-centered" controls autoplay width="100%" height="480"></video>
+    <iframe id="ytPlayer" style="display:none;" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
   </div>
 
-  <!-- Modal Player -->
-  <div id="videoModal" class="video-modal">
-    <span class="close-btn" onclick="closePlayer()">✖</span>
-    <div class="video-box">
-      <video id="videoPlayer" class="video-js vjs-big-play-centered" controls autoplay width="100%" height="auto"></video>
-    </div>
-  </div>
+  <!-- Lista de canales -->
+  <section id="canales"></section>
 
   <!-- Footer -->
   <footer>
-    © 2025 Mi OTT – GitHub Pages
+    © 2025 Mi OTT – estilo DistroTV
   </footer>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
-  <script src="https://unpkg.com/videojs-contrib-hls@latest"></script>
   <script src="assets/app.js"></script>
 </body>
 </html>
