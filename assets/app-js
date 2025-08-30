@@ -8,15 +8,15 @@ fetch("assets/contenido.json")
   .then(res => res.json())
   .then(data => {
     canales = data.canales;
-    renderCanales();
+    renderSidebar();
     if (canales.length > 0) {
       playChannel(canales[0]); // auto-play primer canal
     }
   });
 
-// Renderizar grilla de canales
-function renderCanales() {
-  const contenedor = document.getElementById("canales");
+// Renderizar canales en sidebar
+function renderSidebar() {
+  const contenedor = document.getElementById("listaCanales");
   contenedor.innerHTML = "";
   canales.forEach((canal, index) => {
     let div = document.createElement("div");
@@ -27,8 +27,11 @@ function renderCanales() {
   });
 }
 
-// Reproducir canal según tipo
+// Reproducir canal
 function playChannel(canal) {
+  document.getElementById("canalTitulo").innerText = canal.nombre;
+  document.getElementById("infoCanal").innerText = canal.descripcion || "";
+
   if (canal.tipo === "hls") {
     ytFrame.style.display = "none";
     hlsPlayer.style.display = "block";
