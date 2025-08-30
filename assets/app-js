@@ -1,0 +1,43 @@
+let canales = [];
+let player = videojs('videoPlayer');
+const ytFrame = document.getElementById("ytPlayer");
+const hlsPlayer = document.getElementById("videoPlayer");
+
+// Cargar JSON dinámico
+fetch("assets/contenido.json")
+  .then(res => res.json())
+  .then(data => {
+    canales = data.canales;
+    renderCanales();
+    if (canales.length > 0) {
+      playChannel(canales[0]); // auto-play primer canal
+    }
+  });
+
+// Renderizar grilla de canales
+function renderCanales() {
+  const contenedor = document.getElementById("canales");
+  contenedor.innerHTML = "";
+  canales.forEach((canal, index) => {
+    let div = document.createElement("div");
+    div.className = "canal";
+    div.innerHTML = `<img src="${canal.logo}" alt="${canal.nombre}"><p>${canal.nombre}</p>`;
+    div.onclick = () => playChannel(canal);
+    contenedor.appendChild(div);
+  });
+}
+
+// Reproducir canal según tipo
+function playChannel(canal) {
+  if (canal.tipo === "hls") {
+    ytFrame.style.display = "none";
+    hlsPlayer.style.display = "block";
+    player.src({ type: "application/x-mpegURL", src: canal.src });
+    player.play();
+  } else if (canal.tipo === "youtube") {
+    player.pause();
+    hlsPlayer.style.display = "none";
+    ytFrame.style.display = "block";
+    ytFrame.src = canal.src + "?autoplay=1";
+  }
+}
