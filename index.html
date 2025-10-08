@@ -2,36 +2,174 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi OTT - Estilo DistroTV</title>
-  <link rel="stylesheet" href="https://vjs.zencdn.net/7.20.3/video-js.css"/>
-  <link rel="stylesheet" href="assets/style.css"/>
+  <title>Mbogi Music Player</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#121212; color:#fff; margin:0; }
+    header { background:#1db954; padding:15px; text-align:center; font-size:22px; font-weight:bold; }
+    section { padding:20px; margin-bottom:20px; }
+    h2 { border-bottom:2px solid #1db954; padding-bottom:5px; }
+    .card { background:#1e1e1e; padding:10px; border-radius:8px; margin:10px 0; }
+    iframe, audio, video { width:100%; border:none; border-radius:8px; }
+    select { width:100%; padding:8px; margin:8px 0; background:#1e1e1e; color:#fff; border:1px solid #1db954; border-radius:5px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-  <!-- Sidebar canales -->
-  <aside id="sidebar">
-    <h2>Canales</h2>
-    <div id="listaCanales"></div>
-  </aside>
 
-  <!-- Main player -->
-  <main id="main">
-    <header>
-      <h1 id="canalTitulo">Selecciona un canal</h1>
-    </header>
-    <div id="player-container">
-      <video id="videoPlayer" class="video-js vjs-big-play-centered" controls autoplay width="100%" height="480"></video>
-      <iframe id="ytPlayer" style="display:none;" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <section id="infoCanal"></section>
-  </main>
+<header>🎵 Mbogi Music - Radios · TV · Pelis · YouTube</header>
 
-  <!-- Footer -->
-  <footer>
-    © 2025 Mi OTT – estilo DistroTV
-  </footer>
+<!-- Radios -->
+<section id="radio">
+  <h2>📻 Radios</h2>
+  <select id="countrySelect"></select>
+  <select id="radioSelect"></select>
+  <audio id="radioPlayer" controls autoplay></audio>
+</section>
 
-  <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
-  <script src="assets/app.js"></script>
+<!-- TV -->
+<section id="tv">
+  <h2>📺 TV en Vivo</h2>
+  <select id="tvSelect"></select>
+  <video id="tvPlayer" controls autoplay></video>
+</section>
+
+<!-- Pelis / Series -->
+<section id="movies">
+  <h2>🎬 Películas y Series</h2>
+  <select id="movieSelect"></select>
+  <video id="moviePlayer" controls autoplay></video>
+</section>
+
+<!-- YouTube -->
+<section id="youtube">
+  <h2>🎶 Música (YouTube)</h2>
+  <div id="youtubeList">Cargando videos...</div>
+</section>
+
+<script>
+/* --- Radios: selector de país + estaciones --- */
+async function loadCountries() {
+  const res = await fetch("https://de1.api.radio-browser.info/json/countries");
+  const countries = await res.json();
+  const countrySelect = document.getElementById("countrySelect");
+  countries.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.name;
+    opt.textContent = c.name;
+    countrySelect.appendChild(opt);
+  });
+  countrySelect.value = "Argentina"; // por defecto
+  loadRadios(countrySelect.value);
+  countrySelect.addEventListener("change", () => {
+    loadRadios(countrySelect.value);
+  });
+}
+
+async function loadRadios(country) {
+  const res = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(country)}`);
+  const radios = await res.json();
+  const radioSelect = document.getElementById("radioSelect");
+  radioSelect.innerHTML = "";
+  radios.slice(0,20).forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r.url_resolved;
+    opt.textContent = r.name;
+    radioSelect.appendChild(opt);
+  });
+  const player = document.getElementById("radioPlayer");
+  player.src = radioSelect.value;
+  radioSelect.addEventListener("change", () => {
+    player.src = radioSelect.value;
+  });
+}
+
+/* --- IPTV: canales de demo (se pueden editar) --- */
+function loadIPTV() {
+  const channels = [
+    {name: "Canal Demo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"},
+    {name: "Canal Demo 2", url: "https://test-streams.mux.dev/test_001/stream.m3u8"}
+  ];
+  const select = document.getElementById("tvSelect");
+  channels.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.url;
+    opt.textContent = c.name;
+    select.appendChild(opt);
+  });
+  const video = document.getElementById("tvPlayer");
+  function playChannel(url) {
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = url;
+    }
+  }
+  playChannel(select.value);
+  select.addEventListener("change", () => {
+    playChannel(select.value);
+  });
+}
+
+/* --- Pelis / Series --- */
+function loadMovies() {
+  const movies = [
+    {name: "Big Buck Bunny (Demo)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8"},
+    {name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"}
+  ];
+  const select = document.getElementById("movieSelect");
+  movies.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m.url;
+    opt.textContent = m.name;
+    select.appendChild(opt);
+  });
+  const player = document.getElementById("moviePlayer");
+  function playMovie(url) {
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(player);
+    } else if (player.canPlayType("application/vnd.apple.mpegurl")) {
+      player.src = url;
+    }
+  }
+  playMovie(select.value);
+  select.addEventListener("change", () => {
+    playMovie(select.value);
+  });
+}
+
+/* --- YouTube --- */
+async function loadYouTube() {
+  const apiKey = "AIzaSyDZh9smeykTbGwcH8oPmRIFps9KmWj43gs"; // tu API Key
+  const query = "music argentina";
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=${encodeURIComponent(query)}&key=${apiKey}`);
+  const data = await res.json();
+  let html = "";
+  if(data.items){
+    data.items.forEach(v => {
+      html += `
+        <div class="card">
+          <iframe width="100%" height="200"
+            src="https://www.youtube.com/embed/${v.id.videoId}"
+            allowfullscreen></iframe>
+          <p>${v.snippet.title}</p>
+        </div>`;
+    });
+  } else {
+    html = "<p>No se pudieron cargar videos.</p>";
+  }
+  document.getElementById("youtubeList").innerHTML = html;
+}
+
+/* Inicialización */
+loadCountries();
+loadIPTV();
+loadMovies();
+loadYouTube();
+</script>
+
 </body>
 </html>
