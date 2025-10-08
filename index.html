@@ -1,181 +1,439 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mbogi Music Player</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#121212; color:#fff; margin:0; }
-    header { background:#1db954; padding:15px; text-align:center; font-size:22px; font-weight:bold; }
-    section { padding:20px; margin-bottom:20px; }
-    h2 { border-bottom:2px solid #1db954; padding-bottom:5px; }
-    .card { background:#1e1e1e; padding:10px; border-radius:8px; margin:10px 0; }
-    iframe, audio, video { width:100%; border:none; border-radius:8px; }
-    select { width:100%; padding:8px; margin:8px 0; background:#1e1e1e; color:#fff; border:1px solid #1db954; border-radius:5px; }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta charset="UTF-8">
+    <title>Mbogi Multimedia Hub</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#121212; color:#fff; margin:0; }
+        header { background:#1db954; padding:15px; text-align:center; font-size:22px; font-weight:bold; }
+        section { padding:20px; margin-bottom:20px; }
+        h2 { border-bottom:2px solid #1db954; padding-bottom:5px; }
+        .card { 
+            background:#1e1e1e; padding:10px; border-radius:8px; margin:10px 0; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            background: #282828;
+        }
+        iframe, audio, video { width:100%; border:none; border-radius:8px; }
+        select, input[type="text"], button { 
+            width: 100%; 
+            padding: 8px; 
+            margin: 8px 0; 
+            background: #1e1e1e; 
+            color: #fff; 
+            border: 1px solid #1db954; 
+            border-radius: 5px; 
+            box-sizing: border-box; 
+        }
+        button {
+            background: #1db954; 
+            cursor: pointer;
+            border: none;
+            width: auto;
+            padding: 10px 15px;
+            display: inline-block;
+        }
+        #podcastSearchInput {
+            width: calc(100% - 150px); /* Ajuste para el botón */
+            margin-right: 10px;
+        }
+        .search-controls {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-<header>🎵 Mbogi Music - Radios · TV · Pelis · YouTube</header>
+<header>🎵 Mbogi Multimedia Hub - Radios · TV · Pelis · Spotify · Podcasts</header>
 
-<!-- Radios -->
+<section id="spotify">
+    <h2>🟢 Música (Spotify)</h2>
+    <p>Visualiza playlists o canciones directamente incrustadas.</p>
+    <div id="spotifyEmbed">
+        <div class="card">Cargando música de Spotify...</div>
+    </div>
+</section>
+
+<section id="lastfm">
+    <h2>📈 Tendencias (Last.fm Top Tracks)</h2>
+    <div id="lastfmTracks">Cargando top tracks...</div>
+</section>
+
+<section id="podcast">
+    <h2>🎙️ Podcasts</h2>
+    <p>Explora charts o busca por tema. Selecciona un podcast para ver sus episodios.</p>
+    <select id="podcastSearchType">
+        <option value="charts">Charts Populares (Música)</option>
+        <option value="query">Buscar por Nombre o Tema</option>
+    </select>
+    
+    <div class="search-controls">
+        <input type="text" id="podcastSearchInput" placeholder="Ej: Noticias, comedia..." style="display:none;">
+        <button id="podcastSearchButton">Cargar Charts</button>
+    </div>
+    
+    <select id="podcastSelect"></select>
+    <div id="episodeControls">
+        </div>
+    <audio id="podcastPlayer" controls></audio>
+</section>
+
+<hr>
+
 <section id="radio">
-  <h2>📻 Radios</h2>
-  <select id="countrySelect"></select>
-  <select id="radioSelect"></select>
-  <audio id="radioPlayer" controls autoplay></audio>
+    <h2>📻 Radios</h2>
+    <select id="countrySelect"></select>
+    <select id="radioSelect"></select>
+    <audio id="radioPlayer" controls autoplay></audio>
 </section>
 
-<!-- TV -->
 <section id="tv">
-  <h2>📺 TV en Vivo</h2>
-  <select id="tvSelect"></select>
-  <video id="tvPlayer" controls autoplay></video>
+    <h2>📺 TV en Vivo</h2>
+    <select id="tvSelect"></select>
+    <video id="tvPlayer" controls autoplay></video>
 </section>
 
-<!-- Pelis / Series -->
 <section id="movies">
-  <h2>🎬 Películas y Series</h2>
-  <select id="movieSelect"></select>
-  <video id="moviePlayer" controls autoplay></video>
+    <h2>🎬 Películas y Series</h2>
+    <select id="movieSelect"></select>
+    <video id="moviePlayer" controls autoplay></video>
 </section>
 
-<!-- YouTube -->
-<section id="youtube">
-  <h2>🎶 Música (YouTube)</h2>
-  <div id="youtubeList">Cargando videos...</div>
-</section>
 
 <script>
-/* --- Radios: selector de país + estaciones --- */
+// =====================================================================
+// === Claves API: ¡REEMPLAZA ESTAS POR TUS PROPIAS CLAVES REALES! ===
+// =====================================================================
+const LASTFM_API_KEY = "TU_LASTFM_API_KEY"; // Obtén la tuya de Last.fm
+const LISTEN_NOTES_API_KEY = "TU_LISTEN_NOTES_API_KEY"; // Obtén la tuya de Listen Notes
+const LISTEN_NOTES_API_URL = "https://listen-api.listennotes.com/api/v2";
+
+// =====================================================================
+// === Funciones de Radio (Radio Browser) ===
+// =====================================================================
 async function loadCountries() {
-  const res = await fetch("https://de1.api.radio-browser.info/json/countries");
-  const countries = await res.json();
-  const countrySelect = document.getElementById("countrySelect");
-  countries.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c.name;
-    opt.textContent = c.name;
-    countrySelect.appendChild(opt);
-  });
-  countrySelect.value = "Argentina"; // país por defecto
-  loadRadios(countrySelect.value);
-  countrySelect.addEventListener("change", () => {
+    const res = await fetch("https://de1.api.radio-browser.info/json/countries");
+    const countries = await res.json();
+    const countrySelect = document.getElementById("countrySelect");
+    countries.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.name;
+        opt.textContent = c.name;
+        countrySelect.appendChild(opt);
+    });
+    countrySelect.value = "Argentina"; // país por defecto
     loadRadios(countrySelect.value);
-  });
+    countrySelect.addEventListener("change", () => {
+        loadRadios(countrySelect.value);
+    });
 }
 
 async function loadRadios(country) {
-  const res = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(country)}`);
-  const radios = await res.json();
-  const radioSelect = document.getElementById("radioSelect");
-  radioSelect.innerHTML = "";
-  radios.slice(0,20).forEach(r => {
-    const opt = document.createElement("option");
-    opt.value = r.url_resolved;
-    opt.textContent = r.name;
-    radioSelect.appendChild(opt);
-  });
-  const player = document.getElementById("radioPlayer");
-  player.src = radioSelect.value;
-  radioSelect.addEventListener("change", () => {
-    player.src = radioSelect.value;
-  });
+    const res = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(country)}`);
+    const radios = await res.json();
+    const radioSelect = document.getElementById("radioSelect");
+    radioSelect.innerHTML = "";
+    // Limitar a los primeros 20 resultados
+    radios.slice(0, 20).forEach(r => { 
+        const opt = document.createElement("option");
+        opt.value = r.url_resolved;
+        opt.textContent = r.name;
+        radioSelect.appendChild(opt);
+    });
+    const player = document.getElementById("radioPlayer");
+    // Usar un listener para que el src se actualice inmediatamente
+    radioSelect.addEventListener("change", () => {
+        player.src = radioSelect.value;
+        player.play();
+    });
+    // Reproducir la primera radio al cargar
+    if (radioSelect.value) {
+        player.src = radioSelect.value;
+        player.play();
+    }
+}
+
+// =====================================================================
+// === Funciones de TV / Pelis (Demos IPTV) ===
+// =====================================================================
+function playHLS(videoElement, url) {
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(videoElement);
+        videoElement.play();
+    } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+        videoElement.src = url;
+        videoElement.play();
+    } else {
+        alert("Tu navegador no soporta la reproducción de este stream.");
+    }
 }
 
 /* --- IPTV: canales demo --- */
 function loadIPTV() {
-  const channels = [
-    {name: "Canal Demo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"},
-    {name: "Canal Demo 2", url: "https://test-streams.mux.dev/test_001/stream.m3u8"}
-  ];
-  const select = document.getElementById("tvSelect");
-  channels.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c.url;
-    opt.textContent = c.name;
-    select.appendChild(opt);
-  });
-  const video = document.getElementById("tvPlayer");
-  function playChannel(url) {
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(url);
-      hls.attachMedia(video);
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = url;
-    }
-  }
-  playChannel(select.value);
-  select.addEventListener("change", () => {
-    playChannel(select.value);
-  });
+    // Estas son URLs de prueba (HLS .m3u8)
+    const channels = [
+        {name: "Canal Demo 1 (Mux)", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"},
+        {name: "Canal Demo 2 (Test)", url: "https://test-streams.mux.dev/test_001/stream.m3u8"}
+    ];
+    const select = document.getElementById("tvSelect");
+    channels.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.url;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+    });
+    const video = document.getElementById("tvPlayer");
+    
+    playHLS(video, select.value);
+    select.addEventListener("change", () => {
+        playHLS(video, select.value);
+    });
 }
 
-/* --- Pelis / Series --- */
+/* --- Pelis / Series: demos --- */
 function loadMovies() {
-  const movies = [
-    {name: "Big Buck Bunny (Demo)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8"},
-    {name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"}
-  ];
-  const select = document.getElementById("movieSelect");
-  movies.forEach(m => {
-    const opt = document.createElement("option");
-    opt.value = m.url;
-    opt.textContent = m.name;
-    select.appendChild(opt);
-  });
-  const player = document.getElementById("moviePlayer");
-  function playMovie(url) {
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(url);
-      hls.attachMedia(player);
-    } else if (player.canPlayType("application/vnd.apple.mpegurl")) {
-      player.src = url;
-    }
-  }
-  playMovie(select.value);
-  select.addEventListener("change", () => {
-    playMovie(select.value);
-  });
+    // Estas son URLs de prueba (HLS .m3u8)
+    const movies = [
+        {name: "Big Buck Bunny (Demo)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8"},
+        {name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"}
+    ];
+    const select = document.getElementById("movieSelect");
+    movies.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.url;
+        opt.textContent = m.name;
+        select.appendChild(opt);
+    });
+    const player = document.getElementById("moviePlayer");
+    
+    playHLS(player, select.value);
+    select.addEventListener("change", () => {
+        playHLS(player, select.value);
+    });
 }
 
-/* --- YouTube con API Key --- */
-async function loadYouTube() {
-  const apiKey = "AIzaSyDZh9smeykTbGwcH8oPmRIFps9KmWj43gs"; // tu API Key
-  const query = "musica argentina"; // buscador por defecto
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=${encodeURIComponent(query)}&key=${apiKey}`;
+// =====================================================================
+// === Funciones de Música (Spotify & Last.fm) ===
+// =====================================================================
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    let html = "";
-    if (data.items) {
-      data.items.forEach(v => {
-        html += `
-          <div class="card">
-            <iframe width="100%" height="200"
-              src="https://www.youtube.com/embed/${v.id.videoId}"
-              allowfullscreen></iframe>
-            <p>${v.snippet.title}</p>
-          </div>`;
-      });
+/* --- Spotify: Iframe de Playlist/Canción --- */
+function loadSpotify() {
+    // **Nota:** Para mayor seguridad y control (ej. Web Playback SDK), necesitarías un backend.
+    // Usamos el embed para simplicidad. ¡Cámbialo por tu playlist favorita!
+    const spotifyEmbedUrl = "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator"; 
+    const html = `
+        <div class="card">
+            <iframe style="border-radius:12px" src="${spotifyEmbedUrl}" width="100%" height="352" 
+            frameBorder="0" allowfullscreen="" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+    `;
+    document.getElementById("spotifyEmbed").innerHTML = html;
+}
+
+/* --- Last.fm: Top Tracks --- */
+async function loadLastFm() {
+    const method = "chart.gettoptracks";
+    const limit = 10;
+    const url = `https://ws.audioscrobbler.com/2.0/?method=${method}&api_key=${LASTFM_API_KEY}&format=json&limit=${limit}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        let html = "";
+        
+        if (data.tracks && data.tracks.track) {
+            data.tracks.track.forEach(t => {
+                html += `<div class="card">
+                    <strong>${t.name}</strong> - ${t.artist.name} 
+                    (<a href="${t.url}" target="_blank" style="color:#1db954;">Ver en Last.fm</a>)
+                </div>`;
+            });
+        } else {
+            html = "<p>⚠️ No se pudieron cargar las tendencias de Last.fm. Revisa tu API Key y la consola.</p>";
+        }
+        document.getElementById("lastfmTracks").innerHTML = html;
+    } catch (err) {
+        document.getElementById("lastfmTracks").innerHTML = "<p>❌ Error de conexión al cargar tendencias de Last.fm.</p>";
+        console.error("Error Last.fm:", err);
+    }
+}
+
+// =====================================================================
+// === Funciones de Podcasts (Listen Notes) ===
+// =====================================================================
+
+async function fetchPodcasts(endpoint, params = {}) {
+    const url = new URL(`${LISTEN_NOTES_API_URL}${endpoint}`);
+    url.search = new URLSearchParams(params).toString();
+    
+    // **ADVERTENCIA DE SEGURIDAD:** Exponer la clave API en el frontend no es seguro.
+    // En producción, usa un servidor (backend) para hacer esta llamada.
+    const headers = { "X-ListenAPI-Key": LISTEN_NOTES_API_KEY };
+    
+    try {
+        const res = await fetch(url, { headers });
+        if (!res.ok) throw new Error(`Error en API Listen Notes: ${res.status} - ${await res.text()}`);
+        return await res.json();
+    } catch (error) {
+        console.error("Error Podcast API:", error);
+        return null;
+    }
+}
+
+async function loadPodcasts(type, query = "") {
+    const podcastSelect = document.getElementById("podcastSelect");
+    const episodeControls = document.getElementById("episodeControls");
+    podcastSelect.innerHTML = "<option>Cargando podcasts...</option>";
+    episodeControls.innerHTML = ""; // Limpiar controles de episodios
+    document.getElementById("podcastPlayer").src = ""; // Limpiar reproductor
+
+    let podcastsData = null;
+    
+    if (type === 'charts') {
+        // Top 10 podcasts en español de la categoría "Música" (genre_id 146)
+        podcastsData = await fetchPodcasts("/best_podcasts", {
+            genre_id: 146, 
+            region: 'ar', // Puedes cambiar la región
+            safe_mode: 0,
+            page: 1,
+        });
+        podcastsData = podcastsData ? podcastsData.podcasts.slice(0, 10) : [];
+
+    } else if (type === 'query' && query.trim() !== "") {
+        podcastsData = await fetchPodcasts("/search", {
+            q: query,
+            type: 'podcast',
+            offset: 0,
+            len_min: 5,
+            len_max: 300,
+            only_in: 'title,description',
+            language: 'es',
+        });
+        podcastsData = podcastsData ? podcastsData.results.slice(0, 10) : [];
+    }
+
+    podcastSelect.innerHTML = "";
+    if (podcastsData && podcastsData.length > 0) {
+        podcastsData.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.id;
+            opt.textContent = p.title;
+            podcastSelect.appendChild(opt);
+        });
+        // Cargar episodios del primer podcast al iniciar
+        loadPodcastEpisodes(podcastSelect.value);
     } else {
-      html = "<p>No se pudieron cargar videos.</p>";
+        const opt = document.createElement("option");
+        opt.textContent = "No se encontraron podcasts.";
+        podcastSelect.appendChild(opt);
     }
-    document.getElementById("youtubeList").innerHTML = html;
-  } catch (err) {
-    document.getElementById("youtubeList").innerHTML = "<p>Error cargando videos.</p>";
-    console.error(err);
-  }
 }
 
-/* Inicialización */
-loadCountries();
-loadIPTV();
-loadMovies();
-loadYouTube();
+// Función para cargar los episodios del podcast seleccionado
+async function loadPodcastEpisodes(podcastId) {
+    const res = await fetchPodcasts(`/podcasts/${podcastId}`, {
+        sort: 'recent_first'
+    });
+
+    const podcastPlayer = document.getElementById("podcastPlayer");
+    const podcastSelect = document.getElementById("podcastSelect");
+    const episodeControls = document.getElementById("episodeControls");
+    episodeControls.innerHTML = ""; // Limpiar
+
+    // Ocultar select de podcast y mostrar controles de episodio
+    podcastSelect.style.display = 'none';
+
+    // 1. Botón de Volver
+    const backButton = document.createElement("button");
+    backButton.textContent = "⬅️ Cambiar Podcast";
+    backButton.style.cssText = "width: auto; margin-right: 10px; margin-bottom: 10px; background: #555;";
+    backButton.onclick = () => {
+        podcastSelect.style.display = 'block';
+        episodeControls.innerHTML = "";
+        podcastPlayer.src = "";
+    };
+    episodeControls.appendChild(backButton);
+    
+    // 2. Selector de Episodios
+    const episodeSelect = document.createElement("select");
+    episodeSelect.id = "episodeSelect";
+    episodeSelect.style.cssText = "margin-top: 0;";
+
+    if (res && res.episodes && res.episodes.length > 0) {
+        res.episodes.slice(0, 15).forEach(e => { // Máximo 15 episodios
+            const opt = document.createElement("option");
+            opt.value = e.audio; // La URL directa del audio
+            opt.textContent = e.title;
+            episodeSelect.appendChild(opt);
+        });
+
+        episodeSelect.addEventListener("change", () => {
+            podcastPlayer.src = episodeSelect.value;
+            podcastPlayer.play();
+        });
+        
+        // Reproducir el primer episodio por defecto
+        podcastPlayer.src = episodeSelect.value;
+        podcastPlayer.play();
+        
+    } else {
+        const opt = document.createElement("option");
+        opt.textContent = `No hay episodios disponibles.`;
+        episodeSelect.appendChild(opt);
+    }
+    episodeControls.appendChild(episodeSelect);
+}
+
+// =====================================================================
+// === Lógica de Inicialización y Eventos ===
+// =====================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    // Radio, TV, Películas
+    loadCountries();
+    loadIPTV();
+    loadMovies();
+    
+    // Música y Tendencias
+    loadSpotify();
+    loadLastFm();
+
+    // Podcasts: Lógica de la interfaz
+    const searchType = document.getElementById("podcastSearchType");
+    const searchInput = document.getElementById("podcastSearchInput");
+    const searchButton = document.getElementById("podcastSearchButton");
+    const podcastSelect = document.getElementById("podcastSelect");
+    
+    // Manejo de la interfaz de búsqueda/charts
+    searchType.addEventListener("change", (e) => {
+        searchInput.style.display = (e.target.value === 'query') ? 'block' : 'none';
+        searchButton.textContent = (e.target.value === 'query') ? 'Buscar' : 'Cargar Charts';
+    });
+
+    // Manejo del botón de búsqueda/carga
+    searchButton.addEventListener("click", () => {
+        document.getElementById("podcastPlayer").pause();
+        const type = searchType.value;
+        const query = searchInput.value;
+        loadPodcasts(type, query);
+    });
+    
+    // Al seleccionar un nuevo podcast en el selector principal, cargar sus episodios
+    podcastSelect.addEventListener("change", (e) => {
+        document.getElementById("podcastPlayer").pause();
+        loadPodcastEpisodes(e.target.value);
+    });
+    
+    // Carga inicial de charts al cargar la página
+    loadPodcasts('charts');
+});
 </script>
 
 </body>
