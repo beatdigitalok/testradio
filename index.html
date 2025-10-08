@@ -30,6 +30,27 @@
             border-radius: 5px; 
             box-sizing: border-box; 
         }
+        .youtube-search-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .youtube-search-controls input {
+            flex-grow: 1;
+            padding: 8px; 
+            background: #1e1e1e; 
+            color: #fff; 
+            border: 1px solid #1db954; 
+            border-radius: 5px; 
+        }
+        .youtube-search-controls button {
+            padding: 8px 15px;
+            background: #1db954;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         a { color: #1db954; text-decoration: none; }
         a:hover { text-decoration: underline; }
     </style>
@@ -37,15 +58,20 @@
 </head>
 <body>
 
-<header>🎵 Mbogi Multimedia Hub - Radios · TV · Pelis · Tendencias</header>
+<header>🎵 Mbogi Multimedia Hub - Radios · TV · Pelis · Música (YouTube)</header>
+
+<section id="youtube">
+    <h2>🎶 Música (YouTube Search)</h2>
+    <div class="youtube-search-controls">
+        <input type="text" id="youtubeQuery" placeholder="Buscar música o artista..." value="Top canciones Argentina">
+        <button id="searchYoutubeButton">Buscar</button>
+    </div>
+    <div id="youtubeList">Cargando videos...</div>
+</section>
 
 <section id="lastfm">
     <h2>📈 Tendencias Musicales (Last.fm Top Tracks)</h2>
     <div id="lastfmTracks">Cargando top tracks...</div>
-    <p style="font-size: 0.9em; margin-top: 15px;">
-        *Esta sección muestra las canciones más populares globalmente, pero no las reproduce directamente. 
-        Para reproducción, usa la sección **Radios** o integra otra fuente de audio legal y libre de API.*
-    </p>
 </section>
 
 ---
@@ -72,13 +98,49 @@
 
 <script>
 // =====================================================================
-// === Claves API ===
+// === Claves API de Bruga Music ===
 // =====================================================================
-const LASTFM_API_KEY = "2ec6a460145f44fc845dfc771f5f701b"; 
+const LASTFM_API_KEY = "1b44360cc775726f390e85afc14d8747"; 
+const YOUTUBE_API_KEY = "AIzaSyA0rdTCiTeNH6D6HVriTNPhbJetMcQs84"; // La clave de Bruga Music
 
 // =====================================================================
-// === Funciones de Música (Last.fm) ===
+// === Funciones de Música (YouTube & Last.fm) ===
 // =====================================================================
+
+/* --- YouTube con API Key --- */
+async function loadYouTube(query) {
+    const listElement = document.getElementById("youtubeList");
+    listElement.innerHTML = "Buscando videos...";
+
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        let html = "";
+        
+        if (data.items) {
+            data.items.forEach(v => {
+                // Genera el iframe con el video embebido
+                html += `
+                    <div class="card">
+                        <iframe width="100%" height="200"
+                            src="http://googleusercontent.com/youtube.com/embed/${v.id.videoId}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                        <p style="margin-top: 5px; font-weight: bold;">${v.snippet.title}</p>
+                    </div>`;
+            });
+        } else {
+             // Muestra error si la API Key está mal o excedió la cuota.
+            html = "<p>⚠️ No se pudieron cargar videos. Revisa la consola o la cuota de la API Key.</p>";
+        }
+        listElement.innerHTML = html;
+    } catch (err) {
+        listElement.innerHTML = "<p>❌ Error cargando videos de YouTube.</p>";
+        console.error("Error YouTube:", err);
+    }
+}
 
 /* --- Last.fm: Top Tracks --- */
 async function loadLastFm() {
@@ -99,7 +161,7 @@ async function loadLastFm() {
                 </div>`;
             });
         } else {
-            html = "<p>⚠️ No se pudieron cargar las tendencias de Last.fm. Revisa tu API Key y la consola.</p>";
+            html = "<p>⚠️ No se pudieron cargar las tendencias de Last.fm. Revisa tu API Key.</p>";
         }
         document.getElementById("lastfmTracks").innerHTML = html;
     } catch (err) {
@@ -214,9 +276,32 @@ function loadMovies() {
 }
 
 // =====================================================================
-// === Inicialización ===
+// === Inicialización y Eventos ===
 // =====================================================================
 document.addEventListener("DOMContentLoaded", () => {
+    // Evento para el botón de búsqueda de YouTube
+    const searchButton = document.getElementById("searchYoutubeButton");
+    const queryInput = document.getElementById("youtubeQuery");
+    
+    const performSearch = () => {
+        const query = queryInput.value.trim();
+        if (query) {
+            loadYouTube(query);
+        }
+    };
+    
+    // Asigna el evento al botón
+    searchButton.addEventListener("click", performSearch);
+    
+    // Permite buscar presionando Enter en el input
+    queryInput.addEventListener("keypress", (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // Carga inicial de datos
+    loadYouTube(queryInput.value); // Carga la búsqueda por defecto
     loadLastFm(); 
     loadCountries();
     loadIPTV();
