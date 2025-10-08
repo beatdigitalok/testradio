@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>Mbogi Multimedia Hub</title>
     <style>
         /* --- Estilos Generales --- */
@@ -30,27 +30,6 @@
             border-radius: 5px; 
             box-sizing: border-box; 
         }
-        .youtube-search-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .youtube-search-controls input {
-            flex-grow: 1;
-            padding: 8px; 
-            background: #1e1e1e; 
-            color: #fff; 
-            border: 1px solid #1db954; 
-            border-radius: 5px; 
-        }
-        .youtube-search-controls button {
-            padding: 8px 15px;
-            background: #1db954;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
         a { color: #1db954; text-decoration: none; }
         a:hover { text-decoration: underline; }
     </style>
@@ -58,20 +37,11 @@
 </head>
 <body>
 
-<header>🎵 Mbogi Multimedia Hub - Radios · TV · Pelis · Música (YouTube)</header>
+<header>🎵 Mbogi Multimedia Hub - Radios · TV · Pelis · Música Tendencia</header>
 
-<section id="youtube">
-    <h2>🎶 Música (YouTube Search)</h2>
-    <div class="youtube-search-controls">
-        <input type="text" id="youtubeQuery" placeholder="Buscar música o artista..." value="Top canciones Argentina">
-        <button id="searchYoutubeButton">Buscar</button>
-    </div>
-    <div id="youtubeList">Cargando videos...</div>
-</section>
-
-<section id="lastfm">
-    <h2>📈 Tendencias Musicales (Last.fm Top Tracks)</h2>
-    <div id="lastfmTracks">Cargando top tracks...</div>
+<section id="music-trends">
+    <h2>🔥 Música en Tendencia (Top 5 Global)</h2>
+    <div id="trendMusicList">Cargando tendencias de Last.fm y buscando videos...</div>
 </section>
 
 ---
@@ -98,74 +68,74 @@
 
 <script>
 // =====================================================================
-// === Claves API de Bruga Music ===
+// === Claves API: ¡INSERTA TU CLAVE PERSONAL DE YOUTUBE AQUÍ! ===
 // =====================================================================
-const LASTFM_API_KEY = "1b44360cc775726f390e85afc14d8747"; 
-const YOUTUBE_API_KEY = "AIzaSyA0rdTCiTeNH6D6HVriTNPhbJetMcQs84"; // La clave de Bruga Music
+const LASTFM_API_KEY = "1b44360cc775726f390e85afc14d8747"; // Nueva clave de Last.fm
+const YOUTUBE_API_KEY = "TU_NUEVA_CLAVE_PERSONAL_DE_YOUTUBE"; // ⬅️ ¡IMPORTANTE! REEMPLAZAR CON TU CLAVE REAL.
 
 // =====================================================================
-// === Funciones de Música (YouTube & Last.fm) ===
+// === Funciones de Música (Last.fm + YouTube) ===
 // =====================================================================
 
-/* --- YouTube con API Key --- */
-async function loadYouTube(query) {
-    const listElement = document.getElementById("youtubeList");
-    listElement.innerHTML = "Buscando videos...";
-
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
-
+// Busca el video de YouTube para una canción específica
+async function findAndEmbedVideo(trackName, artistName, containerElement) {
+    const query = `${trackName} ${artistName} official video`;
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
+    
     try {
         const res = await fetch(url);
         const data = await res.json();
-        let html = "";
         
-        if (data.items) {
-            data.items.forEach(v => {
-                // Genera el iframe con el video embebido
-                html += `
-                    <div class="card">
-                        <iframe width="100%" height="200"
-                            src="http://googleusercontent.com/youtube.com/embed/${v.id.videoId}"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen></iframe>
-                        <p style="margin-top: 5px; font-weight: bold;">${v.snippet.title}</p>
-                    </div>`;
-            });
+        if (data.items && data.items.length > 0) {
+            const videoId = data.items[0].id.videoId;
+            const title = data.items[0].snippet.title;
+            
+            containerElement.innerHTML += `
+                <div class="card">
+                    <p style="font-weight: bold; margin-bottom: 5px;">${title} (Buscado por Last.fm)</p>
+                    <iframe width="100%" height="200"
+                        src="http://googleusercontent.com/youtube.com/embed/${videoId}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                </div>`;
         } else {
-             // Muestra error si la API Key está mal o excedió la cuota.
-            html = "<p>⚠️ No se pudieron cargar videos. Revisa la consola o la cuota de la API Key.</p>";
+             containerElement.innerHTML += `<div class="card"><p>No se encontró video en YouTube para: <strong>${trackName}</strong>.</p></div>`;
         }
-        listElement.innerHTML = html;
+        
     } catch (err) {
-        listElement.innerHTML = "<p>❌ Error cargando videos de YouTube.</p>";
+        containerElement.innerHTML += `<div class="card"><p>❌ Error de YouTube al buscar ${trackName}.</p></div>`;
         console.error("Error YouTube:", err);
     }
 }
 
-/* --- Last.fm: Top Tracks --- */
-async function loadLastFm() {
+// Carga Top Tracks de Last.fm y luego los busca en YouTube
+async function loadMusicTrends() {
+    const listElement = document.getElementById("trendMusicList");
+    listElement.innerHTML = "Obteniendo Top Tracks de Last.fm...";
+    
     const method = "chart.gettoptracks";
-    const limit = 10;
+    const limit = 5; // Solo los 5 mejores para no exceder rápido la cuota de YouTube
     const url = `https://ws.audioscrobbler.com/2.0/?method=${method}&api_key=${LASTFM_API_KEY}&format=json&limit=${limit}`;
 
     try {
         const res = await fetch(url);
         const data = await res.json();
-        let html = "";
         
         if (data.tracks && data.tracks.track) {
-            data.tracks.track.forEach(t => {
-                html += `<div class="card">
-                    <strong>${t.name}</strong> - ${t.artist.name} 
-                    (<a href="${t.url}" target="_blank">Ver en Last.fm</a>)
-                </div>`;
-            });
+            listElement.innerHTML = ""; // Limpiar antes de mostrar resultados
+            const tracks = data.tracks.track;
+            
+            // Llama a la búsqueda de YouTube por cada track de Last.fm
+            for (const t of tracks) {
+                await findAndEmbedVideo(t.name, t.artist.name, listElement);
+            }
+            
         } else {
-            html = "<p>⚠️ No se pudieron cargar las tendencias de Last.fm. Revisa tu API Key.</p>";
+            listElement.innerHTML = "<p>⚠️ No se pudieron cargar las tendencias de Last.fm. Revisa tu clave.</p>";
         }
-        document.getElementById("lastfmTracks").innerHTML = html;
+        
     } catch (err) {
-        document.getElementById("lastfmTracks").innerHTML = "<p>❌ Error de conexión al cargar tendencias de Last.fm.</p>";
+        listElement.innerHTML = "<p>❌ Error de conexión al cargar tendencias de Last.fm.</p>";
         console.error("Error Last.fm:", err);
     }
 }
@@ -279,30 +249,10 @@ function loadMovies() {
 // === Inicialización y Eventos ===
 // =====================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    // Evento para el botón de búsqueda de YouTube
-    const searchButton = document.getElementById("searchYoutubeButton");
-    const queryInput = document.getElementById("youtubeQuery");
+    // Carga la nueva sección de música combinada
+    loadMusicTrends(); 
     
-    const performSearch = () => {
-        const query = queryInput.value.trim();
-        if (query) {
-            loadYouTube(query);
-        }
-    };
-    
-    // Asigna el evento al botón
-    searchButton.addEventListener("click", performSearch);
-    
-    // Permite buscar presionando Enter en el input
-    queryInput.addEventListener("keypress", (e) => {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
-
-    // Carga inicial de datos
-    loadYouTube(queryInput.value); // Carga la búsqueda por defecto
-    loadLastFm(); 
+    // Carga las otras secciones
     loadCountries();
     loadIPTV();
     loadMovies();
