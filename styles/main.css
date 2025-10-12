@@ -2,7 +2,7 @@
 :root {
     --primary-color: #E50914; /* Rojo Netflix */
     --background-dark: #141414; /* Fondo Oscuro Profundo */
-    --card-dark: #2A2A2A; /* Color de tarjeta */
+    --card-dark: #232323; /* Tarjeta y Fondos ligeramente más claros que el fondo */
     --text-light: #F0F0F0;
     --secondary-dark: #B3B3B3;
     --player-bg: #000000;
@@ -31,11 +31,12 @@ main {
     padding: 20px;
 }
 h2 { 
-    border-bottom: 2px solid var(--primary-color); 
-    padding-bottom: 8px; 
+    border-left: 5px solid var(--primary-color); 
+    padding-left: 15px; 
     margin-bottom: 25px;
     font-size: 2em;
     color: var(--text-light);
+    font-weight: 500;
 }
 
 /* --- Layout Principal (Reproductor y Tabs) --- */
@@ -64,7 +65,7 @@ h2 {
 #current-media-info {
     padding: 15px;
     font-size: 1.2em;
-    background: rgba(0, 0, 0, 0.4);
+    background: #000; /* Negro sólido en la base del reproductor */
     color: var(--primary-color);
     font-weight: bold;
 }
@@ -189,26 +190,22 @@ h2 {
 /* Tabletas (Ancho máximo de 1024px) */
 @media (max-width: 1024px) {
     #media-player-section {
-        flex-direction: column; /* Apilar en tabletas */
+        flex-direction: column; 
         min-height: auto;
     }
     #media-list-tabs {
-        flex: 1 1 100%; /* Ocupar todo el ancho */
-        max-height: 400px; /* Limitar la altura de la lista para no ocupar toda la pantalla */
+        flex: 1 1 100%; 
+        max-height: 400px; 
         margin-top: 20px;
     }
     #media-player-wrapper {
-        order: -1; /* Mover el reproductor arriba */
+        order: -1; 
     }
     #main-media-player {
         min-height: 250px;
     }
-    #cartoons-list {
-        gap: 15px;
-        padding-bottom: 15px;
-    }
     .cartoon-card {
-        flex: 0 0 160px; /* Reducir ancho de tarjetas */
+        flex: 0 0 160px;
         height: 250px;
     }
 }
