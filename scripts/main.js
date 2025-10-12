@@ -2,20 +2,20 @@
 // === Configuración de Listas M3U/M3U8 y Constantes ===
 // =====================================================================
 
-// URL de la lista M3U de TV Abierta (Argentina)
+// URL de la lista M3U de TV Abierta (Argentina) - Puede ser inestable
 const TV_M3U_URL = "https://radiosargentina.com.ar/TVAR.m3u";
 
-// URL de la lista M3U para Radio AM/Digital
+// URL de la lista M3U para Radio AM/Digital - Puede ser inestable
 const RADIO_M3U_URL = "https://m3u.cl/lista/AR.m3u"; 
 
-// URL de FALLBACK para RADIO (si la lista M3U falla) - Prueba estable
+// URL de FALLBACK para RADIO (si la lista M3U falla)
 const RADIO_FALLBACK_URL = "http://200.43.192.203:8000/fm-nacional-clasica.mp3"; 
 const RADIO_FALLBACK_ITEM = { name: "Radio Nacional Clásica (Fallback)", url: RADIO_FALLBACK_URL, type: 'audio', logo: "https://via.placeholder.com/35/E50914/FFFFFF?text=RNC" };
 
-// Se utiliza un proxy CORS para evitar el bloqueo del navegador si se ejecuta localmente.
+// Proxy CORS para evitar bloqueos del navegador al cargar listas externas
 const CORS_PROXY = "https://api.allorigins.win/raw?url=";
 
-// Streams de prueba para las secciones fijas
+// Streams de prueba estables
 const DEMO_MOVIES = [
     { name: "Big Buck Bunny (Demo Estable)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8", type: 'video' },
     { name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type: 'video' }
@@ -74,8 +74,8 @@ async function parseM3UList(url, type) {
                     currentItem.name = nameMatch[1].trim();
                 }
                 
-                // Extraer el logo y aplicarle el proxy
                 const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+                // Aplicamos el proxy a la URL del logo también
                 currentItem.logo = (logoMatch && logoMatch[1]) ? `${CORS_PROXY}${encodeURIComponent(logoMatch[1])}` : null;
 
             } else if (line && !line.startsWith('#')) {
@@ -119,9 +119,9 @@ function cleanupPlayer() {
 
 /**
  * Reemplaza el elemento del reproductor (VIDEO o AUDIO)
- * @param {string} tagName - 'video' o 'audio'.
  */
 function swapPlayerElement(tagName) {
+    // Si el tag actual ya es el requerido, no hacemos nada
     if (playerElement.tagName.toLowerCase() === tagName) return;
     
     const newPlayer = document.createElement(tagName);
@@ -129,7 +129,6 @@ function swapPlayerElement(tagName) {
     newPlayer.controls = true;
     newPlayer.autoplay = true; 
 
-    // Copiar atributos necesarios del antiguo al nuevo
     const wrapper = playerElement.parentNode;
     wrapper.replaceChild(newPlayer, playerElement);
     playerElement = newPlayer; // Actualizar la referencia global
@@ -138,7 +137,6 @@ function swapPlayerElement(tagName) {
 
 /**
  * Inicia la reproducción HLS/M3U8 (Video)
- * **USANDO HLS.js**
  */
 function playHLS(url) {
     swapPlayerElement('video');
@@ -146,7 +144,6 @@ function playHLS(url) {
     
     if (Hls.isSupported() && url.toLowerCase().includes('.m3u8')) {
         hlsInstance = new Hls({
-            // Mejorar la tolerancia a fallos
             maxBufferLength: 30,
             maxMaxBufferLength: 60,
         });
@@ -160,7 +157,6 @@ function playHLS(url) {
             });
         });
         
-        // Detección Crítica de Fallo de red/stream
         hlsInstance.on(Hls.Events.ERROR, function(event, data) {
             if (data.fatal) {
                 console.error("HLS ERROR FATAL:", data);
@@ -170,7 +166,7 @@ function playHLS(url) {
         });
         
     } else {
-        // Fallback nativo para streams directos que no son HLS
+        // Fallback nativo
         playerElement.src = url;
         playerElement.play().catch(e => {
              console.warn("Auto-reproducción bloqueada (Nativo):", e);
@@ -181,7 +177,6 @@ function playHLS(url) {
 
 /**
  * Inicia la reproducción de Audio
- * **USANDO ETIQUETA NATIVA <audio>**
  */
 function playAudio(url) {
     swapPlayerElement('audio');
@@ -237,7 +232,6 @@ function renderMediaList(type) {
         div.dataset.url = item.url;
         div.dataset.type = item.type;
 
-        // Si el logo falla, usa un placeholder con la inicial
         const logoSrc = item.logo || `https://via.placeholder.com/35/2A2A2A/FFFFFF?text=${item.name.charAt(0)}`;
         div.innerHTML = `<img src="${logoSrc}" alt="${item.name} logo" class="media-logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/35/2A2A2A/FFFFFF?text=${item.name.charAt(0)}'">
                          <span class="media-name">${item.name}</span>`;
@@ -246,7 +240,6 @@ function renderMediaList(type) {
         listPlaceholder.appendChild(div);
     });
 
-    // Reproducir el primer elemento al cargar la lista (solo si no estamos ya en el demo inicial)
     if (mediaList.length > 0 && !playerElement.src.includes('bigbuckbunny')) {
         handlePlayMedia(mediaList[0]);
     }
