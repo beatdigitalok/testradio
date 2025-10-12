@@ -3,47 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Abierta Online - Estilo Carrusel</title>
+    <title>TV Abierta - Estilo Pluto TV</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Estilos generales para el cuerpo */
+        /* =======================================
+        ESTILOS GENERALES Y PLUTO TV LIKE
+        ======================================= */
+        :root {
+            --bg-dark: #111111;
+            --bg-medium: #1c1c1c;
+            --primary-color: #ff9900;
+            --text-color: #ffffff;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #0d0d0d;
-            color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
 
-        /* Título y descripción */
-        h2 {
-            text-align: center;
-            color: #ffffff;
-            font-weight: bold;
-            margin-top: 0;
-        }
-        p {
-            text-align: center;
-            margin-bottom: 25px;
+        /* Ocultar el título principal y solo usar el reproductor y la guía */
+        h2, p {
+            display: none;
         }
 
-        /* Player */
+        /* =======================================
+        REPRODUCTOR (Player)
+        ======================================= */
         #tv-player-container {
             position: relative;
             width: 100%;
-            max-width: 960px;
-            /* 16:9 aspect ratio (960x540) */
+            max-width: 1200px; /* Ancho más grande para sentirlo más inmersivo */
+            margin: 0 auto;
+            /* 16:9 aspect ratio */
             height: 0;
             padding-bottom: 56.25%; 
             background: black;
-            margin: 20px auto;
-            border-radius: 12px;
+            border-radius: 0; /* Quitamos el borde para un look más de app */
             overflow: hidden;
-            box-shadow: 0 0 25px rgba(0,0,0,0.8);
+            box-shadow: none; 
         }
 
-        /* Para que el video y el iframe se ajusten al contenedor */
         #tv-player-video, #tv-player-iframe {
             position: absolute;
             top: 0;
@@ -55,176 +60,203 @@
             border: none;
         }
 
+        /* Info del canal - Estilo "On Now" */
         #channel-info {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            bottom: 65px; /* Más arriba para dejar espacio a la barra de controles */
+            left: 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             background: rgba(0,0,0,0.8);
-            padding: 8px 15px;
-            border-radius: 10px;
-            color: white;
-            font-family: inherit;
-            font-size: 1.1em;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1.2em;
+            font-weight: bold;
             opacity: 0;
             transition: opacity 0.5s;
-            z-index: 100; /* Asegurar que esté encima del video/iframe */
+            z-index: 100;
         }
         #channel-info.show { opacity: 1; }
         #channel-info img { 
-            height: 35px;
+            height: 40px;
+            width: 80px;
+            object-fit: contain;
+            background: var(--bg-dark);
+            padding: 5px;
             border-radius: 4px; 
-            background: white; /* Ayuda si el logo es transparente */
         }
 
+        /* Controles - Barra flotante */
         #player-controls {
             position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
             display: flex;
-            gap: 15px;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 20px;
+            padding: 0 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 100;
         }
-        /* Mostrar controles al pasar el mouse por el reproductor */
+
         #tv-player-container:hover #player-controls {
             opacity: 1;
         }
 
         #player-controls button {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-color);
             font-size: 1.2em;
-            width: 45px;
-            height: 45px;
-            line-height: 45px;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
             padding: 0;
             border-radius: 50%;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: background 0.2s;
         }
         #player-controls button:hover { 
-            background: rgba(255, 255, 255, 0.4); 
-            transform: scale(1.05);
-        }
-        #player-controls button:active {
-            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.3); 
         }
         
-        /* Carrusel */
+        /* Contenedor de volumen y slider */
+        #volume-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #volume-control input[type="range"] {
+            width: 80px;
+            -webkit-appearance: none;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #volume-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-color);
+            cursor: pointer;
+        }
+        
+        /* =======================================
+        CARRUSEL (Guía de Canales - Estilo Pluto)
+        ======================================= */
         .carousel-container {
             position: relative;
-            max-width: 960px;
-            margin: 20px auto;
-            padding: 0 40px; /* Espacio para los botones */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
         }
         .tv-carousel-wrapper {
             display: flex;
             overflow-x: auto;
-            gap: 10px;
-            padding: 15px 5px;
-            background: #181818;
-            border-radius: 12px;
+            gap: 1px; /* Espacio mínimo para simular la guía */
+            padding: 0;
+            background: var(--bg-medium);
+            border-radius: 0;
             scroll-behavior: smooth;
-            border: 1px solid #333;
         }
         .tv-carousel-wrapper::-webkit-scrollbar { display: none; }
+
         .tv-channel {
             flex: 0 0 auto;
-            min-width: 140px;
+            min-width: 180px; /* Canales más anchos */
             padding: 10px;
-            text-align: center;
-            border-radius: 10px;
-            background: #252525;
-            color: #fff;
+            text-align: left;
+            border-radius: 0;
+            background: var(--bg-medium);
+            color: var(--text-color);
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s, background 0.2s;
-            border: 2px solid transparent;
+            transition: background 0.2s;
+            border-bottom: 2px solid transparent;
         }
         .tv-channel:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-            background: #333;
-            border-color: #ff9900; /* Resaltado al pasar el mouse */
+            background: #333333;
         }
         .tv-channel-selected {
-            border-color: #00bfff !important; /* Resaltado para el canal actual */
-            background: #005f7a;
-            box-shadow: 0 0 15px rgba(0,191,255,0.7);
+            background: var(--bg-dark) !important; /* El canal seleccionado resalta por estar oscuro */
+            border-bottom: 2px solid var(--primary-color) !important;
+            box-shadow: inset 5px 0 0 var(--primary-color);
+        }
+
+        .tv-channel-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .tv-channel img {
-            max-height: 50px;
-            width: auto;
-            display: block;
-            margin: 0 auto 8px auto;
+            max-height: 40px;
+            width: 70px;
             object-fit: contain;
-            border-radius: 4px;
+            display: block;
+            margin: 0;
+            background: black;
+            padding: 3px;
+            border-radius: 3px;
         }
         .tv-channel span {
-            font-size: 0.9em;
-            display: block;
+            font-size: 1em;
+            font-weight: bold;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
+        
+        /* Ocultar botones de navegación en el carrusel para el estilo Pluto */
         .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.7);
-            border: none;
-            color: white;
-            font-size: 28px;
-            padding: 12px 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 20;
-            transition: background 0.2s, opacity 0.2s;
+            display: none; 
         }
-        .carousel-btn.left { left: 0px; }
-        .carousel-btn.right { right: 0px; }
-        .carousel-btn:hover { background: rgba(255,255,255,0.2); }
 
+        /* Otros estilos */
         .disclaimer {
             text-align: center;
             font-size: 0.8em;
-            color: #999;
-            margin-top: 30px;
+            color: #555;
+            margin-top: 20px;
+            padding-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-    <h2>Ver TV Abierta Online&nbsp;📺</h2>
-    <p>Haz click en cualquier canal para comenzar a verlo. Usa flechas, touch o mouse para navegar.</p>
+    <div id="tv-experience">
+        <div id="tv-player-container">
+          <video id="tv-player-video" playsinline></video>
+          <iframe allow="autoplay; fullscreen" allowfullscreen frameborder="0" id="tv-player-iframe"></iframe>
+          
+            <div id="channel-info">
+            <img alt="Logo" id="channel-logo" src="" />
+            <span id="channel-name"></span>
+          </div>
 
-    <div id="tv-player-container">
-      <video id="tv-player-video" playsinline></video>
-      <iframe allow="autoplay; fullscreen" allowfullscreen frameborder="0" id="tv-player-iframe"></iframe>
-      
-        <div id="channel-info">
-        <img alt="Logo" id="channel-logo" src="" />
-        <span id="channel-name"></span>
-      </div>
+            <div id="player-controls">
+                <button id="btn-play">▶️</button>
+                <button id="btn-pause">⏸️</button>
+                <div id="volume-control">
+                    <button id="btn-mute">🔇</button>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+                </div>
+                <div style="flex-grow: 1;"></div> 
+                <button id="btn-fullscreen">⛶</button>
+          </div>
+        </div>
 
-        <div id="player-controls">
-        <button id="btn-play">▶️</button>
-        <button id="btn-pause">⏸️</button>
-        <button id="btn-fullscreen">⛶</button>
-      </div>
-    </div>
-
-    <div class="carousel-container">
-      <button class="carousel-btn left">❮</button>
-      <div class="tv-carousel-wrapper" id="tv-carousel"></div>
-      <button class="carousel-btn right">❯</button>
+        <div class="carousel-container">
+            <button class="carousel-btn left">❮</button>
+          <div class="tv-carousel-wrapper" id="tv-carousel"></div>
+          <button class="carousel-btn right">❯</button>
+        </div>
     </div>
     
     <div class="disclaimer">
@@ -236,7 +268,7 @@
 
     <script>
         // ====================
-        // Lista de canales
+        // Lista de canales (Usamos la misma lista que proporcionaste)
         // ====================
         const channels = [
             {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png"}, 
@@ -612,7 +644,6 @@
                 url: "https://videostream.shockmedia.com.ar:19360/radio1045/radio1045.m3u8",
                 type: "hls"
             },
-            // Asegúrate de que todos los canales terminen con una coma, excepto el último.
         ];
 
         const carousel = document.getElementById("tv-carousel");
@@ -621,21 +652,35 @@
         const infoBox = document.getElementById("channel-info");
         const logo = document.getElementById("channel-logo");
         const nameBox = document.getElementById("channel-name");
+
+        const btnMute = document.getElementById("btn-mute");
+        const volumeSlider = document.getElementById("volume-slider");
+
         let currentChannel = 0;
         let hls, dash;
-        let channelElements = []; // Para guardar las referencias a los divs de los canales
+        let channelElements = []; 
+        let lastVolume = 0.5; // Guardar el volumen antes de mutear
 
-        // Renderizar carrusel
+        // ====================
+        // Renderizar Canales y Eventos
+        // ====================
         channels.forEach((ch, idx) => {
             const div = document.createElement("div");
             div.className = "tv-channel";
-            div.innerHTML = `<img src="${ch.logo}" alt="${ch.name}"><span title="${ch.name}">${ch.name}</span>`;
+            div.innerHTML = `
+                <div class="tv-channel-content">
+                    <img src="${ch.logo}" alt="${ch.name}">
+                    <span title="${ch.name}">${ch.name}</span>
+                </div>
+            `;
             div.addEventListener("click", () => playChannel(idx));
             carousel.appendChild(div);
-            channelElements.push(div); // Guardar referencia
+            channelElements.push(div); 
         });
 
-        // Reproducir canal
+        // ====================
+        // Funciones de Reproducción
+        // ====================
         function playChannel(idx) {
             currentChannel = idx;
             const ch = channels[idx];
@@ -644,12 +689,10 @@
             if (hls) { hls.destroy(); hls = null; }
             if (dash) { dash.reset(); dash = null; }
 
-            // 2. Ocultar ambos reproductores al principio
+            // 2. Ocultar reproductores
             playerVideo.style.display = "none";
             playerIframe.style.display = "none";
             playerVideo.pause();
-            
-            // Resetear el src del iframe para detener videos de YouTube
             playerIframe.src = "";
 
             // 3. Actualizar y mostrar info del canal
@@ -658,7 +701,7 @@
             infoBox.classList.add("show");
             setTimeout(()=>infoBox.classList.remove("show"), 3000);
             
-            // 4. Resaltar el canal seleccionado en el carrusel
+            // 4. Resaltar el canal seleccionado
             channelElements.forEach(el => el.classList.remove("tv-channel-selected"));
             channelElements[idx].classList.add("tv-channel-selected");
             
@@ -670,41 +713,77 @@
                 playerIframe.style.display = "block";
                 const urlWithAutoplay = ch.url.includes("autoplay=1") ? ch.url : ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1";
                 playerIframe.src = urlWithAutoplay;
+                
+                // Deshabilitar controles de video (no aplican al iframe)
+                document.getElementById("player-controls").style.display = 'none';
+
             } else if (ch.type === "dash") {
                 playerVideo.style.display = "block";
                 dash = dashjs.MediaPlayer().create();
                 dash.initialize(playerVideo, ch.url, true);
+                playerVideo.volume = volumeSlider.value; // Aplicar volumen
                 playerVideo.play().catch(()=>{});
-            } else { // Asumir HLS o MP4 nativo
+                document.getElementById("player-controls").style.display = 'flex';
+
+            } else { // HLS o MP4 nativo
                 playerVideo.style.display = "block";
                 if (Hls.isSupported()) {
                     hls = new Hls();
                     hls.loadSource(ch.url);
                     hls.attachMedia(playerVideo);
+                    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                        playerVideo.volume = volumeSlider.value; // Aplicar volumen
+                        playerVideo.play().catch(()=>{});
+                    });
                 } else {
                     playerVideo.src = ch.url;
+                    playerVideo.volume = volumeSlider.value; // Aplicar volumen
+                    playerVideo.play().catch(()=>{});
                 }
-                playerVideo.play().catch(()=>{});
+                document.getElementById("player-controls").style.display = 'flex';
             }
         }
 
-        // Función para desplazar el carrusel al canal actual
+        // Desplazamiento de carrusel (función anterior)
         function scrollToChannel(idx) {
             const channelEl = channelElements[idx];
             if (channelEl) {
-                const carouselRect = carousel.getBoundingClientRect();
-                const channelRect = channelEl.getBoundingClientRect();
-                
                 const scrollLeft = channelEl.offsetLeft - carousel.offsetWidth / 2 + channelEl.offsetWidth / 2;
-
-                carousel.scrollTo({
-                    left: scrollLeft,
-                    behavior: 'smooth'
-                });
+                carousel.scrollTo({ left: scrollLeft, behavior: 'smooth' });
             }
         }
 
-        // Controles de Video (solo para <video>, no iframe)
+        // ====================
+        // Controles de Volumen
+        // ====================
+        function updateVolume(newVolume) {
+            playerVideo.volume = newVolume;
+            volumeSlider.value = newVolume;
+            playerVideo.muted = newVolume === 0;
+            btnMute.textContent = newVolume === 0 ? '🔇' : '🔊';
+        }
+        
+        volumeSlider.oninput = (e) => {
+            const newVolume = parseFloat(e.target.value);
+            updateVolume(newVolume);
+            lastVolume = newVolume > 0 ? newVolume : lastVolume; // Guardar el volumen si no es cero
+        };
+
+        btnMute.onclick = () => {
+            if (playerVideo.muted || playerVideo.volume === 0) {
+                // Desmutear
+                let vol = lastVolume > 0 ? lastVolume : 0.5;
+                updateVolume(vol);
+            } else {
+                // Mutear
+                lastVolume = playerVideo.volume; // Guardar volumen actual antes de mutear
+                updateVolume(0);
+            }
+        };
+
+        // ====================
+        // Otros Controles
+        // ====================
         document.getElementById("btn-play").onclick = () => { 
             if (playerVideo.style.display === "block") playerVideo.play().catch(()=>{}); 
         };
@@ -715,34 +794,23 @@
             const container = document.getElementById("tv-player-container");
             if (container.requestFullscreen) {
                 container.requestFullscreen();
-            } else if (container.mozRequestFullScreen) { /* Firefox */
-                container.mozRequestFullScreen();
             } else if (container.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
                 container.webkitRequestFullscreen();
-            } else if (container.msRequestFullscreen) { /* IE/Edge */
-                container.msRequestFullscreen();
             }
         };
 
-
-        // Navegación con flechas carrusel
-        const btnLeft = document.querySelector(".carousel-btn.left");
-        const btnRight = document.querySelector(".carousel-btn.right");
-        btnLeft.onclick = ()=> { carousel.scrollBy({left: -300, behavior: "smooth"}); };
-        btnRight.onclick = ()=> { carousel.scrollBy({left: 300, behavior: "smooth"}); };
-
-        // Teclado (izquierda/derecha cambia canal)
+        // Navegación por teclado
         document.addEventListener("keydown", e => {
             if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-                return; // Ignorar si se está escribiendo en un formulario
+                return;
             }
             if (e.key === "ArrowRight") {
-                e.preventDefault(); // Evitar el scroll de la página
+                e.preventDefault();
                 currentChannel = (currentChannel + 1) % channels.length;
                 playChannel(currentChannel);
             }
             if (e.key === "ArrowLeft") {
-                e.preventDefault(); // Evitar el scroll de la página
+                e.preventDefault();
                 currentChannel = (currentChannel - 1 + channels.length) % channels.length;
                 playChannel(currentChannel);
             }
