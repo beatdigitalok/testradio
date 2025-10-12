@@ -1,212 +1,223 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <title>beatdigital</title>
+    <meta charset="UTF-8">
+    <title>Beat Digital TV - El Hub Multimedia</title>
     <style>
-        /* --- Estilos Generales --- */
-        body { font-family: Arial, sans-serif; background:#121212; color:#fff; margin:0; }
-        header { background:#1db954; padding:15px; text-align:center; font-size:22px; font-weight:bold; }
-        section { padding:20px; margin-bottom:20px; }
-        h2 { border-bottom:2px solid #1db954; padding-bottom:5px; }
-        /* --- Estilos de Componentes --- */
+        /* Paleta de colores basada en una estética moderna de TV/Hub */
+        :root {
+            --primary-color: #E91E63; /* Rosa/Fucsia vibrante */
+            --background-dark: #1A1A2E; /* Fondo oscuro (Deep Blue) */
+            --card-dark: #2C385A; /* Color de tarjeta ligeramente más claro */
+            --text-light: #F0F0F0;
+            --secondary-dark: #8888AA;
+        }
+
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: var(--background-dark); 
+            color: var(--text-light); 
+            margin: 0; 
+            padding: 0;
+            line-height: 1.6;
+        }
+        header { 
+            background: var(--primary-color); 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 28px; 
+            font-weight: bold; 
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        section { 
+            padding: 20px 0; 
+            margin-bottom: 30px; 
+        }
+        h2 { 
+            border-bottom: 2px solid var(--primary-color); 
+            padding-bottom: 8px; 
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: var(--primary-color);
+        }
+        /* Estilos de Componentes */
         .card { 
-            background:#1e1e1e; padding:10px; border-radius:8px; margin:10px 0; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
+            background: var(--card-dark); 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin: 10px 0; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         .card:hover {
-            transform: translateY(-2px);
-            background: #282828;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
         }
-        iframe, audio, video { width:100%; border:none; border-radius:8px; }
-        select { 
+        iframe, audio, video { 
             width: 100%; 
-            padding: 8px; 
+            border: none; 
+            border-radius: 8px; 
+            background: #000; /* Fondo negro para contenido multimedia */
+        }
+        select, input[type="text"], button { 
+            width: 100%; 
+            padding: 10px; 
             margin: 8px 0; 
-            background: #1e1e1e; 
-            color: #fff; 
-            border: 1px solid #1db954; 
+            background: var(--card-dark); 
+            color: var(--text-light); 
+            border: 1px solid var(--primary-color); 
             border-radius: 5px; 
             box-sizing: border-box; 
+            font-size: 1em;
         }
-        a { color: #1db954; text-decoration: none; }
+        button {
+            background: var(--primary-color); 
+            cursor: pointer;
+            border: none;
+            width: auto;
+            padding: 10px 15px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        a { color: var(--primary-color); text-decoration: none; }
         a:hover { text-decoration: underline; }
+
+        /* Estilos del Diario Digital */
+        #newsContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .news-article {
+            background: var(--card-dark);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .news-article h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        .news-article p {
+            font-size: 0.9em;
+            color: var(--secondary-dark);
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
-<header>🎵 beatdigital</header>
-
-<section id="music-trends">
-    <h2>🔥 Música en Tendencia (Top 5 Global)</h2>
-    <div id="trendMusicList">Cargando tendencias de Last.fm y buscando videos...</div>
-</section>
-
----
+<header>📺 Beat Digital TV</header>
+<main>
 
 <section id="radio">
-    <h2>📻 Radios</h2>
+    <h2>📻 Radio Digital</h2>
+    <p>Selecciona un país para ver las estaciones de radio disponibles y sintoniza en vivo.</p>
     <select id="countrySelect"></select>
     <select id="radioSelect"></select>
     <audio id="radioPlayer" controls autoplay></audio>
 </section>
 
 <section id="tv">
-    <h2>📺 TV en Vivo</h2>
+    <h2>📺 TV Abierta</h2>
+    <p>Canales de TV en vivo. Puedes agregar más canales a la lista interna en `loadIPTV()`.</p>
     <select id="tvSelect"></select>
     <video id="tvPlayer" controls autoplay></video>
 </section>
 
 <section id="movies">
-    <h2>🎬 Películas y Series</h2>
+    <h2>🎬 Películas y Series (Demo)</h2>
     <select id="movieSelect"></select>
     <video id="moviePlayer" controls autoplay></video>
 </section>
 
+<section id="digital-daily">
+    <h2>📰 Nuestro Diario Digital (Lectura)</h2>
+    <p>Lectura de noticias de ejemplo. Esta sección simula la integración de artículos de un diario digital.</p>
+    <div id="newsContainer">
+        </div>
+</section>
+
+</main>
 
 <script>
 // =====================================================================
-// === Claves API: ¡INSERTA TU CLAVE PERSONAL DE YOUTUBE AQUÍ! ===
-// =====================================================================
-const LASTFM_API_KEY = "1b44360cc775726f390e85afc14d8747"; 
-const YOUTUBE_API_KEY = "AIzaSyBv8z1bP_rnp5XNTij2ugkDfKL0rHLLh00"; // ⬅️ ¡IMPORTANTE! REEMPLAZAR ESTE TEXTO CON TU CLAVE REAL.
-
-// =====================================================================
-// === Funciones de Música (Last.fm + YouTube) ===
-// =====================================================================
-
-// Intenta buscar en YouTube con una consulta, con un mecanismo de reintento.
-async function searchYoutube(query) {
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    
-    // Si hay error en la API, lo reporta
-    if (data.error) {
-        console.error("Error de la API de YouTube:", data.error.message);
-        return null;
-    }
-    
-    // Devuelve el video si lo encuentra, o null si la lista está vacía.
-    return (data.items && data.items.length > 0) ? data.items[0] : null;
-}
-
-// Busca el video de YouTube para una canción específica con lógica de reintento
-async function findAndEmbedVideo(trackName, artistName, containerElement) {
-    let video = null;
-    let title = `${trackName} - ${artistName}`;
-
-    // 1. Intento principal: Búsqueda exacta (como lo haría Bruga Music)
-    const query1 = `${trackName} ${artistName} official video`;
-    video = await searchYoutube(query1);
-
-    // 2. Fallback: Búsqueda menos específica (a veces mejor para videos no oficiales)
-    if (!video) {
-        const query2 = `${trackName} ${artistName} lyric`;
-        video = await searchYoutube(query2);
-    }
-    
-    // 3. Renderizar el resultado
-    if (video) {
-        const videoId = video.id.videoId;
-        
-        containerElement.innerHTML += `
-            <div class="card">
-                <p style="font-weight: bold; margin-bottom: 5px;">${title} (Buscado por Last.fm)</p>
-                <iframe width="100%" height="200"
-                    src="http://googleusercontent.com/youtube.com/embed/${videoId}"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
-            </div>`;
-    } else {
-        containerElement.innerHTML += `<div class="card"><p>No se encontró video en YouTube para: <strong>${title}</strong>.</p></div>`;
-    }
-}
-
-// Carga Top Tracks de Last.fm y luego los busca en YouTube
-async function loadMusicTrends() {
-    const listElement = document.getElementById("trendMusicList");
-    listElement.innerHTML = "Obteniendo Top Tracks de Last.fm...";
-    
-    const method = "chart.gettoptracks";
-    const limit = 5; 
-    const url = `https://ws.audioscrobbler.com/2.0/?method=${method}&api_key=${LASTFM_API_KEY}&format=json&limit=${limit}`;
-
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        
-        if (data.tracks && data.tracks.track) {
-            listElement.innerHTML = "";
-            const tracks = data.tracks.track;
-            
-            // Llama a la búsqueda de YouTube por cada track de Last.fm
-            for (const t of tracks) {
-                // Usamos await para que los videos se carguen en orden y se muestren correctamente
-                await findAndEmbedVideo(t.name, t.artist.name, listElement);
-            }
-            
-        } else {
-            listElement.innerHTML = "<p>⚠️ No se pudieron cargar las tendencias de Last.fm. Revisa tu clave.</p>";
-        }
-        
-    } catch (err) {
-        listElement.innerHTML = "<p>❌ Error de conexión al cargar tendencias de Last.fm.</p>";
-        console.error("Error Last.fm:", err);
-    }
-}
-
-
-// =====================================================================
 // === Funciones de Radio (Radio Browser) ===
 // =====================================================================
+
 async function loadCountries() {
-    const res = await fetch("https://de1.api.radio-browser.info/json/countries");
-    const countries = await res.json();
     const countrySelect = document.getElementById("countrySelect");
-    countries.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.name;
-        opt.textContent = c.name;
-        countrySelect.appendChild(opt);
-    });
-    countrySelect.value = "Argentina";
-    loadRadios(countrySelect.value);
-    countrySelect.addEventListener("change", () => {
+    countrySelect.innerHTML = "<option>Cargando países...</option>";
+    
+    try {
+        const res = await fetch("https://de1.api.radio-browser.info/json/countries");
+        const countries = await res.json();
+        
+        countrySelect.innerHTML = ""; // Limpiar
+        countries.forEach(c => {
+            const opt = document.createElement("option");
+            opt.value = c.name;
+            opt.textContent = c.name;
+            countrySelect.appendChild(opt);
+        });
+        
+        countrySelect.value = "Argentina"; // País por defecto
         loadRadios(countrySelect.value);
-    });
+        
+        countrySelect.addEventListener("change", () => {
+            loadRadios(countrySelect.value);
+        });
+
+    } catch (error) {
+        countrySelect.innerHTML = "<option>Error al cargar países.</option>";
+        console.error("Error Radio Browser API:", error);
+    }
 }
 
 async function loadRadios(country) {
-    const res = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(country)}`);
-    const radios = await res.json();
     const radioSelect = document.getElementById("radioSelect");
-    radioSelect.innerHTML = "";
-    
-    radios.slice(0, 20).forEach(r => { 
-        const opt = document.createElement("option");
-        opt.value = r.url_resolved;
-        opt.textContent = r.name;
-        radioSelect.appendChild(opt);
-    });
-    const player = document.getElementById("radioPlayer");
-    
-    radioSelect.addEventListener("change", () => {
-        player.src = radioSelect.value;
-        player.play();
-    });
-    
-    if (radioSelect.value) {
-        player.src = radioSelect.value;
-        player.play();
+    radioSelect.innerHTML = "<option>Cargando radios...</option>";
+
+    try {
+        const res = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(country)}`);
+        const radios = await res.json();
+        
+        radioSelect.innerHTML = "";
+        radios.slice(0, 20).forEach(r => { // Limitar a 20 estaciones
+            const opt = document.createElement("option");
+            opt.value = r.url_resolved;
+            opt.textContent = r.name;
+            radioSelect.appendChild(opt);
+        });
+        
+        const player = document.getElementById("radioPlayer");
+        
+        radioSelect.addEventListener("change", () => {
+            player.src = radioSelect.value;
+            player.play();
+        });
+        
+        if (radioSelect.value) {
+            player.src = radioSelect.value;
+            player.play();
+        }
+    } catch (error) {
+        radioSelect.innerHTML = "<option>Error al cargar estaciones.</option>";
+        console.error("Error Radio Browser API:", error);
     }
 }
 
 // =====================================================================
-// === Funciones de TV / Pelis (Demos IPTV) ===
+// === Funciones de TV / Pelis (Demos HLS/M3U8) ===
 // =====================================================================
+
+// Inicializa el reproductor HLS/M3U8
 function playHLS(videoElement, url) {
     if (Hls.isSupported()) {
         const hls = new Hls();
@@ -217,63 +228,104 @@ function playHLS(videoElement, url) {
         videoElement.src = url;
         videoElement.play();
     } else {
-        console.error("Tu navegador no soporta la reproducción de este stream.");
+        console.error("Tu navegador no soporta la reproducción de este stream HLS/M3U8.");
     }
 }
 
-/* --- IPTV: canales demo --- */
+/* --- TV Abierta (Canales IPTV Demos) --- */
 function loadIPTV() {
+    // 💡 Puedes agregar más canales aquí con su nombre y URL del stream (M3U8)
     const channels = [
-        {name: "Canal Demo 1 (Mux)", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"},
-        {name: "Canal Demo 2 (Test)", url: "https://test-streams.mux.dev/test_001/stream.m3u8"}
+        {name: "Canal Demo 1 (Mux Test)", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"},
+        {name: "Canal Demo 2 (Test)", url: "https://test-streams.mux.dev/test_001/stream.m3u8"},
+        {name: "Noticias (Big Buck Bunny)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8"}
     ];
     const select = document.getElementById("tvSelect");
+    
     channels.forEach(c => {
         const opt = document.createElement("option");
         opt.value = c.url;
         opt.textContent = c.name;
         select.appendChild(opt);
     });
-    const video = document.getElementById("tvPlayer");
     
+    const video = document.getElementById("tvPlayer");
     playHLS(video, select.value);
+    
     select.addEventListener("change", () => {
         playHLS(video, select.value);
     });
 }
 
-/* --- Pelis / Series: demos --- */
+/* --- Pelis / Series (Demos M3U8) --- */
 function loadMovies() {
     const movies = [
         {name: "Big Buck Bunny (Demo)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8"},
         {name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"}
     ];
     const select = document.getElementById("movieSelect");
+    
     movies.forEach(m => {
         const opt = document.createElement("option");
         opt.value = m.url;
         opt.textContent = m.name;
         select.appendChild(opt);
     });
-    const player = document.getElementById("moviePlayer");
     
+    const player = document.getElementById("moviePlayer");
     playHLS(player, select.value);
+    
     select.addEventListener("change", () => {
         playHLS(player, select.value);
     });
 }
 
 // =====================================================================
-// === Inicialización y Eventos ===
+// === Funciones del Diario Digital ===
+// =====================================================================
+
+function loadDailyNews() {
+    const newsData = [
+        {
+            title: "El Futuro Digital de la Televisión Abierta",
+            summary: "Expertos debaten sobre la convergencia de streaming y canales tradicionales en plataformas como Beat Digital TV.",
+            link: "#"
+        },
+        {
+            title: "Tendencias Musicales: El resurgimiento del Rock Latino",
+            summary: "Un análisis de los artistas que dominan las listas y cómo la radio digital amplifica su alcance.",
+            link: "#"
+        },
+        {
+            title: "Reporte: Nuevas Películas HLS y su impacto en el consumo móvil",
+            summary: "La tecnología HLS y M3U8 permite streams de alta calidad y baja latencia, revolucionando las series y películas.",
+            link: "#"
+        }
+    ];
+
+    const container = document.getElementById("newsContainer");
+    container.innerHTML = newsData.map(article => `
+        <div class="news-article card">
+            <h3>${article.title}</h3>
+            <p>${article.summary}</p>
+            <a href="${article.link}" target="_blank">Leer Más</a>
+        </div>
+    `).join('');
+}
+
+// =====================================================================
+// === Inicialización ===
 // =====================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    // Carga la nueva sección de música combinada
-    loadMusicTrends(); 
-    
-    // Carga las otras secciones
+    // 1. Radio Digital
     loadCountries();
+    
+    // 2. TV Abierta y Pelis
     loadIPTV();
     loadMovies();
+    
+    // 3. Diario Digital
+    loadDailyNews();
 });
 </script>
 
