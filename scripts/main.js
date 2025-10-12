@@ -29,7 +29,6 @@ const CARTOONS_CATALOG = [
     { name: "Serie de Fantasía", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type: 'video', img: "https://via.placeholder.com/200x140/141414/E50914?text=CARTOON+4" },
 ];
 
-
 let allMediaData = {
     tv: [],
     radio: [],
@@ -51,7 +50,7 @@ let hlsInstance = null;
 // =====================================================================
 
 /**
- * Descarga y parsea una lista M3U desde una URL, incluyendo el logo.
+ * Descarga y parsea una lista M3U, incluyendo el logo.
  */
 async function parseM3UList(url, type) {
     try {
@@ -76,8 +75,10 @@ async function parseM3UList(url, type) {
                     currentItem.name = nameMatch[1].trim();
                 }
                 
+                // Extraer el logo
                 const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-                currentItem.logo = (logoMatch && logoMatch[1]) ? logoMatch[1] : null;
+                // Usamos el proxy para el logo también, ya que los logos de IPTV pueden tener CORS
+                currentItem.logo = (logoMatch && logoMatch[1]) ? `${CORS_PROXY}${encodeURIComponent(logoMatch[1])}` : null;
 
             } else if (line && !line.startsWith('#')) {
                 currentItem.url = line;
@@ -90,12 +91,12 @@ async function parseM3UList(url, type) {
                 currentItem = {}; 
             }
         }
-
+        
     } catch (error) {
         console.error(`Error al cargar ${type} desde M3U.`, error);
         
         // Si falla la radio, agregamos un fallback conocido
-        if (type === 'radio') {
+        if (type === 'radio' && allMediaData.radio.length === 0) {
             allMediaData.radio.push(RADIO_FALLBACK_ITEM);
         }
     }
@@ -103,7 +104,7 @@ async function parseM3UList(url, type) {
 
 
 // =====================================================================
-// === Lógica del Reproductor (Solución de Reproducción) ===
+// === Lógica del Reproductor (Mejorada para Estabilidad) ===
 // =====================================================================
 
 /**
@@ -114,7 +115,6 @@ function cleanupHls() {
         hlsInstance.destroy();
         hlsInstance = null;
     }
-    // Asegurarse de limpiar la fuente nativa
     playerElement.src = "";
     playerElement.load();
 }
@@ -135,16 +135,20 @@ function playHLS(url) {
         hlsInstance.loadSource(url);
         hlsInstance.attachMedia(playerElement);
         
-        // El evento cargado es crucial para que la reproducción funcione.
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
             playerElement.play().catch(e => {
                 console.warn("Auto-reproducción bloqueada (HLS):", e);
                 infoElement.textContent = `⚠️ Haz clic en el reproductor para ver ${infoElement.textContent.split(': ')[1]}.`;
             });
         });
+        
+        // Detección Crítica de Fallo
         hlsInstance.on(Hls.Events.ERROR, function(event, data) {
-            console.error("HLS Error:", data);
-            infoElement.textContent = `❌ Error en el stream de TV. Código: ${data.details}.`;
+            if (data.fatal) {
+                console.error("HLS ERROR FATAL:", data);
+                infoElement.textContent = `❌ ERROR FATAL: El stream está caído o bloqueado. Intenta con otro canal.`;
+                cleanupHls();
+            }
         });
         
     } else {
@@ -176,7 +180,6 @@ function playAudio(url) {
 
 /**
  * Maneja la selección de un medio y su reproducción.
- * @param {object} item - Objeto con name, url, type y logo.
  */
 function handlePlayMedia(item) {
     document.querySelectorAll('.media-item, .cartoon-card').forEach(el => el.classList.remove('active'));
@@ -224,8 +227,8 @@ function renderMediaList(type) {
         listPlaceholder.appendChild(div);
     });
 
-    // Reproducir el primer elemento al cargar la lista
-    if (mediaList.length > 0) {
+    // Reproducir el primer elemento al cargar la lista (pero solo si no está reproduciendo el demo)
+    if (mediaList.length > 0 && !playerElement.src.includes('bigbuckbunny')) {
         handlePlayMedia(mediaList[0]);
     }
 }
@@ -266,13 +269,16 @@ function renderCartoons() {
 // =====================================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Cargar todas las listas M3U/M3U8
-    infoElement.textContent = 'Cargando listas (TV y Radio)...';
+    // 1. Iniciar con un canal de DEMO ESTABLE para verificar que el reproductor funciona
+    const demoItem = DEMO_MOVIES[0];
+    playHLS(demoItem.url);
+    infoElement.textContent = `📺 Viendo: ${demoItem.name} (Prueba de Reproductor)`;
+    
+    // 2. Cargar todas las listas M3U/M3U8 en segundo plano
     await parseM3UList(TV_M3U_URL, 'tv');
     await parseM3UList(RADIO_M3U_URL, 'radio');
-    infoElement.textContent = 'Listas cargadas. Selecciona un contenido.';
     
-    // 2. Inicializar los eventos de las pestañas
+    // 3. Inicializar los eventos de las pestañas
     tabButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             tabButtons.forEach(btn => btn.classList.remove('active'));
@@ -281,9 +287,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
     
-    // 3. Cargar el contenido por defecto (TV)
+    // 4. Cargar el contenido por defecto (TV)
     renderMediaList('tv');
     
-    // 4. Cargar el carrusel de Dibujos Animados
+    // 5. Cargar el carrusel de Dibujos Animados
     renderCartoons();
 });
