@@ -6,7 +6,7 @@
 const TV_M3U_URL = "https://radiosargentina.com.ar/TVAR.m3u";
 
 // URL de la lista M3U para Radio AM/Digital - Puede ser inestable
-const RADIO_M3U_URL = "https://m3u.cl/lista/AR.m3u"; 
+const RADIO_M3U_URL = "https://radio.hpr.fm/aac_128.m3u"; 
 
 // URL de FALLBACK para RADIO (si la lista M3U falla)
 const RADIO_FALLBACK_URL = "http://200.43.192.203:8000/fm-nacional-clasica.mp3"; 
