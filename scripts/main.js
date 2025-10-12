@@ -3,10 +3,10 @@
 // =====================================================================
 
 // URL de la lista M3U de TV Abierta (Argentina) - Puede ser inestable
-const TV_M3U_URL = "https://radiosargentina.com.ar/TVAR.m3u";
+const TV_M3U_URL = "https://iptv-org.github.io/iptv/index.m3u";
 
 // URL de la lista M3U para Radio AM/Digital - Puede ser inestable
-const RADIO_M3U_URL = "https://radio.hpr.fm/aac_128.m3u"; 
+const RADIO_M3U_URL = "https://iptv-org.github.io/iptv/languages/spa.m3u"; 
 
 // URL de FALLBACK para RADIO (si la lista M3U falla)
 const RADIO_FALLBACK_URL = "http://200.43.192.203:8000/fm-nacional-clasica.mp3"; 
