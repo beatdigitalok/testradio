@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Abierta - Estilo Pluto TV</title>
+    <title>TV Abierta - Guía Vertical Estilo Pluto TV</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         /* =======================================
-        ESTILOS GENERALES Y PLUTO TV LIKE
+        ESTILOS GENERALES Y LAYOUT PRINCIPAL
         ======================================= */
         :root {
             --bg-dark: #111111;
             --bg-medium: #1c1c1c;
             --primary-color: #ff9900;
             --text-color: #ffffff;
+            --guide-width: 280px; /* Ancho de la guía de canales */
         }
 
         body {
@@ -25,30 +26,114 @@
             color: var(--text-color);
             margin: 0;
             padding: 0;
+            display: flex; /* Usamos flexbox para el layout principal */
+            height: 100vh;
+            overflow: hidden; /* Evitar scroll general */
         }
 
-        /* Ocultar el título principal y solo usar el reproductor y la guía */
-        h2, p {
-            display: none;
+        h2, p { display: none; } /* Ocultar textos de bienvenida */
+
+        /* =======================================
+        GUÍA DE CANALES (Carrusel Vertical)
+        ======================================= */
+        .carousel-container {
+            flex: 0 0 var(--guide-width);
+            max-width: var(--guide-width);
+            height: 100vh;
+            background-color: var(--bg-medium);
+            overflow-y: auto; /* Scroll vertical para los canales */
+            overflow-x: hidden;
+            border-right: 1px solid #333;
+            padding-top: 20px;
         }
+
+        .carousel-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .carousel-container::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+
+        .tv-channel {
+            padding: 12px 15px;
+            text-align: left;
+            background: transparent;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background 0.2s;
+            border-left: 5px solid transparent;
+            margin-bottom: 2px;
+        }
+        .tv-channel:hover {
+            background: #2a2a2a;
+        }
+        .tv-channel-selected {
+            background: #2a2a2a !important; 
+            border-left-color: var(--primary-color) !important;
+        }
+
+        .tv-channel-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .tv-channel img {
+            max-height: 35px;
+            width: 60px;
+            object-fit: contain;
+            background: black;
+            padding: 3px;
+            border-radius: 3px;
+        }
+        .tv-channel-info {
+            display: flex;
+            flex-direction: column;
+            white-space: nowrap;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+        .tv-channel-info .name {
+            font-size: 1em;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tv-channel-info .now-playing {
+            font-size: 0.85em;
+            color: #aaa;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Ocultar elementos no necesarios en la guía */
+        .tv-carousel-wrapper {
+            display: block; /* Cambiar a bloque para scroll vertical */
+            padding: 0;
+            gap: 0;
+        }
+        .carousel-btn { display: none; }
+
 
         /* =======================================
         REPRODUCTOR (Player)
         ======================================= */
-        #tv-player-container {
-            position: relative;
-            width: 100%;
-            max-width: 1200px; /* Ancho más grande para sentirlo más inmersivo */
-            margin: 0 auto;
-            /* 16:9 aspect ratio */
-            height: 0;
-            padding-bottom: 56.25%; 
-            background: black;
-            border-radius: 0; /* Quitamos el borde para un look más de app */
+        #tv-player-container-wrapper {
+            flex-grow: 1; /* El reproductor ocupa el espacio restante */
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
-            box-shadow: none; 
         }
 
+        #tv-player-container {
+            width: 100%;
+            /* 16:9 con respecto al ancho disponible */
+            padding-bottom: 56.25%; 
+            position: relative;
+            background: black;
+        }
+
+        /* (Resto de estilos del reproductor y controles son similares) */
         #tv-player-video, #tv-player-iframe {
             position: absolute;
             top: 0;
@@ -60,10 +145,10 @@
             border: none;
         }
 
-        /* Info del canal - Estilo "On Now" */
+        /* Info del canal (Overlay) */
         #channel-info {
             position: absolute;
-            bottom: 65px; /* Más arriba para dejar espacio a la barra de controles */
+            bottom: 65px; 
             left: 20px;
             display: flex;
             align-items: center;
@@ -148,119 +233,48 @@
             background: var(--text-color);
             cursor: pointer;
         }
-        
-        /* =======================================
-        CARRUSEL (Guía de Canales - Estilo Pluto)
-        ======================================= */
-        .carousel-container {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0;
-        }
-        .tv-carousel-wrapper {
-            display: flex;
-            overflow-x: auto;
-            gap: 1px; /* Espacio mínimo para simular la guía */
-            padding: 0;
-            background: var(--bg-medium);
-            border-radius: 0;
-            scroll-behavior: smooth;
-        }
-        .tv-carousel-wrapper::-webkit-scrollbar { display: none; }
 
-        .tv-channel {
-            flex: 0 0 auto;
-            min-width: 180px; /* Canales más anchos */
-            padding: 10px;
-            text-align: left;
-            border-radius: 0;
-            background: var(--bg-medium);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: background 0.2s;
-            border-bottom: 2px solid transparent;
-        }
-        .tv-channel:hover {
-            background: #333333;
-        }
-        .tv-channel-selected {
-            background: var(--bg-dark) !important; /* El canal seleccionado resalta por estar oscuro */
-            border-bottom: 2px solid var(--primary-color) !important;
-            box-shadow: inset 5px 0 0 var(--primary-color);
-        }
-
-        .tv-channel-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .tv-channel img {
-            max-height: 40px;
-            width: 70px;
-            object-fit: contain;
-            display: block;
-            margin: 0;
-            background: black;
-            padding: 3px;
-            border-radius: 3px;
-        }
-        .tv-channel span {
-            font-size: 1em;
-            font-weight: bold;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        /* Ocultar botones de navegación en el carrusel para el estilo Pluto */
-        .carousel-btn {
-            display: none; 
-        }
-
-        /* Otros estilos */
         .disclaimer {
+            padding: 10px 20px;
             text-align: center;
             font-size: 0.8em;
             color: #555;
-            margin-top: 20px;
-            padding-bottom: 20px;
+            background-color: var(--bg-dark);
         }
     </style>
 </head>
 <body>
 
-    <div id="tv-experience">
-        <div id="tv-player-container">
-          <video id="tv-player-video" playsinline></video>
-          <iframe allow="autoplay; fullscreen" allowfullscreen frameborder="0" id="tv-player-iframe"></iframe>
-          
-            <div id="channel-info">
-            <img alt="Logo" id="channel-logo" src="" />
-            <span id="channel-name"></span>
-          </div>
+    <div class="carousel-container" id="channel-guide">
+      <div class="tv-carousel-wrapper" id="tv-carousel">
+            </div>
+    </div>
 
-            <div id="player-controls">
+    <div id="tv-player-container-wrapper">
+        <div id="tv-player-container">
+            <video id="tv-player-video" playsinline></video>
+            <iframe allow="autoplay; fullscreen" allowfullscreen frameborder="0" id="tv-player-iframe"></iframe>
+            
+            <div id="channel-info">
+                <img alt="Logo" id="channel-logo" src="" />
+                <span id="channel-name"></span>
+            </div>
+
+            <div id="player-controls">
                 <button id="btn-play">▶️</button>
                 <button id="btn-pause">⏸️</button>
                 <div id="volume-control">
-                    <button id="btn-mute">🔇</button>
+                    <button id="btn-mute">🔊</button>
                     <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
                 </div>
                 <div style="flex-grow: 1;"></div> 
                 <button id="btn-fullscreen">⛶</button>
-          </div>
+            </div>
         </div>
-
-        <div class="carousel-container">
-            <button class="carousel-btn left">❮</button>
-          <div class="tv-carousel-wrapper" id="tv-carousel"></div>
-          <button class="carousel-btn right">❯</button>
+        
+        <div class="disclaimer">
+            RBD Noticias no aloja ni retransmite señales. Los derechos pertenecen a cada canal. Si usted es titular y desea solicitar el retiro de su señal, contáctenos en inforbdnoticias.com@gmail.com
         </div>
-    </div>
-    
-    <div class="disclaimer">
-        RBD Noticias no aloja ni retransmite señales. Los derechos pertenecen a cada canal. Si usted es titular y desea solicitar el retiro de su señal, contáctenos en inforbdnoticias.com@gmail.com
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -268,398 +282,144 @@
 
     <script>
         // ====================
-        // Lista de canales (Usamos la misma lista que proporcionaste)
+        // Lista de canales 
         // ====================
         const channels = [
-            {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png"}, 
+            // HE MANTENIDO LA LISTA COMPLETA QUE PROPORCIONASTE
+            {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png", playing: "Programación en vivo"}, 
             {
                 name: "Bloomberg",
                 logo: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Bloomberg_TV.svg",
                 url: "https://liveprodusphoenixeast.akamaized.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8",
-                type: "hls"
+                type: "hls",
+                playing: "Noticias financieras"
             },
             {
                 name: "Canal 22",
                 logo: "https://i.imgur.com/R4wXVxf.png",
                 url: "https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8",
-                type: "hls"
+                type: "hls",
+                playing: "Cultura y Arte"
             },
             {
                 name: "AMC",
                 logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/AMC_logo_2019.svg",
                 url: "https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8",
-                type: "hls"
+                type: "hls",
+                playing: "Películas y Series Clásicas"
             },
             {
                 name: "Argentinisima",
                 logo: "https://www.argentinisimatv.com.ar/favicon.ico",
                 url: "https://stream1.sersat.com/hls/argentinisima.m3u8",
-                type: "hls"
+                type: "hls",
+                playing: "Música Folklórica"
             },
-            {
-                name: "Canal 79 Santa Clara del Mar",
-                logo: "https://i.imgur.com/I93ypGY.png",
-                url: "https://streamconex.com:19360/santaclara-1/santaclara-1.m3u8",
-                type: "hls"
-            }, 
             {
                 name: "Canal de la Ciudad",
                 logo: "https://www.buenosaires.gob.ar/sites/gcaba/files/favicon_0.ico",
                 url: "https://www.youtube.com/embed/VHCnqfdX-t0?si=IdP5kIMZ1_9wP_m4&autoplay=1",
-                type: "youtube"
+                type: "youtube",
+                playing: "Noticias de Buenos Aires"
             },
             {
                 name: "YouTube Canal",
                 logo: "https://i.imgur.com/Logo1.png",
                 url: "https://www.youtube.com/embed/cb12KmMMDJA?si=izjgyuyQ1O8lGbbz&autoplay=1",
-                type: "youtube"
-            },
-            {
-                name: "5tv",
-                logo: "https://i.imgur.com/mSn7ACs.png",
-                url: "https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "13Max Television",
-                logo: "https://i.imgur.com/QvF4lT.png",
-                url: "https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Aire de Santa Fe",
-                logo: "https://i.imgur.com/60vSWW0.png",
-                url: "https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "AlternaTV",
-                logo: "https://alternatv.ar/alternatv.png",
-                url: "https://alternatv.ar/stream/hls/live.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Argentinisima Satelital",
-                logo: "https://i.imgur.com/xFgJawa.png",
-                url: "https://stream1.sersat.com/hls/argentinisima.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Azahares Radiovisual",
-                logo: "https://i.imgur.com/g1BFoSs.png",
-                url: "https://streamyes.alsolnet.com/azaharesfm/live/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Bayres TV",
-                logo: "https://i.imgur.com/BayresTV.png",
-                url: "https://streaming01.mikrolive.tv/bayrestv/live/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Beats Radio",
-                logo: "https://i.imgur.com/zkNUO5p.png",
-                url: "https://videostream.shockmedia.com.ar:19360/beatsradio/beatsradio.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Cable Imagen Armstrong",
-                logo: "https://i.imgur.com/U9NuJQC.png",
-                url: "https://stream.arcast.com.ar/casse/casse/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Cadena103.TV",
-                logo: "https://i.imgur.com/vBsry35.png",
-                url: "https://streamlov.alsolnet.com/cadena103/live/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 2 de Ushuaia",
-                logo: "https://i.ibb.co/q5NPdK2/canal2-logo.png",
-                url: "https://nd106.republicaservers.com:4433/hls/c6611/index.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 2 Misiones",
-                logo: "https://i.imgur.com/YqTNXDf.png",
-                url: "https://nd106.republicaservers.com:4433/hls/canal2misioness/index.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 3 La Pampa",
-                logo: "https://i.imgur.com/SsNFudZ.png",
-                url: "https://stream.arcast.com.ar/c3lapampa/ngrp:c3lapampa_all/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 3 Las Heras",
-                logo: "https://i.imgur.com/bd2afET.png",
-                url: "https://stream.arcast.com.ar/canal3/canal3/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 4 Posadas",
-                logo: "https://i.imgur.com/tElJr3e.png",
-                url: "https://iptv.ixfo.com.ar:30443/live/C4POS/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 4 San Juan",
-                logo: "https://i.imgur.com/MsCnwRA.png",
-                url: "https://streamlov.alsolnet.com/canal4sanjuan/live/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 5 Pico Truncado",
-                logo: "https://i.imgur.com/VwUiSVF.png",
-                url: "https://stream.arcast.com.ar/canal5picotruncado/canal5picotruncado/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 5 Santa Fe",
-                logo: "https://i.imgur.com/WX0esjQ.png",
-                url: "https://stream.arcast.com.ar/c5sf/c5sf/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 6 Posadas",
-                logo: "https://i.imgur.com/OamBiS5.png",
-                url: "https://iptv.ixfo.com.ar:30443/live/c6digital/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 7 Neuquén",
-                logo: "https://i.ibb.co/BrvQsWm/C7neuquenlogo2023.png",
-                url: "https://stream.arcast.com.ar/c7nq/ngrp:c7nq_all/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 7 Salta",
-                logo: "https://i.imgur.com/CudG6sl.png",
-                url: "https://vivo.solumedia.com:19360/cooperativa/cooperativa.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 7 TV",
-                logo: "https://i.imgur.com/iJMH0UK.png",
-                url: "https://stream.arcast.com.ar/envivo/castv/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 9 Litoral",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Canal_9_Litoral_2021.png",
-                url: "https://stream.arcast.live/ahora/ahora/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 9 Resistencia",
-                logo: "https://i.imgur.com/xqgRFpC.png",
-                url: "http://coninfo.net:1935/9linklivert/smil:9linkmultibr.smil/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 9 Televida",
-                logo: "https://i.imgur.com/JUtAzg4.png",
-                url: "https://unlimited1-saopaulo.dps.live/televidaar/televidaar.smil/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 11 de la Costa",
-                logo: "https://i.imgur.com/yYExcq1.jpg",
-                url: "https://vivo.solumedia.com:19360/dadaproductora/dadaproductora.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 12 Web",
-                logo: "https://i.imgur.com/VYcTRbd.png",
-                url: "https://5f700d5b2c46f.streamlock.net/madryntv/madryntv/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 13 Jujuy",
-                logo: "https://i.imgur.com/lmKLiJ3.jpg",
-                url: "https://genexservicios.com:19360/canal13jujuy/canal13jujuy.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 13 La Rioja",
-                logo: "https://i.imgur.com/OI97Sgq.png",
-                url: "https://stream.arcast.net:4443/mp/mp/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 21 TV",
-                logo: "https://i.imgur.com/Am7yMXg.png",
-                url: "https://eus22.playlist.ttvnw.net/v1/playlist/CsYE9T-c44Ia1Mtu1YUcXc6AlpVvOKdYygBlRmn4UEinZHymBwUlDOjIUCpEh7xLJ0KZWblzIPrBkGArTefioeR2XLKhVDX9Pt0TDIbTjumg0Uh3sQ0MjXGIgwh4k1vVO2TQiar8xhxtVXX291wY0w0PyaOj-OvxFvHxAms2_NRFmloBvvAu2Bh3T3R-0ahKckz19l6a652l_xUg6mNtlZS12DRx2Mwl3MXPJRmFrriTCaVzJeh4FUfZnh9A6M4vv4DckhMvALLjgGJyFQBBHFYNNDK2X4n0sJ8KUkGV0LBrvkTZQEV_STOw00fXu9jIKZt1C2EYKdI7gPEQ9SGV9qIb4MiQ9YD0m7THiJjVnBfm1MxO3MrAZUO1kjnrMoRz6uvNecc3JB3c8RPKk8vYJjpYs0ayZMn_mkOhrg0D9GaMo3Up8px99X9YkrT-9nOMCf5H1YvAVvfD22oJDDK7eYMWagxS4oFMPNUiUOM575kO4XcE9PSsBW2CZYPUpk8FgikSHgLgMEvpMqFAU5cVVo7DyLR_yw940FWoILzh1V40pPslZ15oVTp-NuXTuINtgQYUTEru1NXZWhN2nx6_LOB0fvexTHn5m3OBD5MPDfFyK8UmaVh6vmz7vu_X7ZKyYP6a1bPUYJhu1b9VKfasRwxKPmz3m5DTjSRiKEa9uGStDeO-1qSGkGQvDzsIMMN92UA-43rvtkUjHVqjPVW7_eoDSv_0nXFbWVDdnTFtB1prjBAVQkjDtcltOy5hrGp24HYo4iVLWacWGgzrYtW-Z5szh5-APvkgASoJZXUtd2VzdC0yMIQN.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 22",
-                logo: "https://i.imgur.com/R4wXVxf.png",
-                url: "https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 34 San Juan",
-                logo: "https://i.imgur.com/bZMEiYe.png",
-                url: "https://streamyes.alsolnet.com/canal34hd/live/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal 40 Caucete SD",
-                logo: "https://i.imgur.com/xUiQvk8.png",
-                url: "https://canalsj.kozow.com/canal40/tracks-v1/index.fmp4.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal E",
-                logo: "https://i.ibb.co/y4pkxH3/Qtc8-M2-PG-400x400.jpg",
-                url: "https://unlimited1-us.dps.live/perfiltv/perfiltv.smil/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal Provincial",
-                logo: "https://i.imgur.com/bXHHtcb.png",
-                url: "https://streaming.telered.com.ar/provincial/streaming/mystream.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Canal Santa Maria",
-                logo: "https://www.canalsantamaria.com.ar/images/santamaria_logo.jpg",
-                url: "https://streaming.telered.com.ar/santa-maria/streaming/mystream.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Catamarca TV",
-                logo: "https://i.imgur.com/CEuPoqG.png",
-                url: "https://stream.arcast.com.ar/canal7catamarca/ngrp:canal7catamarca_all/playlist.m3u8?DVR=",
-                type: "hls"
-            },
-            {
-                name: "Celta TV",
-                logo: "https://i.imgur.com/rwoIF4w.png",
-                url: "https://vivo.solumedia.com:19360/celta/celta.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Chaco TV",
-                logo: "https://i.imgur.com/b6RerDw.png",
-                url: "https://wowzasrv.chaco.gov.ar/Streamtv/chacotv/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Chilecito TV",
-                logo: "https://i.imgur.com/zGubmgZ.png",
-                url: "https://vivo.solumedia.com:19360/grupoemail/grupoemail.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Ciudad Magazine",
-                logo: "https://i.imgur.com/V1xZV72.png",
-                url: "https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Cosmos TV SD",
-                logo: "https://i0.wp.com/fmcosmos.com/wp-content/uploads/2021/11/COSMOS-TV.png",
-                url: "https://tv.mediacp.eu:19360/cosmos/cosmos.m3u8",
-                type: "hls"
+                type: "youtube",
+                playing: "Stream en vivo de YouTube"
             },
             {
                 name: "El Trece",
                 logo: "https://i.imgur.com/TrgBAdA.png",
                 url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Garage TV Latin America",
-                logo: "https://i.imgur.com/FqFxog1.png",
-                url: "https://stream1.sersat.com/hls/garagetv.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Lapacho TV Canal 11",
-                logo: "https://i.imgur.com/PmFBL7x.png",
-                url: "https://vivo.solumedia.com:19360/lapacho/lapacho.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Litus TV",
-                logo: "https://i.imgur.com/QIGSf4L.png",
-                url: "https://stream.arcast.com.ar/litustv/ngrp:litustv_all/playlist.m3u8",
-                type: "hls"
+                type: "hls",
+                playing: "Telenovelas y Noticieros"
             },
             {
                 name: "Magic Kids",
                 logo: "https://i.imgur.com/CMImqQY.png",
                 url: "https://magicstream.ddns.net/magicstream/stream.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Mas FM",
-                logo: "https://i.imgur.com/TJ4gWQM.png",
-                url: "https://vivo.solumedia.com:19360/masfm/masfm.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Metro TV",
-                logo: "https://i.imgur.com/7f7M7zl.png",
-                url: "https://streamtv12.ddns.net:5443/LiveApp/streams/193945633734205616732920.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Neox TV",
-                logo: "https://i.imgur.com/eIX71c9.png",
-                url: "https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8",
-                type: "hls"
+                type: "hls",
+                playing: "Dibujos Animados (Retro)"
             },
             {
                 name: "NET TV",
                 logo: "https://i.imgur.com/IhJ0BjF.png",
                 url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8",
-                type: "hls"
+                type: "hls",
+                playing: "Magazine y entretenimiento"
             },
-            {
-                name: "NG Federal",
-                logo: "https://i.imgur.com/lJCIqYn.png",
-                url: "https://617c5175c970b.streamlock.net:4444/tvlink/live/playlist.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Panc TV",
-                logo: "https://i.imgur.com/u1dnEVv.png",
-                url: "https://panel.host-live.com:19360/20004/20004.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Play Television",
-                logo: "https://i.ibb.co/nR85vvb/2021-01-03.jpg",
-                url: "https://vivo.solumedia.com:19360/playtv/playtv.m3u8",
-                type: "hls"
-            },
-            {
-                name: "Power Max Radio TV",
-                logo: "https://i.ibb.co/qgZLYDj/channels4-profile-6.jpg",
-                url: "https://videostream.shockmedia.com.ar:19360/radio1045/radio1045.m3u8",
-                type: "hls"
-            },
+            // Se agregaron las primeras 10 entradas de la lista original, el resto puede seguir el mismo formato
+            {name:"Canal 79 Santa Clara del Mar", type:"hls", url:"https://streamconex.com:19360/santaclara-1/santaclara-1.m3u8", logo:"https://i.imgur.com/I93ypGY.png", playing: "Local en Vivo"},
+            {name:"5tv", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8", logo:"https://i.imgur.com/mSn7ACs.png", playing: "Noticiero Central"},
+            {name:"13Max Television", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8", logo:"https://i.imgur.com/QvF4lT.png", playing: "Deportes"},
+            {name:"Aire de Santa Fe", type:"hls", url:"https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8", logo:"https://i.imgur.com/60vSWW0.png", playing: "Programas Locales"},
+            {name:"AlternaTV", type:"hls", url:"https://alternatv.ar/stream/hls/live.m3u8", logo:"https://alternatv.ar/alternatv.png", playing: "Canal Independiente"},
+            {name:"Argentinisima Satelital", type:"hls", url:"https://stream1.sersat.com/hls/argentinisima.m3u8", logo:"https://i.imgur.com/xFgJawa.png", playing: "Música Folklórica"},
+            {name:"Azahares Radiovisual", type:"hls", url:"https://streamyes.alsolnet.com/azaharesfm/live/playlist.m3u8", logo:"https://i.imgur.com/g1BFoSs.png", playing: "Radio TV"},
+            {name:"Bayres TV", type:"hls", url:"https://streaming01.mikrolive.tv/bayrestv/live/playlist.m3u8", logo:"https://i.imgur.com/BayresTV.png", playing: "Contenido Regional"},
+            {name:"Beats Radio", type:"hls", url:"https://videostream.shockmedia.com.ar:19360/beatsradio/beatsradio.m3u8", logo:"https://i.imgur.com/zkNUO5p.png", playing: "Música en Vivo"},
+            {name:"Cable Imagen Armstrong", type:"hls", url:"https://stream.arcast.com.ar/casse/casse/playlist.m3u8", logo:"https://i.imgur.com/U9NuJQC.png", playing: "Noticias Comunitarias"},
+            {name:"Cadena103.TV", type:"hls", url:"https://streamlov.alsolnet.com/cadena103/live/playlist.m3u8", logo:"https://i.imgur.com/vBsry35.png", playing: "Programación en Directo"},
+            {name:"Canal 2 de Ushuaia", type:"hls", url:"https://nd106.republicaservers.com:4433/hls/c6611/index.m3u8", logo:"https://i.ibb.co/q5NPdK2/canal2-logo.png", playing: "Clima y Noticias"},
+            {name:"Canal 2 Misiones", type:"hls", url:"https://nd106.republicaservers.com:4433/hls/canal2misioness/index.m3u8", logo:"https://i.imgur.com/YqTNXDf.png", playing: "Noticiero Regional"},
+            {name:"Canal 3 La Pampa", type:"hls", url:"https://stream.arcast.com.ar/c3lapampa/ngrp:c3lapampa_all/playlist.m3u8", logo:"https://i.imgur.com/SsNFudZ.png", playing: "En Vivo"},
+            {name:"Canal 3 Las Heras", type:"hls", url:"https://stream.arcast.com.ar/canal3/canal3/playlist.m3u8", logo:"https://i.imgur.com/bd2afET.png", playing: "Noticias locales"},
+            {name:"Canal 4 Posadas", type:"hls", url:"https://iptv.ixfo.com.ar:30443/live/C4POS/playlist.m3u8", logo:"https://i.imgur.com/tElJr3e.png", playing: "Información"},
+            {name:"Canal 4 San Juan", type:"hls", url:"https://streamlov.alsolnet.com/canal4sanjuan/live/playlist.m3u8", logo:"https://i.imgur.com/MsCnwRA.png", playing: "En directo"},
+            {name:"Canal 5 Pico Truncado", type:"hls", url:"https://stream.arcast.com.ar/canal5picotruncado/canal5picotruncado/playlist.m3u8", logo:"https://i.imgur.com/VwUiSVF.png", playing: "Actualidad"},
+            {name:"Canal 5 Santa Fe", type:"hls", url:"https://stream.arcast.com.ar/c5sf/c5sf/playlist.m3u8", logo:"https://i.imgur.com/WX0esjQ.png", playing: "Noticias"},
+            {name:"Canal 6 Posadas", type:"hls", url:"https://iptv.ixfo.com.ar:30443/live/c6digital/playlist.m3u8", logo:"https://i.imgur.com/OamBiS5.png", playing: "Deportes"},
+            {name:"Canal 7 Neuquén", type:"hls", url:"https://stream.arcast.com.ar/c7nq/ngrp:c7nq_all/playlist.m3u8", logo:"https://i.ibb.co/BrvQsWm/C7neuquenlogo2023.png", playing: "Cultura Regional"},
+            {name:"Canal 7 Salta", type:"hls", url:"https://vivo.solumedia.com:19360/cooperativa/cooperativa.m3u8", logo:"https://i.imgur.com/CudG6sl.png", playing: "En Vivo"},
+            {name:"Canal 7 TV", type:"hls", url:"https://stream.arcast.com.ar/envivo/castv/playlist.m3u8", logo:"https://i.imgur.com/iJMH0UK.png", playing: "Entretenimiento"},
+            {name:"Canal 9 Litoral", type:"hls", url:"https://stream.arcast.live/ahora/ahora/playlist.m3u8", logo:"https://upload.wikimedia.org/wikipedia/commons/a/ad/Canal_9_Litoral_2021.png", playing: "Tardes en vivo"},
+            {name:"Canal 9 Resistencia", type:"hls", url:"http://coninfo.net:1935/9linklivert/smil:9linkmultibr.smil/playlist.m3u8", logo:"https://i.imgur.com/xqgRFpC.png", playing: "Noticiero"},
+            {name:"Canal 9 Televida", type:"hls", url:"https://unlimited1-saopaulo.dps.live/televidaar/televidaar.smil/playlist.m3u8", logo:"https://i.imgur.com/JUtAzg4.png", playing: "Noticias"},
+            {name:"Canal 11 de la Costa", type:"hls", url:"https://vivo.solumedia.com:19360/dadaproductora/dadaproductora.m3u8", logo:"https://i.imgur.com/yYExcq1.jpg", playing: "Revista"},
+            {name:"Canal 12 Web", type:"hls", url:"https://5f700d5b2c46f.streamlock.net/madryntv/madryntv/playlist.m3u8", logo:"https://i.imgur.com/VYcTRbd.png", playing: "Noticias"},
+            {name:"Canal 13 Jujuy", type:"hls", url:"https://genexservicios.com:19360/canal13jujuy/canal13jujuy.m3u8", logo:"https://i.imgur.com/lmKLiJ3.jpg", playing: "Actualidad"},
+            {name:"Canal 13 La Rioja", type:"hls", url:"https://stream.arcast.net:4443/mp/mp/playlist.m3u8", logo:"https://i.imgur.com/OI97Sgq.png", playing: "Programación en vivo"},
+            {name:"Canal 21 TV", type:"hls", url:"https://eus22.playlist.ttvnw.net/v1/playlist/CsYE9T-c44Ia1Mtu1YUcXc6AlpVvOKdYygBlRmn4UEinZHymBwUlDOjIUCpEh7xLJ0KZWblzIPrBkGArTefioeR2XLKhVDX9Pt0TDIbTjumg0Uh3sQ0MjXGIgwh4k1vVO2TQiar8xhxtVXX291wY0w0PyaOj-OvxFvHxAms2_NRFmloBvvAu2Bh3T3R-0ahKckz19l6a652l_xUg6mNtlZS12DRx2Mwl3MXPJRmFrriTCaVzJeh4FUfZnh9A6M4vv4DckhMvALLjgGJyFQBBHFYNNDK2X4n0sJ8KUkGV0LBrvkTZQEV_STOw00fXu9jIKZt1C2EYKdI7gPEQ9SGV9qIb4MiQ9YD0m7THiJjVnBfm1MxO3MrAZUO1kjnrMoRz6uvNecc3JB3c8RPKk8vYJjpYs0ayZMn_mkOhrg0D9GaMo3Up8px99X9YkrT-9nOMCf5H1YvAVvfD22oJDDK7eYMWagxS4oFMPNUiUOM575kO4XcE9PSsBW2CZYPUpk8FgikSHgLgMEvpMqFAU5cVVo7DyLR_yw940FWoILzh1V40pPslZ15oVTp-NuXTuINtgQYUTEru1NXZWhN2nx6_LOB0fvexTHn5m3OBD5MPDfFyK8UmaVh6vmz7vu_X7ZKyYP6a1bPUYJhu1b9VKfasRwxKPmz3m5DTjSRiKEa9uGStDeO-1qSGkGQvDzsIMMN92UA-43rvtkUjHVqjPVW7_eoDSv_0nXFbWVDdnTFtB1prjBAVQkjDtcltOy5hrGp24HYo4iVLWacWGgzrYtW-Z5szh5-APvkgASoJZXUtd2VzdC0yMIQN.m3u8", playing: "Variedades"},
+            {name:"Canal 22", type:"hls", url:"https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8", logo:"https://i.imgur.com/R4wXVxf.png", playing: "Documentales"},
+            {name:"Canal 34 San Juan", type:"hls", url:"https://streamyes.alsolnet.com/canal34hd/live/playlist.m3u8", logo:"https://i.imgur.com/bZMEiYe.png", playing: "Noticiero"},
+            {name:"Canal 40 Caucete SD", type:"hls", url:"https://canalsj.kozow.com/canal40/tracks-v1/index.fmp4.m3u8", logo:"https://i.imgur.com/xUiQvk8.png", playing: "En Vivo"},
+            {name:"Canal E", type:"hls", url:"https://unlimited1-us.dps.live/perfiltv/perfiltv.smil/playlist.m3u8", logo:"https://i.ibb.co/y4pkxH3/Qtc8-M2-PG-400x400.jpg", playing: "Economía"},
+            {name:"Canal Provincial", type:"hls", url:"https://streaming.telered.com.ar/provincial/streaming/mystream.m3u8", logo:"https://i.imgur.com/bXHHtcb.png", playing: "Noticias"},
+            {name:"Canal Santa Maria", type:"hls", url:"https://streaming.telered.com.ar/santa-maria/streaming/mystream.m3u8", logo:"https://www.canalsantamaria.com.ar/images/santamaria_logo.jpg", playing: "Religioso"},
+            {name:"Catamarca TV", type:"hls", url:"https://stream.arcast.com.ar/canal7catamarca/ngrp:canal7catamarca_all/playlist.m3u8?DVR=", logo:"https://i.imgur.com/CEuPoqG.png", playing: "Magazine"},
+            {name:"Celta TV", type:"hls", url:"https://vivo.solumedia.com:19360/celta/celta.m3u8", logo:"https://i.imgur.com/rwoIF4w.png", playing: "Noticias"},
+            {name:"Chaco TV", type:"hls", url:"https://wowzasrv.chaco.gov.ar/Streamtv/chacotv/playlist.m3u8", logo:"https://i.imgur.com/b6RerDw.png", playing: "Actualidad"},
+            {name:"Chilecito TV", type:"hls", url:"https://vivo.solumedia.com:19360/grupoemail/grupoemail.m3u8", logo:"https://i.imgur.com/zGubmgZ.png", playing: "Local"},
+            {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png", playing: "Farándula"},
+            {name:"Cosmos TV SD", type:"hls", url:"https://tv.mediacp.eu:19360/cosmos/cosmos.m3u8", logo:"https://i0.wp.com/fmcosmos.com/wp-content/uploads/2021/11/COSMOS-TV.png", playing: "Mundo"},
+            {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor"},
+            {name:"Lapacho TV Canal 11", type:"hls", url:"https://vivo.solumedia.com:19360/lapacho/lapacho.m3u8", logo:"https://i.imgur.com/PmFBL7x.png", playing: "Actualidad"},
+            {name:"Litus TV", type:"hls", url:"https://stream.arcast.com.ar/litustv/ngrp:litustv_all/playlist.m3u8", logo:"https://i.imgur.com/QIGSf4L.png", playing: "En Vivo"},
+            {name:"Mas FM", type:"hls", url:"https://vivo.solumedia.com:19360/masfm/masfm.m3u8", logo:"https://i.imgur.com/TJ4gWQM.png", playing: "Música y Noticias"},
+            {name:"Metro TV", type:"hls", url:"https://streamtv12.ddns.net:5443/LiveApp/streams/193945633734205616732920.m3u8", logo:"https://i.imgur.com/7f7M7zl.png", playing: "Noticias"},
+            {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven"},
+            {name:"NG Federal", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvlink/live/playlist.m3u8", logo:"https://i.imgur.com/lJCIqYn.png", playing: "Noticiero"},
+            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVv.png", playing: "Variedades"},
+            {name:"Play Television", type:"hls", url:"https://vivo.solumedia.com:19360/playtv/playtv.m3u8", logo:"https://i.ibb.co/nR85vvb/2021-01-03.jpg", playing: "Deportes"},
+            {name:"Power Max Radio TV", type:"hls", url:"https://videostream.shockmedia.com.ar:19360/radio1045/radio1045.m3u8", logo:"https://i.ibb.co/qgZLYDj/channels4-profile-6.jpg", playing: "Música y TV"},
         ];
 
         const carousel = document.getElementById("tv-carousel");
+        const channelGuide = document.getElementById("channel-guide");
         const playerVideo = document.getElementById("tv-player-video");
         const playerIframe = document.getElementById("tv-player-iframe");
         const infoBox = document.getElementById("channel-info");
         const logo = document.getElementById("channel-logo");
         const nameBox = document.getElementById("channel-name");
-
         const btnMute = document.getElementById("btn-mute");
         const volumeSlider = document.getElementById("volume-slider");
 
         let currentChannel = 0;
         let hls, dash;
         let channelElements = []; 
-        let lastVolume = 0.5; // Guardar el volumen antes de mutear
+        let lastVolume = 0.5; 
 
         // ====================
         // Renderizar Canales y Eventos
@@ -670,7 +430,10 @@
             div.innerHTML = `
                 <div class="tv-channel-content">
                     <img src="${ch.logo}" alt="${ch.name}">
-                    <span title="${ch.name}">${ch.name}</span>
+                    <div class="tv-channel-info">
+                        <span class="name" title="${ch.name}">${ch.name}</span>
+                        <span class="now-playing">${ch.playing || 'En vivo'}</span>
+                    </div>
                 </div>
             `;
             div.addEventListener("click", () => playChannel(idx));
@@ -699,24 +462,23 @@
             logo.src = ch.logo;
             nameBox.textContent = ch.name;
             infoBox.classList.add("show");
-            setTimeout(()=>infoBox.classList.remove("show"), 3000);
+            // Eliminar el overlay después de un tiempo, y mostrarlo de nuevo al interactuar
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
             
             // 4. Resaltar el canal seleccionado
             channelElements.forEach(el => el.classList.remove("tv-channel-selected"));
             channelElements[idx].classList.add("tv-channel-selected");
             
-            // 5. Scroll al canal seleccionado
+            // 5. Scroll al canal seleccionado (vertical)
             scrollToChannel(idx);
 
             // 6. Configurar y mostrar el reproductor correcto
             if (ch.type === "youtube") {
                 playerIframe.style.display = "block";
-                const urlWithAutoplay = ch.url.includes("autoplay=1") ? ch.url : ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1";
+                const urlWithAutoplay = ch.url.includes("autoplay=1") ? ch.url : ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0"; // Asegurar autoplay
                 playerIframe.src = urlWithAutoplay;
-                
-                // Deshabilitar controles de video (no aplican al iframe)
-                document.getElementById("player-controls").style.display = 'none';
-
+                document.getElementById("player-controls").style.display = 'none'; // YouTube maneja sus propios controles
             } else if (ch.type === "dash") {
                 playerVideo.style.display = "block";
                 dash = dashjs.MediaPlayer().create();
@@ -724,7 +486,6 @@
                 playerVideo.volume = volumeSlider.value; // Aplicar volumen
                 playerVideo.play().catch(()=>{});
                 document.getElementById("player-controls").style.display = 'flex';
-
             } else { // HLS o MP4 nativo
                 playerVideo.style.display = "block";
                 if (Hls.isSupported()) {
@@ -744,12 +505,13 @@
             }
         }
 
-        // Desplazamiento de carrusel (función anterior)
+        // Función para desplazar la guía vertical al canal actual
         function scrollToChannel(idx) {
             const channelEl = channelElements[idx];
             if (channelEl) {
-                const scrollLeft = channelEl.offsetLeft - carousel.offsetWidth / 2 + channelEl.offsetWidth / 2;
-                carousel.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+                // Calcular la posición central
+                const offset = channelEl.offsetTop - (channelGuide.offsetHeight / 2) + (channelEl.offsetHeight / 2);
+                channelGuide.scrollTo({ top: offset, behavior: 'smooth' });
             }
         }
 
@@ -766,17 +528,15 @@
         volumeSlider.oninput = (e) => {
             const newVolume = parseFloat(e.target.value);
             updateVolume(newVolume);
-            lastVolume = newVolume > 0 ? newVolume : lastVolume; // Guardar el volumen si no es cero
+            lastVolume = newVolume > 0 ? newVolume : lastVolume;
         };
 
         btnMute.onclick = () => {
             if (playerVideo.muted || playerVideo.volume === 0) {
-                // Desmutear
                 let vol = lastVolume > 0 ? lastVolume : 0.5;
                 updateVolume(vol);
             } else {
-                // Mutear
-                lastVolume = playerVideo.volume; // Guardar volumen actual antes de mutear
+                lastVolume = playerVideo.volume;
                 updateVolume(0);
             }
         };
@@ -786,33 +546,57 @@
         // ====================
         document.getElementById("btn-play").onclick = () => { 
             if (playerVideo.style.display === "block") playerVideo.play().catch(()=>{}); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
         };
         document.getElementById("btn-pause").onclick = () => { 
             if (playerVideo.style.display === "block") playerVideo.pause(); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
         };
         document.getElementById("btn-fullscreen").onclick = () => {
             const container = document.getElementById("tv-player-container");
+            // Priorizar el contenedor completo para el estilo 'app'
             if (container.requestFullscreen) {
                 container.requestFullscreen();
-            } else if (container.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            } else if (container.webkitRequestFullscreen) {
                 container.webkitRequestFullscreen();
             }
         };
 
-        // Navegación por teclado
+        // Navegación por teclado (Arriba/Abajo para la guía vertical)
         document.addEventListener("keydown", e => {
             if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
                 return;
             }
-            if (e.key === "ArrowRight") {
-                e.preventDefault();
+            if (e.key === "ArrowDown") {
+                e.preventDefault(); 
                 currentChannel = (currentChannel + 1) % channels.length;
                 playChannel(currentChannel);
             }
-            if (e.key === "ArrowLeft") {
+            if (e.key === "ArrowUp") {
                 e.preventDefault();
                 currentChannel = (currentChannel - 1 + channels.length) % channels.length;
                 playChannel(currentChannel);
+            }
+            // Control de volumen con flechas izquierda/derecha
+            if (playerVideo.style.display === "block" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+                 e.preventDefault(); 
+                 const step = 0.05;
+                 let currentVolume = parseFloat(volumeSlider.value);
+                 if (e.key === "ArrowRight") {
+                     currentVolume = Math.min(1, currentVolume + step);
+                 } else {
+                     currentVolume = Math.max(0, currentVolume - step);
+                 }
+                 updateVolume(currentVolume);
+
+                 // Mostrar el overlay de info al cambiar volumen
+                 infoBox.classList.add("show");
+                 clearTimeout(infoBox.timeout);
+                 infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
             }
         });
 
