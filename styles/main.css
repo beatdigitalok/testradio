@@ -65,7 +65,7 @@ h2 {
 #current-media-info {
     padding: 15px;
     font-size: 1.2em;
-    background: #000; /* Negro sólido en la base del reproductor */
+    background: #000; 
     color: var(--primary-color);
     font-weight: bold;
 }
