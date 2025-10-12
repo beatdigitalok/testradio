@@ -17,9 +17,9 @@
             --bg-medium: #1c1c1c;
             --primary-color: #ff9900;
             --text-color: #ffffff;
-            --guide-width: 280px;
+            --guide-width: 280px; /* Ancho en Desktop */
             --header-height: 60px;
-            --overlay-bg: rgba(15, 15, 15, 0.95); /* Fondo oscuro semitransparente para overlays */
+            --overlay-bg: rgba(15, 15, 15, 0.98); /* Más opaco para móvil */
         }
 
         body {
@@ -37,7 +37,7 @@
         h2, p { display: none; } 
 
         /* =======================================
-        HEADER SUPERIOR
+        HEADER SUPERIOR (Desktop y Mobile)
         ======================================= */
         #main-header {
             height: var(--header-height);
@@ -48,6 +48,7 @@
             padding: 0 20px;
             border-bottom: 1px solid #333;
             z-index: 1000;
+            flex-shrink: 0;
         }
         #platform-logo {
             font-size: 1.5em;
@@ -55,11 +56,16 @@
             color: var(--primary-color);
             letter-spacing: 1px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            /* Ocultar "DIGITAL TV" en móvil para ahorrar espacio */
         }
         #platform-logo span { color: var(--text-color); font-weight: 400; }
-        #main-nav { display: flex; gap: 25px; flex-grow: 1; margin-left: 50px; }
+        
+        #main-nav { 
+            display: flex; gap: 25px; flex-grow: 1; margin-left: 50px; 
+        }
         #main-nav button {
             background: none; border: none; color: var(--text-color); font-size: 1.1em; font-weight: 700; padding: 10px 0; cursor: pointer; position: relative; transition: color 0.2s;
+            white-space: nowrap; /* Evitar que los textos del menú se rompan */
         }
         #main-nav button:hover { color: var(--primary-color); }
         #main-nav button.active { color: var(--primary-color); }
@@ -67,22 +73,19 @@
             content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: var(--primary-color); border-radius: 2px;
         }
         #search-button {
-            background: none; border: none; color: var(--text-color); font-size: 1.2em; cursor: pointer; padding: 8px 15px; border-radius: 4px; transition: background 0.2s;
+            display: none; /* Ya está en el menú */
         }
-        #search-button:hover { background-color: #333; }
 
         /* =======================================
-        CONTENEDOR PRINCIPAL - 
-        Contiene Reproductor y Overlays (Guía, On Demand, Buscar)
+        CONTENEDOR PRINCIPAL Y REPRODUCTOR
         ======================================= */
         #main-content {
             flex-grow: 1;
-            position: relative; /* Clave para posicionar overlays */
+            position: relative;
             overflow: hidden;
-            display: flex; /* Para que el reproductor ocupe el 100% */
+            display: flex; 
         }
 
-        /* REPRODUCTOR - Ahora ocupa el 100% del área de contenido */
         #tv-player-container-wrapper {
             flex-grow: 1;
             display: flex;
@@ -104,16 +107,6 @@
             border: none;
         }
 
-        /* DISCLAIMER */
-        .disclaimer {
-            padding: 10px 20px;
-            text-align: center;
-            font-size: 0.8em;
-            color: #555;
-            background-color: var(--bg-dark);
-            flex-shrink: 0;
-        }
-
         /* =======================================
         CAPAS DE OVERLAY (Guía, On Demand, Buscar)
         ======================================= */
@@ -123,49 +116,48 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Por defecto no interactivo */
+            pointer-events: none;
             z-index: 900;
             opacity: 1;
             transition: opacity 0.3s ease-out;
-            display: flex; /* Usamos flex para el layout interno */
+            display: flex; 
         }
-        /* La capa inactiva se hace transparente, el contenido sigue sonando */
         .overlay-layer.hidden {
             opacity: 0;
             pointer-events: none;
         }
 
-        /* GUÍA DE CANALES (Siempre a la izquierda cuando visible) */
+        /* GUÍA DE CANALES (Configuración Desktop por defecto: izquierda) */
         #channel-guide {
-            flex: 0 0 var(--guide-width); /* El ancho de la guía */
+            flex: 0 0 var(--guide-width); 
             max-width: var(--guide-width);
             height: 100%;
             background-color: var(--bg-medium);
             overflow-y: auto;
             overflow-x: hidden;
             border-right: 1px solid #333;
-            pointer-events: auto; /* Habilitar interacción para la guía */
+            pointer-events: auto; 
+            display: block; /* Visible por defecto en Live */
         }
 
-        /* RESTO DEL CONTENIDO (Overlay que cubre el video cuando no es "ETV EN VIVO") */
+        /* CONTENIDO EXTRA (Ocupa el resto en Desktop) */
         #main-display-overlay {
-            flex-grow: 1; /* Ocupa el espacio restante al lado de la guía */
-            background-color: transparent; /* Por defecto transparente */
+            flex-grow: 1; 
+            background-color: transparent; 
             transition: background-color 0.3s;
-            pointer-events: auto; /* Debe ser interactivo cuando hay contenido */
-            display: flex;
+            pointer-events: auto;
+            display: none; /* Oculto por defecto en Live */
             justify-content: center;
             align-items: center;
         }
         
-        /* Cuando el overlay principal está activo (On Demand o Buscar), tiene fondo */
+        /* Estilo de Overlay cuando no es LIVE */
         .overlay-mode #main-display-overlay {
             background-color: var(--overlay-bg);
-            /* Opcional: Reducir tamaño del video de fondo */
-            /* transform: scale(0.9); */
+            display: flex;
         }
 
-        /* Contenido de las secciones (On Demand, Buscar) */
+        /* Contenido de las secciones */
         .content-section {
             width: 100%;
             height: 100%;
@@ -174,15 +166,18 @@
             align-items: center;
             font-size: 2em;
             color: #777;
+            padding: 20px;
+            box-sizing: border-box;
+            flex-direction: column;
+            text-align: center;
         }
-        .content-section.active {
-            display: flex;
-            /* El fondo se aplica al #main-display-overlay, no a la sección */
-        }
+        .content-section h1 { font-size: 1.5em; margin-bottom: 0.5em; color: var(--text-color); }
+        .content-section p { display: block; font-size: 0.5em; color: #777; }
+        .content-section.active { display: flex; }
 
 
         /* =======================================
-        GUÍA DE CANALES (Estilos de elementos)
+        ESTILOS DE CANALES (Mantenidos)
         ======================================= */
         .carousel-container::-webkit-scrollbar { width: 8px; }
         .carousel-container::-webkit-scrollbar-thumb { background-color: #555; border-radius: 4px; }
@@ -199,30 +194,91 @@
         .tv-channel-info .name { font-size: 1em; font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
         .tv-channel-info .now-playing { font-size: 0.85em; color: #aaa; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Controles y Overlays del Reproductor (dentro de #tv-player-container) */
+        /* Controles (Mantenidos) */
         #channel-info { 
-            position: absolute; bottom: 65px; left: 20px; display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 6px; font-size: 1.2em; font-weight: bold; opacity: 0; transition: opacity 0.5s; z-index: 100; pointer-events: none; /* Desactivar interacción */
+            position: absolute; bottom: 65px; left: 20px; display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 6px; font-size: 1.2em; font-weight: bold; opacity: 0; transition: opacity 0.5s; z-index: 100; pointer-events: none;
         }
         #channel-info.show { opacity: 1; }
-        #channel-info img { 
-            height: 40px; width: 80px; object-fit: contain; background: var(--bg-dark); padding: 5px; border-radius: 4px; 
-        }
         #player-controls {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: 0 20px; background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s; z-index: 100;
         }
-        /* Solo mostrar controles al pasar el mouse sobre el contenedor del video (NO el overlay) */
         #tv-player-container:hover #player-controls { opacity: 1; }
-        /* El resto de estilos de controles se mantienen igual */
         #player-controls button {
             background: rgba(255, 255, 255, 0.1); border: none; color: var(--text-color); font-size: 1.2em; width: 35px; height: 35px; line-height: 35px; padding: 0; border-radius: 50%; cursor: pointer; transition: background 0.2s;
         }
-        #player-controls button:hover { background: rgba(255, 255, 255, 0.3); }
         #volume-control { display: flex; align-items: center; gap: 5px; }
-        #volume-control input[type="range"] {
-            width: 80px; -webkit-appearance: none; height: 5px; background: rgba(255, 255, 255, 0.4); border-radius: 5px; cursor: pointer;
-        }
-        #volume-control input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--text-color); cursor: pointer;
+
+        /* =======================================
+        ADAPTACIÓN A MÓVILES (MEDIA QUERY)
+        ======================================= */
+        @media (max-width: 768px) {
+            
+            #main-header {
+                padding: 0 10px;
+            }
+            #platform-logo {
+                font-size: 1.2em;
+            }
+            #platform-logo span {
+                 display: none; /* Ocultar "DIGITAL TV" */
+            }
+
+            #main-nav {
+                flex-grow: 0; /* No toma espacio extra */
+                margin-left: 10px;
+                gap: 15px;
+            }
+            #main-nav button {
+                font-size: 1em;
+                padding: 15px 0; /* Más área de toque */
+            }
+
+            /* 1. La Guía de Canales ocupa el 100% de la pantalla cuando está activa */
+            #channel-guide {
+                flex: 0 0 100%;
+                max-width: 100%;
+                border-right: none;
+                /* Usar una transición para que se vea más suave */
+                transform: translateX(0);
+                transition: transform 0.3s ease-out;
+            }
+            /* Ocultar la guía al cambiar a otras secciones */
+            .overlay-mode #channel-guide {
+                transform: translateX(-100%); /* Deslizar fuera de pantalla */
+                display: none; 
+            }
+
+            /* 2. El Contenido Extra (On Demand/Buscar) ocupa el 100% */
+            #main-display-overlay {
+                flex-grow: 1;
+                width: 100%;
+                height: 100%;
+                /* En móvil, el video queda oculto, la interfaz lo cubre */
+            }
+            
+            /* 3. El reproductor (aunque sigue reproduciéndose) se pone al fondo */
+            #tv-player-container {
+                /* Asegurar que el reproductor no interfiera con el toque */
+                pointer-events: none;
+            }
+            #player-controls {
+                /* Controles más grandes para tocar */
+                height: 40px; 
+                padding: 0 10px;
+                opacity: 1 !important; /* Mantener siempre visibles los controles en móvil si el usuario está en modo LIVE */
+            }
+            #player-controls button {
+                width: 30px; height: 30px; line-height: 30px; font-size: 1em;
+            }
+            #volume-control {
+                display: none; /* Simplificar controles en móvil (el sistema operativo maneja el volumen) */
+            }
+            
+            /* Ocultar la info del canal después de unos segundos, incluso en móvil */
+            #channel-info { 
+                bottom: 50px; /* Sobre los controles */
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -236,8 +292,6 @@
             <button id="nav-ondemand" data-section="ondemand">🎬 ON DEMAND</button>
             <button id="nav-buscar" data-section="search">🔎 BUSCAR</button>
         </nav>
-        
-        <button id="search-button"></button>
     </header>
 
     <div id="main-content">
@@ -264,10 +318,7 @@
                 </div>
             </div>
             
-            <div class="disclaimer">
-                RBD Noticias no aloja ni retransmite señales. Los derechos pertenecen a cada canal. Si usted es titular y desea solicitar el retiro de su señal, contáctenos en inforbdnoticias.com@gmail.com
             </div>
-        </div>
 
         <div id="main-overlay-layer" class="overlay-layer">
             
@@ -305,10 +356,10 @@
             {name: "AMC", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/AMC_logo_2019.svg", url: "https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8", type: "hls", playing: "Películas y Series Clásicas"},
             {name: "Argentinisima", logo: "https://www.argentinisimatv.com.ar/favicon.ico", url: "https://stream1.sersat.com/hls/argentinisima.m3u8", type: "hls", playing: "Música Folklórica"},
             {name: "Canal de la Ciudad", logo: "https://www.buenosaires.gob.ar/sites/gcaba/files/favicon_0.ico", url: "https://www.youtube.com/embed/VHCnqfdX-t0?si=IdP5kIMZ1_9wP_m4&autoplay=1", type: "youtube", playing: "Noticias de Buenos Aires"},
-            // ... (Resto de los canales de la lista anterior)
-            {name:"El Trece", logo: "https://i.imgur.com/TrgBAdA.png", url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8", type: "hls", playing: "Telenovelas y Noticieros"},
-            {name:"Magic Kids", logo: "https://i.imgur.com/CMImqQY.png", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", type: "hls", playing: "Dibujos Animados (Retro)"},
-            {name:"NET TV", logo: "https://i.imgur.com/IhJ0BjF.png", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", type: "hls", playing: "Magazine y entretenimiento"},
+            {name: "YouTube Canal", logo: "https://i.imgur.com/Logo1.png", url: "https://www.youtube.com/embed/cb12KmMMDJA?si=izjgyuyQ1O8lGbbz&autoplay=1", type: "youtube", playing: "Stream en vivo de YouTube"},
+            {name: "El Trece", logo: "https://i.imgur.com/TrgBAdA.png", url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8", type: "hls", playing: "Telenovelas y Noticieros"},
+            {name: "Magic Kids", logo: "https://i.imgur.com/CMImqQY.png", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", type: "hls", playing: "Dibujos Animados (Retro)"},
+            {name: "NET TV", logo: "https://i.imgur.com/IhJ0BjF.png", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", type: "hls", playing: "Magazine y entretenimiento"},
             {name:"Canal 79 Santa Clara del Mar", type:"hls", url:"https://streamconex.com:19360/santaclara-1/santaclara-1.m3u8", logo:"https://i.imgur.com/I93ypGY.png", playing: "Local en Vivo"},
             {name:"5tv", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8", logo:"https://i.imgur.com/mSn7ACs.png", playing: "Noticiero Central"},
             {name:"13Max Television", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8", logo:"https://i.imgur.com/QvF4lT.png", playing: "Deportes"},
@@ -347,289 +398,4 @@
             {name:"Canal Provincial", type:"hls", url:"https://streaming.telered.com.ar/provincial/streaming/mystream.m3u8", logo:"https://i.imgur.com/bXHHtcb.png", playing: "Noticias"},
             {name:"Canal Santa Maria", type:"hls", url:"https://streaming.telered.com.ar/santa-maria/streaming/mystream.m3u8", logo:"https://www.canalsantamaria.com.ar/images/santamaria_logo.jpg", playing: "Religioso"},
             {name:"Catamarca TV", type:"hls", url:"https://stream.arcast.com.ar/canal7catamarca/ngrp:canal7catamarca_all/playlist.m3u8?DVR=", logo:"https://i.imgur.com/CEuPoqG.png", playing: "Magazine"},
-            {name:"Celta TV", type:"hls", url:"https://vivo.solumedia.com:19360/celta/celta.m3u8", logo:"https://i.imgur.com/rwoIF4w.png", playing: "Noticias"},
-            {name:"Chaco TV", type:"hls", url:"https://wowzasrv.chaco.gov.ar/Streamtv/chacotv/playlist.m3u8", logo:"https://i.imgur.com/b6RerDw.png", playing: "Actualidad"},
-            {name:"Chilecito TV", type:"hls", url:"https://vivo.solumedia.com:19360/grupoemail/grupoemail.m3u8", logo:"https://i.imgur.com/zGubmgZ.png", playing: "Local"},
-            {name:"Cosmos TV SD", type:"hls", url:"https://tv.mediacp.eu:19360/cosmos/cosmos.m3u8", logo:"https://i0.wp.com/fmcosmos.com/wp-content/uploads/2021/11/COSMOS-TV.png", playing: "Mundo"},
-            {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor"},
-            {name:"Lapacho TV Canal 11", type:"hls", url:"https://vivo.solumedia.com:19360/lapacho/lapacho.m3u8", logo:"https://i.imgur.com/PmFBL7x.png", playing: "Actualidad"},
-            {name:"Litus TV", type:"hls", url:"https://stream.arcast.com.ar/litustv/ngrp:litustv_all/playlist.m3u8", logo:"https://i.imgur.com/QIGSf4L.png", playing: "En Vivo"},
-            {name:"Mas FM", type:"hls", url:"https://vivo.solumedia.com:19360/masfm/masfm.m3u8", logo:"https://i.imgur.com/TJ4gWQM.png", playing: "Música y Noticias"},
-            {name:"Metro TV", type:"hls", url:"https://streamtv12.ddns.net:5443/LiveApp/streams/193945633734205616732920.m3u8", logo:"https://i.imgur.com/7f7M7zl.png", playing: "Noticias"},
-            {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven"},
-            {name:"NG Federal", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvlink/live/playlist.m3u8", logo:"https://i.imgur.com/lJCIqYn.png", playing: "Noticiero"},
-            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVv.png", playing: "Variedades"},
-            {name:"Play Television", type:"hls", url:"https://vivo.solumedia.com:19360/playtv/playtv.m3u8", logo:"https://i.ibb.co/nR85vvb/2021-01-03.jpg", playing: "Deportes"},
-            {name:"Power Max Radio TV", type:"hls", url:"https://videostream.shockmedia.com.ar:19360/radio1045/radio1045.m3u8", logo:"https://i.ibb.co/qgZLYDj/channels4-profile-6.jpg", playing: "Música y TV"},
-        ];
-
-        // ====================
-        // Variables y Elementos del DOM
-        // ====================
-        const carousel = document.getElementById("tv-carousel");
-        const channelGuide = document.getElementById("channel-guide");
-        const navButtons = document.querySelectorAll('#main-nav button');
-        const overlayLayer = document.getElementById('main-overlay-layer');
-        const mainDisplayOverlay = document.getElementById('main-display-overlay');
-        const contentSections = {
-            live: channelGuide, // La guía se trata como contenido "live"
-            ondemand: document.getElementById("ondemand-section"),
-            search: document.getElementById("search-section")
-        };
-        
-        // Elementos de reproducción (igual que antes)
-        const playerVideo = document.getElementById("tv-player-video");
-        const playerIframe = document.getElementById("tv-player-iframe");
-        const volumeSlider = document.getElementById("volume-slider");
-        const infoBox = document.getElementById("channel-info");
-        
-        let currentChannel = 0;
-        let channelElements = []; 
-        let hls, dash;
-        let lastVolume = 0.5; 
-
-        // ====================
-        // Funcionalidad de Navegación del Header
-        // ====================
-        function showSection(sectionId) {
-            // 1. Gestionar la pestaña activa
-            navButtons.forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
-
-            // 2. Gestionar la visibilidad de las capas de Overlay
-            if (sectionId === 'live') {
-                // Modo LIVE: El video se ve a pantalla completa con la guía al lado.
-                overlayLayer.classList.remove('overlay-mode');
-                overlayLayer.style.opacity = 1;
-                
-                // Mostrar solo la guía de canales
-                channelGuide.style.display = 'block';
-                mainDisplayOverlay.style.display = 'none';
-
-            } else {
-                // Modo ON DEMAND/BUSCAR: El video sigue sonando, pero la interfaz principal
-                // pasa a ser una capa opaca superpuesta.
-                overlayLayer.classList.add('overlay-mode');
-                overlayLayer.style.opacity = 1;
-
-                // Ocultar la guía
-                channelGuide.style.display = 'none';
-                
-                // Mostrar el overlay principal
-                mainDisplayOverlay.style.display = 'flex';
-                // Aplicar el fondo oscuro al overlay principal para que cubra el video
-                mainDisplayOverlay.classList.add('overlay-mode'); 
-            }
-
-            // 3. Gestionar la visibilidad del contenido dentro del overlay (OnDemand/Buscar)
-            [contentSections.ondemand, contentSections.search].forEach(el => el.classList.remove('active'));
-
-            if (sectionId === 'ondemand') {
-                contentSections.ondemand.classList.add('active');
-            } else if (sectionId === 'search') {
-                contentSections.search.classList.add('active');
-            }
-
-            // Pausar el video solo si es un iframe de YouTube (para evitar autoplay si no lo pausas)
-            if (channels[currentChannel] && channels[currentChannel].type === 'youtube' && sectionId !== 'live') {
-                playerIframe.src = playerIframe.src.replace('autoplay=1', 'autoplay=0');
-            }
-        }
-
-        navButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                showSection(e.target.dataset.section);
-            });
-        });
-        document.getElementById('search-button').addEventListener('click', () => {
-             showSection('search');
-        });
-
-
-        // ====================
-        // Funciones de Reproducción y Canales (Se mantienen)
-        // ====================
-        function renderChannels() {
-             channels.forEach((ch, idx) => {
-                const div = document.createElement("div");
-                div.className = "tv-channel";
-                div.innerHTML = `
-                    <div class="tv-channel-content">
-                        <img src="${ch.logo}" alt="${ch.name}">
-                        <div class="tv-channel-info">
-                            <span class="name" title="${ch.name}">${ch.name}</span>
-                            <span class="now-playing">${ch.playing || 'En vivo'}</span>
-                        </div>
-                    </div>
-                `;
-                div.addEventListener("click", () => playChannel(idx));
-                carousel.appendChild(div);
-                channelElements.push(div); 
-            });
-        }
-        
-        function playChannel(idx) {
-            currentChannel = idx;
-            const ch = channels[idx];
-            
-            // Destruir reproductores anteriores
-            if (hls) { hls.destroy(); hls = null; }
-            if (dash) { dash.reset(); dash = null; }
-
-            // Ocultar reproductores
-            playerVideo.style.display = "none";
-            playerIframe.style.display = "none";
-            playerVideo.pause();
-            playerIframe.src = "";
-
-            // Asegurarse de volver a la sección LIVE al cambiar de canal
-            showSection('live'); 
-
-            // Actualizar y mostrar info del canal
-            document.getElementById('channel-logo').src = ch.logo;
-            document.getElementById('channel-name').textContent = ch.name;
-            infoBox.classList.add("show");
-            clearTimeout(infoBox.timeout);
-            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
-            
-            channelElements.forEach(el => el.classList.remove("tv-channel-selected"));
-            channelElements[idx].classList.add("tv-channel-selected");
-            
-            scrollToChannel(idx);
-
-            // 6. Configurar y mostrar el reproductor correcto
-            if (ch.type === "youtube") {
-                playerIframe.style.display = "block";
-                // Asegurar autoplay y que sepa el estado de muted
-                const urlWithAutoplay = ch.url.includes("autoplay=1") ? ch.url : ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0";
-                playerIframe.src = urlWithAutoplay;
-                document.getElementById("player-controls").style.display = 'none';
-            } else if (ch.type === "dash") {
-                playerVideo.style.display = "block";
-                dash = dashjs.MediaPlayer().create();
-                dash.initialize(playerVideo, ch.url, true);
-                playerVideo.volume = volumeSlider.value;
-                playerVideo.play().catch(()=>{});
-                document.getElementById("player-controls").style.display = 'flex';
-            } else { // HLS o MP4 nativo
-                playerVideo.style.display = "block";
-                if (Hls.isSupported()) {
-                    hls = new Hls();
-                    hls.loadSource(ch.url);
-                    hls.attachMedia(playerVideo);
-                    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                        playerVideo.volume = volumeSlider.value;
-                        playerVideo.play().catch(()=>{});
-                    });
-                } else {
-                    playerVideo.src = ch.url;
-                    playerVideo.volume = volumeSlider.value;
-                    playerVideo.play().catch(()=>{});
-                }
-                document.getElementById("player-controls").style.display = 'flex';
-            }
-        }
-
-        function scrollToChannel(idx) {
-            const channelEl = channelElements[idx];
-            if (channelEl) {
-                const guideContainer = document.getElementById("channel-guide");
-                const offset = channelEl.offsetTop - (guideContainer.offsetHeight / 2) + (channelEl.offsetHeight / 2);
-                guideContainer.scrollTo({ top: offset, behavior: 'smooth' });
-            }
-        }
-        
-        // ====================
-        // Controles de Volumen y Teclado (Mantienen funcionalidad)
-        // ====================
-        const btnMute = document.getElementById("btn-mute");
-        function updateVolume(newVolume) {
-            playerVideo.volume = newVolume;
-            volumeSlider.value = newVolume;
-            playerVideo.muted = newVolume === 0;
-            btnMute.textContent = newVolume === 0 ? '🔇' : '🔊';
-        }
-        
-        volumeSlider.oninput = (e) => {
-            const newVolume = parseFloat(e.target.value);
-            updateVolume(newVolume);
-            lastVolume = newVolume > 0 ? newVolume : lastVolume;
-        };
-
-        btnMute.onclick = () => {
-            if (playerVideo.muted || playerVideo.volume === 0) {
-                let vol = lastVolume > 0 ? lastVolume : 0.5;
-                updateVolume(vol);
-            } else {
-                lastVolume = playerVideo.volume;
-                updateVolume(0);
-            }
-        };
-
-        document.getElementById("btn-play").onclick = () => { 
-            if (playerVideo.style.display === "block") playerVideo.play().catch(()=>{}); 
-            // Mostrar info al reanudar
-            infoBox.classList.add("show");
-            clearTimeout(infoBox.timeout);
-            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
-        };
-        document.getElementById("btn-pause").onclick = () => { 
-            if (playerVideo.style.display === "block") playerVideo.pause(); 
-            // Mostrar info al pausar
-            infoBox.classList.add("show");
-            clearTimeout(infoBox.timeout);
-            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
-        };
-        document.getElementById("btn-fullscreen").onclick = () => {
-            const container = document.getElementById("tv-player-container");
-            if (container.requestFullscreen) {
-                container.requestFullscreen();
-            } else if (container.webkitRequestFullscreen) {
-                container.webkitRequestFullscreen();
-            }
-        };
-
-        // Navegación por teclado
-        document.addEventListener("keydown", e => {
-            const isLiveSection = document.getElementById('nav-live').classList.contains('active');
-            
-            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-                e.preventDefault(); 
-                if (isLiveSection) {
-                    currentChannel = e.key === "ArrowDown" 
-                        ? (currentChannel + 1) % channels.length
-                        : (currentChannel - 1 + channels.length) % channels.length;
-                    playChannel(currentChannel);
-                }
-            }
-            // Control de volumen con flechas izquierda/derecha
-            if (playerVideo.style.display === "block" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-                 e.preventDefault(); 
-                 const step = 0.05;
-                 let currentVolume = parseFloat(volumeSlider.value);
-                 if (e.key === "ArrowRight") {
-                     currentVolume = Math.min(1, currentVolume + step);
-                 } else {
-                     currentVolume = Math.max(0, currentVolume - step);
-                 }
-                 updateVolume(currentVolume);
-
-                 infoBox.classList.add("show");
-                 clearTimeout(infoBox.timeout);
-                 infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
-            }
-        });
-
-
-        // ====================
-        // Inicialización
-        // ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            renderChannels();
-            // Iniciar en la sección EN VIVO con el primer canal
-            showSection('live');
-            playChannel(0); 
-        });
-    </script>
-</body>
-</html>
+            {
