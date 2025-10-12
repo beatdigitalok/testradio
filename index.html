@@ -398,4 +398,286 @@
             {name:"Canal Provincial", type:"hls", url:"https://streaming.telered.com.ar/provincial/streaming/mystream.m3u8", logo:"https://i.imgur.com/bXHHtcb.png", playing: "Noticias"},
             {name:"Canal Santa Maria", type:"hls", url:"https://streaming.telered.com.ar/santa-maria/streaming/mystream.m3u8", logo:"https://www.canalsantamaria.com.ar/images/santamaria_logo.jpg", playing: "Religioso"},
             {name:"Catamarca TV", type:"hls", url:"https://stream.arcast.com.ar/canal7catamarca/ngrp:canal7catamarca_all/playlist.m3u8?DVR=", logo:"https://i.imgur.com/CEuPoqG.png", playing: "Magazine"},
-            {
+            {name:"Celta TV", type:"hls", url:"https://vivo.solumedia.com:19360/celta/celta.m3u8", logo:"https://i.imgur.com/rwoIF4w.png", playing: "Noticias"},
+            {name:"Chaco TV", type:"hls", url:"https://wowzasrv.chaco.gov.ar/Streamtv/chacotv/playlist.m3u8", logo:"https://i.imgur.com/b6RerDw.png", playing: "Actualidad"},
+            {name:"Chilecito TV", type:"hls", url:"https://vivo.solumedia.com:19360/grupoemail/grupoemail.m3u8", logo:"https://i.imgur.com/zGubmgZ.png", playing: "Local"},
+            {name:"Cosmos TV SD", type:"hls", url:"https://tv.mediacp.eu:19360/cosmos/cosmos.m3u8", logo:"https://i0.wp.com/fmcosmos.com/wp-content/uploads/2021/11/COSMOS-TV.png", playing: "Mundo"},
+            {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor"},
+            {name:"Lapacho TV Canal 11", type:"hls", url:"https://vivo.solumedia.com:19360/lapacho/lapacho.m3u8", logo:"https://i.imgur.com/PmFBL7x.png", playing: "Actualidad"},
+            {name:"Litus TV", type:"hls", url:"https://stream.arcast.com.ar/litustv/ngrp:litustv_all/playlist.m3u8", logo:"https://i.imgur.com/QIGSf4L.png", playing: "En Vivo"},
+            {name:"Mas FM", type:"hls", url:"https://vivo.solumedia.com:19360/masfm/masfm.m3u8", logo:"https://i.imgur.com/TJ4gWQM.png", playing: "Música y Noticias"},
+            {name:"Metro TV", type:"hls", url:"https://streamtv12.ddns.net:5443/LiveApp/streams/193945633734205616732920.m3u8", logo:"https://i.imgur.com/7f7M7zl.png", playing: "Noticias"},
+            {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven"},
+            {name:"NG Federal", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvlink/live/playlist.m3u8", logo:"https://i.imgur.com/lJCIqYn.png", playing: "Noticiero"},
+            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVv.png", playing: "Variedades"},
+            {name:"Play Television", type:"hls", url:"https://vivo.solumedia.com:19360/playtv/playtv.m3u8", logo:"https://i.ibb.co/nR85vvb/2021-01-03.jpg", playing: "Deportes"},
+            {name:"Power Max Radio TV", type:"hls", url:"https://videostream.shockmedia.com.ar:19360/radio1045/radio1045.m3u8", logo:"https://i.ibb.co/qgZLYDj/channels4-profile-6.jpg", playing: "Música y TV"},
+        ];
+
+        // ====================
+        // Variables y Elementos del DOM
+        // ====================
+        const carousel = document.getElementById("tv-carousel");
+        const channelGuide = document.getElementById("channel-guide");
+        const navButtons = document.querySelectorAll('#main-nav button');
+        const overlayLayer = document.getElementById('main-overlay-layer');
+        const mainDisplayOverlay = document.getElementById('main-display-overlay');
+        const contentSections = {
+            live: channelGuide, 
+            ondemand: document.getElementById("ondemand-section"),
+            search: document.getElementById("search-section")
+        };
+        
+        // Elementos de reproducción (igual que antes)
+        const playerVideo = document.getElementById("tv-player-video");
+        const playerIframe = document.getElementById("tv-player-iframe");
+        const volumeSlider = document.getElementById("volume-slider");
+        const infoBox = document.getElementById("channel-info");
+        
+        let currentChannel = 0;
+        let channelElements = []; 
+        let hls, dash;
+        let lastVolume = 0.5; 
+
+        // ====================
+        // Funcionalidad de Navegación del Header
+        // ====================
+        function showSection(sectionId) {
+            // 1. Gestionar la pestaña activa
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+
+            // 2. Gestionar la visibilidad de las capas de Overlay
+            if (sectionId === 'live') {
+                // Modo LIVE: Muestra la Guía y oculta el overlay de contenido
+                overlayLayer.classList.remove('overlay-mode');
+                
+                channelGuide.style.display = 'block';
+                channelGuide.focus(); // Intentar enfocar la guía para navegación con teclado
+                mainDisplayOverlay.style.display = 'none';
+
+            } else {
+                // Modo ON DEMAND/BUSCAR: Oculta la guía y muestra el overlay de contenido oscuro
+                overlayLayer.classList.add('overlay-mode');
+
+                // Ocultar la guía (solo visible en LIVE)
+                channelGuide.style.display = 'none'; 
+                
+                // Mostrar el overlay principal
+                mainDisplayOverlay.style.display = 'flex';
+                mainDisplayOverlay.classList.add('overlay-mode'); 
+            }
+
+            // 3. Gestionar la visibilidad del contenido dentro del overlay (OnDemand/Buscar)
+            [contentSections.ondemand, contentSections.search].forEach(el => el.classList.remove('active'));
+
+            if (sectionId === 'ondemand') {
+                contentSections.ondemand.classList.add('active');
+            } else if (sectionId === 'search') {
+                contentSections.search.classList.add('active');
+            }
+
+            // 4. Gestionar el estado de reproducción del video de fondo
+            if (channels[currentChannel] && channels[currentChannel].type === 'youtube' && sectionId !== 'live') {
+                // Si es YouTube y no estamos en la sección LIVE, lo pausamos o silenciamos
+                // Nota: Los iframes de YouTube son difíciles de controlar. La mejor práctica es pausar si es posible.
+                // Aquí simulamos que si sales de LIVE, el iframe se pausa (idealmente) o se silencia.
+                // Ya no pausamos, sino que confiamos en que el overlay opaque la imagen, pero el audio sigue.
+            }
+        }
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                showSection(e.target.dataset.section);
+            });
+        });
+
+
+        // ====================
+        // Funciones de Reproducción y Canales
+        // ====================
+        function renderChannels() {
+             channels.forEach((ch, idx) => {
+                const div = document.createElement("div");
+                div.className = "tv-channel";
+                div.setAttribute('tabindex', 0); // Habilitar foco para móvil/teclado
+                div.innerHTML = `
+                    <div class="tv-channel-content">
+                        <img src="${ch.logo}" alt="${ch.name}">
+                        <div class="tv-channel-info">
+                            <span class="name" title="${ch.name}">${ch.name}</span>
+                            <span class="now-playing">${ch.playing || 'En vivo'}</span>
+                        </div>
+                    </div>
+                `;
+                div.addEventListener("click", () => playChannel(idx));
+                div.addEventListener("keydown", (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        playChannel(idx);
+                    }
+                });
+                carousel.appendChild(div);
+                channelElements.push(div); 
+            });
+        }
+        
+        function playChannel(idx) {
+            currentChannel = idx;
+            const ch = channels[idx];
+            
+            if (hls) { hls.destroy(); hls = null; }
+            if (dash) { dash.reset(); dash = null; }
+
+            playerVideo.style.display = "none";
+            playerIframe.style.display = "none";
+            playerVideo.pause();
+            playerIframe.src = "";
+
+            // Volver a la sección LIVE al cambiar de canal
+            showSection('live'); 
+
+            // Actualizar y mostrar info del canal
+            document.getElementById('channel-logo').src = ch.logo;
+            document.getElementById('channel-name').textContent = ch.name;
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+            
+            channelElements.forEach(el => el.classList.remove("tv-channel-selected"));
+            channelElements[idx].classList.add("tv-channel-selected");
+            
+            scrollToChannel(idx);
+
+            // 6. Configurar y mostrar el reproductor correcto
+            if (ch.type === "youtube") {
+                playerIframe.style.display = "block";
+                const urlWithAutoplay = ch.url.includes("autoplay=1") ? ch.url : ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0";
+                playerIframe.src = urlWithAutoplay;
+                document.getElementById("player-controls").style.display = 'none';
+            } else if (ch.type === "dash") {
+                playerVideo.style.display = "block";
+                dash = dashjs.MediaPlayer().create();
+                dash.initialize(playerVideo, ch.url, true);
+                playerVideo.volume = volumeSlider.value;
+                playerVideo.play().catch(()=>{});
+                document.getElementById("player-controls").style.display = 'flex';
+            } else { // HLS o MP4 nativo
+                playerVideo.style.display = "block";
+                if (Hls.isSupported()) {
+                    hls = new Hls();
+                    hls.loadSource(ch.url);
+                    hls.attachMedia(playerVideo);
+                    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                        playerVideo.volume = volumeSlider.value;
+                        playerVideo.play().catch(()=>{});
+                    });
+                } else {
+                    playerVideo.src = ch.url;
+                    playerVideo.volume = volumeSlider.value;
+                    playerVideo.play().catch(()=>{});
+                }
+                document.getElementById("player-controls").style.display = 'flex';
+            }
+        }
+
+        function scrollToChannel(idx) {
+            const channelEl = channelElements[idx];
+            if (channelEl) {
+                const guideContainer = document.getElementById("channel-guide");
+                const offset = channelEl.offsetTop - (guideContainer.offsetHeight / 2) + (channelEl.offsetHeight / 2);
+                guideContainer.scrollTo({ top: offset, behavior: 'smooth' });
+            }
+        }
+        
+        // ====================
+        // Controles de Volumen y Teclado
+        // ====================
+        const btnMute = document.getElementById("btn-mute");
+        function updateVolume(newVolume) {
+            playerVideo.volume = newVolume;
+            volumeSlider.value = newVolume;
+            playerVideo.muted = newVolume === 0;
+            btnMute.textContent = newVolume === 0 ? '🔇' : '🔊';
+        }
+        
+        volumeSlider.oninput = (e) => {
+            const newVolume = parseFloat(e.target.value);
+            updateVolume(newVolume);
+            lastVolume = newVolume > 0 ? newVolume : 0.5;
+        };
+
+        btnMute.onclick = () => {
+            if (playerVideo.muted || playerVideo.volume === 0) {
+                let vol = lastVolume > 0 ? lastVolume : 0.5;
+                updateVolume(vol);
+            } else {
+                lastVolume = playerVideo.volume;
+                updateVolume(0);
+            }
+        };
+
+        document.getElementById("btn-play").onclick = () => { 
+            if (playerVideo.style.display === "block") playerVideo.play().catch(()=>{}); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+        };
+        document.getElementById("btn-pause").onclick = () => { 
+            if (playerVideo.style.display === "block") playerVideo.pause(); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+        };
+        document.getElementById("btn-fullscreen").onclick = () => {
+            const container = document.getElementById("tv-player-container");
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            }
+        };
+
+        // Navegación por teclado (Flechas arriba/abajo cambian de canal, izquierda/derecha cambian volumen)
+        document.addEventListener("keydown", e => {
+            const isLiveSection = document.getElementById('nav-live').classList.contains('active');
+            
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault(); 
+                if (isLiveSection) {
+                    currentChannel = e.key === "ArrowDown" 
+                        ? (currentChannel + 1) % channels.length
+                        : (currentChannel - 1 + channels.length) % channels.length;
+                    playChannel(currentChannel);
+                }
+            }
+            if (playerVideo.style.display === "block" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+                 e.preventDefault(); 
+                 const step = 0.05;
+                 let currentVolume = parseFloat(volumeSlider.value);
+                 if (e.key === "ArrowRight") {
+                     currentVolume = Math.min(1, currentVolume + step);
+                 } else {
+                     currentVolume = Math.max(0, currentVolume - step);
+                 }
+                 updateVolume(currentVolume);
+
+                 infoBox.classList.add("show");
+                 clearTimeout(infoBox.timeout);
+                 infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+            }
+        });
+
+
+        // ====================
+        // Inicialización
+        // ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChannels();
+            // Iniciar en la sección EN VIVO con el primer canal
+            showSection('live');
+            playChannel(0); 
+        });
+    </script>
+</body>
+</html>
