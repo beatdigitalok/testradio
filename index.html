@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <title>Beat Digital TV - El Hub Multimedia</title>
     <style>
-        /* Paleta de colores basada en una estética moderna de TV/Hub */
+        /* Paleta de colores y Estilos de Smart TV */
         :root {
-            --primary-color: #E91E63; /* Rosa/Fucsia vibrante */
-            --background-dark: #1A1A2E; /* Fondo oscuro (Deep Blue) */
-            --card-dark: #2C385A; /* Color de tarjeta ligeramente más claro */
+            --primary-color: #E91E63; 
+            --background-dark: #1A1A2E; 
+            --card-dark: #2C385A; 
             --text-light: #F0F0F0;
             --secondary-dark: #8888AA;
+            --player-bg: #000000;
         }
 
         body { 
@@ -31,13 +32,12 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
         main {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
-        }
-        section { 
-            padding: 20px 0; 
-            margin-bottom: 30px; 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
         }
         h2 { 
             border-bottom: 2px solid var(--primary-color); 
@@ -45,26 +45,77 @@
             margin-bottom: 20px;
             font-size: 1.8em;
             color: var(--primary-color);
+            width: 100%;
         }
-        /* Estilos de Componentes */
-        .card { 
-            background: var(--card-dark); 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin: 10px 0; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
+        section { 
+            padding: 20px;
+            border-radius: 10px;
+            background: var(--card-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            flex: 1 1 45%; /* Dos columnas principales */
+            min-width: 350px;
         }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+
+        /* Reproductor Único (Radio y TV) - Estilo Smart TV */
+        #media-player-section {
+            flex: 1 1 100%; /* Ocupa todo el ancho */
+            display: flex;
+            gap: 20px;
+            padding: 0;
+            background: none;
+            box-shadow: none;
         }
-        iframe, audio, video { 
-            width: 100%; 
-            border: none; 
-            border-radius: 8px; 
-            background: #000; /* Fondo negro para contenido multimedia */
+        #media-list-container {
+            flex: 0 0 300px; /* Ancho fijo para la lista de canales/radios */
+            padding: 15px;
+            background: var(--card-dark);
+            border-radius: 10px;
+            overflow-y: auto;
+            max-height: 600px;
         }
+        #media-player-wrapper {
+            flex-grow: 1;
+            background: var(--player-bg);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        #main-media-player {
+            width: 100%;
+            flex-grow: 1;
+            min-height: 300px; /* Altura mínima para el reproductor de video */
+            border-radius: 8px;
+            background: var(--player-bg);
+        }
+        .media-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            font-size: 1em;
+        }
+        .media-item:hover, .media-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Estilos para el Diario Digital */
+        #digital-daily {
+            flex: 1 1 100%;
+            padding: 0;
+            background: none;
+            box-shadow: none;
+        }
+        #news-iframe {
+            width: 100%;
+            height: 800px; /* Altura generosa para la lectura */
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Estilos generales de componentes */
         select, input[type="text"], button { 
             width: 100%; 
             padding: 10px; 
@@ -76,38 +127,7 @@
             box-sizing: border-box; 
             font-size: 1em;
         }
-        button {
-            background: var(--primary-color); 
-            cursor: pointer;
-            border: none;
-            width: auto;
-            padding: 10px 15px;
-            display: inline-block;
-            font-weight: bold;
-        }
         a { color: var(--primary-color); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-
-        /* Estilos del Diario Digital */
-        #newsContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .news-article {
-            background: var(--card-dark);
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .news-article h3 {
-            color: var(--primary-color);
-            margin-top: 0;
-            font-size: 1.2em;
-        }
-        .news-article p {
-            font-size: 0.9em;
-            color: var(--secondary-dark);
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
@@ -116,216 +136,214 @@
 <header>📺 Beat Digital TV</header>
 <main>
 
-<section id="radio">
-    <h2>📻 Radio Digital</h2>
-    <p>Selecciona un país para ver las estaciones de radio disponibles y sintoniza en vivo.</p>
-    <select id="countrySelect"></select>
-    <select id="radioSelect"></select>
-    <audio id="radioPlayer" controls autoplay></audio>
-</section>
-
-<section id="tv">
-    <h2>📺 TV Abierta</h2>
-    <p>Canales de TV en vivo. Puedes agregar más canales a la lista interna en `loadIPTV()`.</p>
-    <select id="tvSelect"></select>
-    <video id="tvPlayer" controls autoplay></video>
-</section>
-
-<section id="movies">
-    <h2>🎬 Películas y Series (Demo)</h2>
-    <select id="movieSelect"></select>
-    <video id="moviePlayer" controls autoplay></video>
+<section id="media-player-section">
+    <div id="media-player-wrapper">
+        <h2>📻/📺 Reproductor Único</h2>
+        <video id="main-media-player" controls autoplay></video>
+        <p id="current-media-info" style="padding: 10px; font-weight: bold;">Selecciona un canal o radio de la lista.</p>
+    </div>
+    
+    <div id="media-list-container">
+        <h2>Lista de Canales</h2>
+        <select id="media-type-select">
+            <option value="tv">TV Abierta / IPTV</option>
+            <option value="radio">Radio Digital</option>
+            <option value="movies">Películas/Series (Demo)</option>
+        </select>
+        <div id="media-list-placeholder">Cargando lista...</div>
+    </div>
 </section>
 
 <section id="digital-daily">
-    <h2>📰 Nuestro Diario Digital (Lectura)</h2>
-    <p>Lectura de noticias de ejemplo. Esta sección simula la integración de artículos de un diario digital.</p>
-    <div id="newsContainer">
-        </div>
+    <h2>📰 RBD Noticias (Nuestro Diario Digital)</h2>
+    <p>Acceso directo a la lectura de nuestro diario digital. (Puede requerir que el servidor de la web lo permita, si no, se verá un error de conexión).</p>
+    <iframe id="news-iframe" src="https://www.rbdnoticias.com" title="RBD Noticias Digital Daily"></iframe>
 </section>
 
 </main>
 
 <script>
 // =====================================================================
-// === Funciones de Radio (Radio Browser) ===
+// === Configuración y Datos ===
 // =====================================================================
 
-async function loadCountries() {
-    const countrySelect = document.getElementById("countrySelect");
-    countrySelect.innerHTML = "<option>Cargando países...</option>";
-    
+// Lista M3U compartida para canales de TV y Radios
+const AR_M3U_URL = "https://m3u.cl/lista/AR.m3u";
+
+// Definición de streams de prueba para la sección Películas/Series
+const DEMO_MOVIES = [
+    { name: "Big Buck Bunny (Demo)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8", type: 'video' },
+    { name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type: 'video' }
+];
+
+// Almacenará los datos parseados de la lista M3U
+let allMediaData = {
+    tv: [],
+    radio: [],
+    movies: DEMO_MOVIES
+};
+
+// =====================================================================
+// === Parser M3U para Radio y TV ===
+// =====================================================================
+
+// Función que descarga y analiza la lista M3U.
+async function parseM3UList() {
     try {
-        const res = await fetch("https://de1.api.radio-browser.info/json/countries");
-        const countries = await res.json();
+        const response = await fetch(AR_M3U_URL);
+        const text = await response.text();
+        const lines = text.split('\n');
         
-        countrySelect.innerHTML = ""; // Limpiar
-        countries.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c.name;
-            opt.textContent = c.name;
-            countrySelect.appendChild(opt);
-        });
+        let currentItem = {};
         
-        countrySelect.value = "Argentina"; // País por defecto
-        loadRadios(countrySelect.value);
-        
-        countrySelect.addEventListener("change", () => {
-            loadRadios(countrySelect.value);
-        });
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            if (line.startsWith('#EXTINF:')) {
+                // Obtener el nombre del canal/radio
+                const nameMatch = line.match(/,(.+)$/);
+                if (nameMatch && nameMatch[1]) {
+                    currentItem.name = nameMatch[1].trim();
+                }
+                
+                // Intentar clasificar como TV o Radio (heurística)
+                const groupMatch = line.match(/group-title="([^"]+)"/);
+                const isRadio = groupMatch && groupMatch[1].toLowerCase().includes('radio');
 
-    } catch (error) {
-        countrySelect.innerHTML = "<option>Error al cargar países.</option>";
-        console.error("Error Radio Browser API:", error);
-    }
-}
-
-async function loadRadios(country) {
-    const radioSelect = document.getElementById("radioSelect");
-    radioSelect.innerHTML = "<option>Cargando radios...</option>";
-
-    try {
-        const res = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(country)}`);
-        const radios = await res.json();
-        
-        radioSelect.innerHTML = "";
-        radios.slice(0, 20).forEach(r => { // Limitar a 20 estaciones
-            const opt = document.createElement("option");
-            opt.value = r.url_resolved;
-            opt.textContent = r.name;
-            radioSelect.appendChild(opt);
-        });
-        
-        const player = document.getElementById("radioPlayer");
-        
-        radioSelect.addEventListener("change", () => {
-            player.src = radioSelect.value;
-            player.play();
-        });
-        
-        if (radioSelect.value) {
-            player.src = radioSelect.value;
-            player.play();
+            } else if (line && !line.startsWith('#')) {
+                // La URL del stream
+                currentItem.url = line;
+                currentItem.type = currentItem.url.toLowerCase().includes('.mp3') || currentItem.url.toLowerCase().includes('.aac') || isRadio ? 'audio' : 'video';
+                
+                // Asignar al array correspondiente
+                if (currentItem.type === 'audio' || currentItem.name.toLowerCase().includes('radio')) {
+                    allMediaData.radio.push(currentItem);
+                } else {
+                    allMediaData.tv.push(currentItem);
+                }
+                
+                currentItem = {}; // Reiniciar para el siguiente item
+            }
         }
+        console.log(`M3U parseado. TV: ${allMediaData.tv.length}, Radio: ${allMediaData.radio.length}`);
     } catch (error) {
-        radioSelect.innerHTML = "<option>Error al cargar estaciones.</option>";
-        console.error("Error Radio Browser API:", error);
+        console.error("Error al descargar o parsear la lista M3U:", error);
     }
 }
 
+
 // =====================================================================
-// === Funciones de TV / Pelis (Demos HLS/M3U8) ===
+// === Lógica del Reproductor Único ===
 // =====================================================================
 
-// Inicializa el reproductor HLS/M3U8
-function playHLS(videoElement, url) {
+const playerElement = document.getElementById("main-media-player");
+const listPlaceholder = document.getElementById("media-list-placeholder");
+const typeSelect = document.getElementById("media-type-select");
+const infoElement = document.getElementById("current-media-info");
+let currentMediaType = 'tv';
+
+// Inicializa el reproductor HLS/M3U8 (Video)
+function playHLS(url) {
     if (Hls.isSupported()) {
         const hls = new Hls();
         hls.loadSource(url);
-        hls.attachMedia(videoElement);
-        videoElement.play();
-    } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
-        videoElement.src = url;
-        videoElement.play();
+        hls.attachMedia(playerElement);
+        playerElement.play();
+    } else if (playerElement.canPlayType("application/vnd.apple.mpegurl")) {
+        playerElement.src = url;
+        playerElement.play();
     } else {
+        infoElement.textContent = "Error: Tu navegador no soporta este stream.";
         console.error("Tu navegador no soporta la reproducción de este stream HLS/M3U8.");
     }
 }
 
-/* --- TV Abierta (Canales IPTV Demos) --- */
-function loadIPTV() {
-    // 💡 Puedes agregar más canales aquí con su nombre y URL del stream (M3U8)
-    const channels = [
-        {name: "Canal Demo 1 (Mux Test)", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"},
-        {name: "Canal Demo 2 (Test)", url: "https://test-streams.mux.dev/test_001/stream.m3u8"},
-        {name: "Noticias (Big Buck Bunny)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8"}
-    ];
-    const select = document.getElementById("tvSelect");
-    
-    channels.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.url;
-        opt.textContent = c.name;
-        select.appendChild(opt);
-    });
-    
-    const video = document.getElementById("tvPlayer");
-    playHLS(video, select.value);
-    
-    select.addEventListener("change", () => {
-        playHLS(video, select.value);
-    });
+// Inicializa el reproductor de Audio
+function playAudio(url) {
+    playerElement.removeAttribute('poster');
+    playerElement.src = url;
+    playerElement.load();
+    playerElement.play();
 }
 
-/* --- Pelis / Series (Demos M3U8) --- */
-function loadMovies() {
-    const movies = [
-        {name: "Big Buck Bunny (Demo)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8"},
-        {name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"}
-    ];
-    const select = document.getElementById("movieSelect");
+
+// Función principal para manejar la reproducción de cualquier elemento
+function handlePlayMedia(item) {
+    // 1. Limpiar estilos "active" anteriores
+    document.querySelectorAll('.media-item').forEach(el => el.classList.remove('active'));
+
+    // 2. Aplicar estilo "active" al elemento seleccionado
+    const selectedElement = document.querySelector(`.media-item[data-url="${item.url}"]`);
+    if (selectedElement) {
+        selectedElement.classList.add('active');
+    }
     
-    movies.forEach(m => {
-        const opt = document.createElement("option");
-        opt.value = m.url;
-        opt.textContent = m.name;
-        select.appendChild(opt);
-    });
+    // 3. Configurar el reproductor (Video/Audio)
+    if (item.type === 'video') {
+        playerElement.tagName = 'VIDEO';
+        playerElement.controls = true;
+        playHLS(item.url);
+        infoElement.textContent = `📺 Viendo: ${item.name}`;
+    } else if (item.type === 'audio') {
+        // Para audio, forzamos el elemento a verse como un reproductor de audio
+        // NOTA: En HTML, el tag sigue siendo <video>, pero podemos usarlo para audio
+        playerElement.tagName = 'AUDIO'; 
+        playerElement.controls = true;
+        playAudio(item.url);
+        infoElement.textContent = `📻 Escuchando: ${item.name}`;
+    }
     
-    const player = document.getElementById("moviePlayer");
-    playHLS(player, select.value);
-    
-    select.addEventListener("change", () => {
-        playHLS(player, select.value);
-    });
+    playerElement.style.display = 'block';
 }
 
-// =====================================================================
-// === Funciones del Diario Digital ===
-// =====================================================================
 
-function loadDailyNews() {
-    const newsData = [
-        {
-            title: "El Futuro Digital de la Televisión Abierta",
-            summary: "Expertos debaten sobre la convergencia de streaming y canales tradicionales en plataformas como Beat Digital TV.",
-            link: "#"
-        },
-        {
-            title: "Tendencias Musicales: El resurgimiento del Rock Latino",
-            summary: "Un análisis de los artistas que dominan las listas y cómo la radio digital amplifica su alcance.",
-            link: "#"
-        },
-        {
-            title: "Reporte: Nuevas Películas HLS y su impacto en el consumo móvil",
-            summary: "La tecnología HLS y M3U8 permite streams de alta calidad y baja latencia, revolucionando las series y películas.",
-            link: "#"
-        }
-    ];
+// Función para renderizar la lista de canales/radios
+function renderMediaList(type) {
+    currentMediaType = type;
+    const mediaList = allMediaData[type];
+    
+    listPlaceholder.innerHTML = "";
+    if (mediaList.length === 0) {
+        listPlaceholder.innerHTML = `<p style="color: var(--secondary-dark);">No hay ${type} disponibles.</p>`;
+        return;
+    }
 
-    const container = document.getElementById("newsContainer");
-    container.innerHTML = newsData.map(article => `
-        <div class="news-article card">
-            <h3>${article.title}</h3>
-            <p>${article.summary}</p>
-            <a href="${article.link}" target="_blank">Leer Más</a>
-        </div>
-    `).join('');
+    mediaList.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "media-item";
+        div.textContent = item.name;
+        div.dataset.url = item.url;
+        div.dataset.type = item.type;
+        
+        div.addEventListener('click', () => {
+            handlePlayMedia(item);
+        });
+        
+        listPlaceholder.appendChild(div);
+    });
+
+    // Reproducir el primer elemento automáticamente
+    if (mediaList.length > 0) {
+        handlePlayMedia(mediaList[0]);
+    }
 }
 
 // =====================================================================
 // === Inicialización ===
 // =====================================================================
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Radio Digital
-    loadCountries();
+document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Cargar y parsear la lista M3U (Radio y TV)
+    await parseM3UList();
     
-    // 2. TV Abierta y Pelis
-    loadIPTV();
-    loadMovies();
+    // 2. Inicializar el selector de tipo de medio
+    typeSelect.addEventListener('change', (e) => {
+        renderMediaList(e.target.value);
+    });
     
-    // 3. Diario Digital
-    loadDailyNews();
+    // 3. Cargar la lista de TV por defecto
+    renderMediaList('tv');
+    
+    // 4. Diario Digital: No necesita JS adicional, solo el iframe
 });
 </script>
 
