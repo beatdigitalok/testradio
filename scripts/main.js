@@ -8,6 +8,10 @@ const TV_M3U_URL = "https://radiosargentina.com.ar/TVAR.m3u";
 // URL de la lista M3U para Radio AM/Digital
 const RADIO_M3U_URL = "https://m3u.cl/lista/AR.m3u"; 
 
+// URL de FALLBACK para RADIO (si la lista M3U falla) - Usando una radio de prueba conocida
+const RADIO_FALLBACK_URL = "http://200.43.192.203:8000/fm-nacional-clasica.mp3"; 
+const RADIO_FALLBACK_ITEM = { name: "Radio Nacional Clásica (Fallback)", url: RADIO_FALLBACK_URL, type: 'audio', logo: "https://via.placeholder.com/35/E50914/FFFFFF?text=RNC" };
+
 // Se utiliza un proxy CORS para evitar el bloqueo del navegador si se ejecuta localmente.
 const CORS_PROXY = "https://api.allorigins.win/raw?url=";
 
@@ -38,15 +42,16 @@ const infoElement = document.getElementById("current-media-info");
 const listPlaceholder = document.getElementById("media-list-placeholder");
 const tabButtons = document.querySelectorAll('.tab-button');
 
+// Variable global para manejar el objeto HLS
+let hlsInstance = null;
+
 
 // =====================================================================
-// === Funciones de Parser M3U (Ahora extrae el logo) ===
+// === Funciones de Parser M3U ===
 // =====================================================================
 
 /**
  * Descarga y parsea una lista M3U desde una URL, incluyendo el logo.
- * @param {string} url - URL del archivo M3U.
- * @param {string} type - 'tv' o 'radio'.
  */
 async function parseM3UList(url, type) {
     try {
@@ -66,20 +71,17 @@ async function parseM3UList(url, type) {
             const line = lines[i].trim();
             
             if (line.startsWith('#EXTINF:')) {
-                // 1. Extraer el nombre
                 const nameMatch = line.match(/,(.+)$/);
                 if (nameMatch && nameMatch[1]) {
                     currentItem.name = nameMatch[1].trim();
                 }
                 
-                // 2. Extraer el logo (si existe)
                 const logoMatch = line.match(/tvg-logo="([^"]+)"/);
                 currentItem.logo = (logoMatch && logoMatch[1]) ? logoMatch[1] : null;
 
             } else if (line && !line.startsWith('#')) {
                 currentItem.url = line;
                 
-                // Heurística de tipo: 'audio' si es la lista de radio o tiene extensión de audio
                 currentItem.type = (type === 'radio' || currentItem.url.toLowerCase().match(/\.(mp3|aac|m4a)$/)) ? 'audio' : 'video';
                 
                 if (currentItem.name && currentItem.url) {
@@ -88,44 +90,70 @@ async function parseM3UList(url, type) {
                 currentItem = {}; 
             }
         }
-        
+
     } catch (error) {
         console.error(`Error al cargar ${type} desde M3U.`, error);
+        
+        // Si falla la radio, agregamos un fallback conocido
+        if (type === 'radio') {
+            allMediaData.radio.push(RADIO_FALLBACK_ITEM);
+        }
     }
 }
 
 
 // =====================================================================
-// === Lógica del Reproductor (Mejorada) ===
+// === Lógica del Reproductor (Solución de Reproducción) ===
 // =====================================================================
+
+/**
+ * Detiene y limpia la instancia HLS anterior si existe.
+ */
+function cleanupHls() {
+    if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+    }
+    // Asegurarse de limpiar la fuente nativa
+    playerElement.src = "";
+    playerElement.load();
+}
 
 /**
  * Inicia la reproducción HLS/M3U8 (Video)
  * @param {string} url - URL del stream.
  */
 function playHLS(url) {
+    cleanupHls();
     playerElement.style.display = 'block';
-    playerElement.load();
+    playerElement.controls = true;
     playerElement.removeAttribute('poster'); 
     
     // Configurar para HLS
-    if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(playerElement);
-        // Intentar reproducir, capturando el error de auto-reproducción
-        playerElement.play().catch(e => {
-            console.warn("Auto-reproducción bloqueada (HLS):", e);
-            infoElement.textContent = `⚠️ Haz clic en el reproductor para ver ${infoElement.textContent.split(': ')[1]}.`;
+    if (Hls.isSupported() && url.toLowerCase().includes('.m3u8')) {
+        hlsInstance = new Hls();
+        hlsInstance.loadSource(url);
+        hlsInstance.attachMedia(playerElement);
+        
+        // El evento cargado es crucial para que la reproducción funcione.
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+            playerElement.play().catch(e => {
+                console.warn("Auto-reproducción bloqueada (HLS):", e);
+                infoElement.textContent = `⚠️ Haz clic en el reproductor para ver ${infoElement.textContent.split(': ')[1]}.`;
+            });
         });
-    } else if (playerElement.canPlayType("application/vnd.apple.mpegurl")) {
+        hlsInstance.on(Hls.Events.ERROR, function(event, data) {
+            console.error("HLS Error:", data);
+            infoElement.textContent = `❌ Error en el stream de TV. Código: ${data.details}.`;
+        });
+        
+    } else {
+        // Fallback nativo (MP4 directo u otros)
         playerElement.src = url;
         playerElement.play().catch(e => {
              console.warn("Auto-reproducción bloqueada (Nativo):", e);
              infoElement.textContent = `⚠️ Haz clic en el reproductor para ver ${infoElement.textContent.split(': ')[1]}.`;
         });
-    } else {
-        infoElement.textContent = "Error: Tu navegador no soporta este stream HLS/M3U8.";
     }
 }
 
@@ -134,7 +162,9 @@ function playHLS(url) {
  * @param {string} url - URL del stream.
  */
 function playAudio(url) {
+    cleanupHls();
     playerElement.style.display = 'block';
+    playerElement.controls = true;
     playerElement.src = url;
     playerElement.load();
     
@@ -149,14 +179,11 @@ function playAudio(url) {
  * @param {object} item - Objeto con name, url, type y logo.
  */
 function handlePlayMedia(item) {
-    // 1. Limpiar estilos "active" en todos los elementos
     document.querySelectorAll('.media-item, .cartoon-card').forEach(el => el.classList.remove('active'));
 
-    // 2. Marcar el elemento seleccionado
     const selector = `.media-item[data-url="${item.url}"], .cartoon-card[data-url="${item.url}"]`;
     document.querySelector(selector)?.classList.add('active');
     
-    // 3. Reproducir
     if (item.type === 'video') {
         playHLS(item.url);
         infoElement.textContent = `📺 Viendo: ${item.name}`;
@@ -173,7 +200,6 @@ function handlePlayMedia(item) {
 
 /**
  * Renderiza la lista de contenido en el panel lateral.
- * @param {string} type - Tipo de contenido a renderizar ('tv', 'radio', 'movies').
  */
 function renderMediaList(type) {
     const mediaList = allMediaData[type];
@@ -190,7 +216,6 @@ function renderMediaList(type) {
         div.dataset.url = item.url;
         div.dataset.type = item.type;
 
-        // Añadir logo si existe, o un placeholder
         const logoSrc = item.logo || `https://via.placeholder.com/35/2A2A2A/FFFFFF?text=${item.name.charAt(0)}`;
         div.innerHTML = `<img src="${logoSrc}" alt="${item.name} logo" class="media-logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/35/2A2A2A/FFFFFF?text=${item.name.charAt(0)}'">
                          <span class="media-name">${item.name}</span>`;
@@ -199,7 +224,7 @@ function renderMediaList(type) {
         listPlaceholder.appendChild(div);
     });
 
-    // Reproducir el primer elemento automáticamente
+    // Reproducir el primer elemento al cargar la lista
     if (mediaList.length > 0) {
         handlePlayMedia(mediaList[0]);
     }
@@ -227,7 +252,6 @@ function renderCartoons() {
         
         card.addEventListener('click', () => {
             handlePlayMedia(cartoon);
-            // Mover la vista al reproductor principal en móviles
             if (window.innerWidth < 1024) {
                  document.getElementById('media-player-section').scrollIntoView({ behavior: 'smooth' });
             }
