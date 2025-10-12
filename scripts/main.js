@@ -8,7 +8,7 @@ const TV_M3U_URL = "https://radiosargentina.com.ar/TVAR.m3u";
 // URL de la lista M3U para Radio AM/Digital
 const RADIO_M3U_URL = "https://m3u.cl/lista/AR.m3u"; 
 
-// URL de FALLBACK para RADIO (si la lista M3U falla) - Usando una radio de prueba conocida
+// URL de FALLBACK para RADIO (si la lista M3U falla) - Prueba estable
 const RADIO_FALLBACK_URL = "http://200.43.192.203:8000/fm-nacional-clasica.mp3"; 
 const RADIO_FALLBACK_ITEM = { name: "Radio Nacional Clásica (Fallback)", url: RADIO_FALLBACK_URL, type: 'audio', logo: "https://via.placeholder.com/35/E50914/FFFFFF?text=RNC" };
 
@@ -17,7 +17,7 @@ const CORS_PROXY = "https://api.allorigins.win/raw?url=";
 
 // Streams de prueba para las secciones fijas
 const DEMO_MOVIES = [
-    { name: "Big Buck Bunny (Demo)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8", type: 'video' },
+    { name: "Big Buck Bunny (Demo Estable)", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8", type: 'video' },
     { name: "Serie Demo Capítulo 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type: 'video' }
 ];
 
@@ -26,7 +26,6 @@ const CARTOONS_CATALOG = [
     { name: "Clásico Animado 1", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8", type: 'video', img: "https://via.placeholder.com/200x140/E50914/FFFFFF?text=CARTOON+1" },
     { name: "Aventura Épica", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type: 'video', img: "https://via.placeholder.com/200x140/141414/E50914?text=CARTOON+2" },
     { name: "Comedia Retro", url: "https://test-streams.mux.dev/bigbuckbunny/master.m3u8", type: 'video', img: "https://via.placeholder.com/200x140/E50914/FFFFFF?text=CARTOON+3" },
-    { name: "Serie de Fantasía", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", type: 'video', img: "https://via.placeholder.com/200x140/141414/E50914?text=CARTOON+4" },
 ];
 
 let allMediaData = {
@@ -36,7 +35,7 @@ let allMediaData = {
 };
 
 // Referencias a elementos del DOM
-const playerElement = document.getElementById("main-media-player");
+let playerElement = document.getElementById("main-media-player");
 const infoElement = document.getElementById("current-media-info");
 const listPlaceholder = document.getElementById("media-list-placeholder");
 const tabButtons = document.querySelectorAll('.tab-button');
@@ -75,9 +74,8 @@ async function parseM3UList(url, type) {
                     currentItem.name = nameMatch[1].trim();
                 }
                 
-                // Extraer el logo
+                // Extraer el logo y aplicarle el proxy
                 const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-                // Usamos el proxy para el logo también, ya que los logos de IPTV pueden tener CORS
                 currentItem.logo = (logoMatch && logoMatch[1]) ? `${CORS_PROXY}${encodeURIComponent(logoMatch[1])}` : null;
 
             } else if (line && !line.startsWith('#')) {
@@ -95,7 +93,6 @@ async function parseM3UList(url, type) {
     } catch (error) {
         console.error(`Error al cargar ${type} desde M3U.`, error);
         
-        // Si falla la radio, agregamos un fallback conocido
         if (type === 'radio' && allMediaData.radio.length === 0) {
             allMediaData.radio.push(RADIO_FALLBACK_ITEM);
         }
@@ -104,34 +101,55 @@ async function parseM3UList(url, type) {
 
 
 // =====================================================================
-// === Lógica del Reproductor (Mejorada para Estabilidad) ===
+// === Lógica del Reproductor (Adaptación a Tipo de Stream) ===
 // =====================================================================
 
 /**
  * Detiene y limpia la instancia HLS anterior si existe.
  */
-function cleanupHls() {
+function cleanupPlayer() {
     if (hlsInstance) {
         hlsInstance.destroy();
         hlsInstance = null;
     }
     playerElement.src = "";
     playerElement.load();
+    playerElement.pause();
 }
 
 /**
+ * Reemplaza el elemento del reproductor (VIDEO o AUDIO)
+ * @param {string} tagName - 'video' o 'audio'.
+ */
+function swapPlayerElement(tagName) {
+    if (playerElement.tagName.toLowerCase() === tagName) return;
+    
+    const newPlayer = document.createElement(tagName);
+    newPlayer.id = 'main-media-player';
+    newPlayer.controls = true;
+    newPlayer.autoplay = true; 
+
+    // Copiar atributos necesarios del antiguo al nuevo
+    const wrapper = playerElement.parentNode;
+    wrapper.replaceChild(newPlayer, playerElement);
+    playerElement = newPlayer; // Actualizar la referencia global
+}
+
+
+/**
  * Inicia la reproducción HLS/M3U8 (Video)
- * @param {string} url - URL del stream.
+ * **USANDO HLS.js**
  */
 function playHLS(url) {
-    cleanupHls();
-    playerElement.style.display = 'block';
-    playerElement.controls = true;
-    playerElement.removeAttribute('poster'); 
+    swapPlayerElement('video');
+    cleanupPlayer();
     
-    // Configurar para HLS
     if (Hls.isSupported() && url.toLowerCase().includes('.m3u8')) {
-        hlsInstance = new Hls();
+        hlsInstance = new Hls({
+            // Mejorar la tolerancia a fallos
+            maxBufferLength: 30,
+            maxMaxBufferLength: 60,
+        });
         hlsInstance.loadSource(url);
         hlsInstance.attachMedia(playerElement);
         
@@ -142,17 +160,17 @@ function playHLS(url) {
             });
         });
         
-        // Detección Crítica de Fallo
+        // Detección Crítica de Fallo de red/stream
         hlsInstance.on(Hls.Events.ERROR, function(event, data) {
             if (data.fatal) {
                 console.error("HLS ERROR FATAL:", data);
-                infoElement.textContent = `❌ ERROR FATAL: El stream está caído o bloqueado. Intenta con otro canal.`;
-                cleanupHls();
+                infoElement.textContent = `❌ ERROR FATAL: El stream (${data.details}) está caído, bloqueado o la URL es incorrecta.`;
+                cleanupPlayer();
             }
         });
         
     } else {
-        // Fallback nativo (MP4 directo u otros)
+        // Fallback nativo para streams directos que no son HLS
         playerElement.src = url;
         playerElement.play().catch(e => {
              console.warn("Auto-reproducción bloqueada (Nativo):", e);
@@ -163,12 +181,12 @@ function playHLS(url) {
 
 /**
  * Inicia la reproducción de Audio
- * @param {string} url - URL del stream.
+ * **USANDO ETIQUETA NATIVA <audio>**
  */
 function playAudio(url) {
-    cleanupHls();
-    playerElement.style.display = 'block';
-    playerElement.controls = true;
+    swapPlayerElement('audio');
+    cleanupPlayer();
+    
     playerElement.src = url;
     playerElement.load();
     
@@ -219,6 +237,7 @@ function renderMediaList(type) {
         div.dataset.url = item.url;
         div.dataset.type = item.type;
 
+        // Si el logo falla, usa un placeholder con la inicial
         const logoSrc = item.logo || `https://via.placeholder.com/35/2A2A2A/FFFFFF?text=${item.name.charAt(0)}`;
         div.innerHTML = `<img src="${logoSrc}" alt="${item.name} logo" class="media-logo" onerror="this.onerror=null;this.src='https://via.placeholder.com/35/2A2A2A/FFFFFF?text=${item.name.charAt(0)}'">
                          <span class="media-name">${item.name}</span>`;
@@ -227,7 +246,7 @@ function renderMediaList(type) {
         listPlaceholder.appendChild(div);
     });
 
-    // Reproducir el primer elemento al cargar la lista (pero solo si no está reproduciendo el demo)
+    // Reproducir el primer elemento al cargar la lista (solo si no estamos ya en el demo inicial)
     if (mediaList.length > 0 && !playerElement.src.includes('bigbuckbunny')) {
         handlePlayMedia(mediaList[0]);
     }
@@ -272,7 +291,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 1. Iniciar con un canal de DEMO ESTABLE para verificar que el reproductor funciona
     const demoItem = DEMO_MOVIES[0];
     playHLS(demoItem.url);
-    infoElement.textContent = `📺 Viendo: ${demoItem.name} (Prueba de Reproductor)`;
+    infoElement.textContent = `📺 Viendo: ${demoItem.name} (Prueba de Reproductor Funcional)`;
     
     // 2. Cargar todas las listas M3U/M3U8 en segundo plano
     await parseM3UList(TV_M3U_URL, 'tv');
