@@ -10,17 +10,18 @@
 
     <style>
         /* =======================================
-        VARIABLES y ESTILOS GENERALES
+        VARIABLES y ESTILOS GENERALES (Pluto-like: Negro, Naranja)
         ======================================= */
         :root {
             --bg-dark: #0f0f0f;
             --bg-medium: #1c1c1c;
-            --primary-color: #ff9900;
+            --primary-color: #ff8800; /* Naranja más vivo, similar a Pluto TV */
             --text-color: #ffffff;
             --header-height: 60px;
             --player-height-desktop: 70vh; 
             --player-height-mobile: 35vh; 
-            --guide-narrow-width: 250px; /* Ancho de la guía vertical */
+            --guide-narrow-width: 250px; 
+            --selection-bg: #333333; /* Fondo de selección más oscuro */
         }
 
         body {
@@ -32,7 +33,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden; /* Evita el scroll general de la página */
+            overflow: hidden; 
         }
 
         /* =======================================
@@ -61,13 +62,14 @@
         #main-nav button {
             background: none; border: none; color: var(--text-color); font-size: 1.1em; font-weight: 700; padding: 10px 0; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap;
         }
+        #main-nav button:hover { color: var(--primary-color); }
         #main-nav button.active { color: var(--primary-color); }
         #main-nav button.active::after {
             content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: var(--primary-color); border-radius: 2px;
         }
 
         /* =======================================
-        REPRODUCTOR SUPERIOR
+        REPRODUCTOR SUPERIOR (Controles Minimalistas)
         ======================================= */
         #tv-player-container-wrapper {
             height: var(--player-height-desktop); 
@@ -91,8 +93,9 @@
         }
         #tv-player-container:hover #player-controls { opacity: 1; }
         #player-controls button {
-            background: rgba(255, 255, 255, 0.05); 
-            border: 1px solid rgba(255, 255, 255, 0.2); 
+            /* Iconos más transparentes */
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
             color: var(--text-color); 
             font-size: 1.1em; 
             width: 38px; 
@@ -104,9 +107,11 @@
             transition: background 0.2s, border-color 0.2s;
         }
         #player-controls button:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
             border-color: var(--primary-color);
         }
+        
+        /* INFO CANAL (Similar a barra de info de canal) */
         #channel-info { 
             position: absolute; bottom: 65px; left: 20px; display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 6px; font-size: 1.2em; font-weight: bold; opacity: 0; transition: opacity 0.5s; z-index: 100; pointer-events: none;
         }
@@ -116,7 +121,7 @@
         }
 
         /* =======================================
-        CONTENIDO INFERIOR (Ajuste clave aquí)
+        CONTENIDO INFERIOR
         ======================================= */
         #main-content {
             flex-grow: 1;
@@ -124,28 +129,24 @@
             flex-direction: column;
             overflow: hidden;
         }
-
         #content-section-wrapper {
             flex-grow: 1; 
             background-color: var(--bg-dark);
-            overflow: hidden; /* El contenedor padre NO debe scrollear */
+            overflow: hidden; 
             position: relative;
         }
-        
-        /* CORRECCIÓN: Los hijos ocupan el 100% del padre */
         .content-display {
             width: 100%;
             height: 100%; 
-            /* Se ha eliminado position: absolute */
-            overflow: hidden; /* Controlamos el overflow de cada sección */
+            overflow: hidden; 
             display: none;
             box-sizing: border-box;
         }
         .content-display.active {
-            display: flex; /* La sección LIVE es flex por defecto */
+            display: flex;
         }
 
-        /* === SECCIÓN LIVE (Guía vertical a la izquierda) === */
+        /* === SECCIÓN LIVE (Guía vertical a la izquierda - Pluto TV style) === */
         #live-display {
             display: flex;
             flex-direction: row;
@@ -153,16 +154,15 @@
             height: 100%;
         }
         
-        /* Contenedor de la Guía de Canales (Vertical Estrecha) */
         #channel-guide-list {
-            flex: 0 0 var(--guide-narrow-width); /* Ancho fijo para la guía */
+            flex: 0 0 var(--guide-narrow-width); 
             background-color: var(--bg-medium);
-            overflow-y: auto; /* Permite scroll solo en la guía */
+            overflow-y: auto; 
             border-right: 1px solid #333;
             padding: 10px 0;
         }
 
-        /* Estilo del Canal en la lista vertical (similar a Pluto TV) */
+        /* Estilo del Canal en la lista vertical */
         .tv-channel {
             padding: 8px 15px; 
             background: transparent; 
@@ -172,15 +172,15 @@
             display: flex;
             flex-direction: column; 
         }
-        .tv-channel:hover { background: #2a2a2a; }
+        .tv-channel:hover { background: var(--selection-bg); }
         .tv-channel-selected {
-            background: #2a2a2a !important; 
-            border-left-color: var(--primary-color) !important;
+            background: var(--selection-bg) !important; 
+            border-left-color: var(--primary-color) !important; /* Indicador naranja */
         }
         .tv-channel-content { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
         .tv-channel img { max-height: 25px; width: 45px; object-fit: contain; background: black; padding: 2px; border-radius: 2px; }
         .tv-channel-info { flex-grow: 1; overflow: hidden; }
-        .tv-channel-info .name { font-size: 0.9em; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tv-channel-info .name { font-size: 0.9em; font-weight: 700; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .tv-channel-description { 
             font-size: 0.75em; 
             color: #aaa; 
@@ -191,7 +191,6 @@
             padding-left: 55px;
         }
         
-        /* Contenedor de la Guía EPG Detallada (Futuro) */
         #epg-detail-view {
             flex-grow: 1;
             padding: 20px;
@@ -203,44 +202,96 @@
             font-size: 1.5em;
         }
         
-        /* === SECCIÓN ON DEMAND (Debe ser `flex` o `block` cuando está activo) === */
+        /* === SECCIÓN ON DEMAND (Estilo Cuadrícula de VOD) === */
         #ondemand-display {
-            display: flex;
+            display: flex; 
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: #777;
             overflow-y: auto;
-            /* Añadir padding para que el contenido no se pegue al borde */
             padding: 20px; 
             box-sizing: border-box;
         }
+        #vod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            padding-top: 10px;
+        }
+        .vod-item {
+            cursor: pointer;
+            background: var(--bg-medium);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .vod-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(255, 136, 0, 0.3); /* Sombra naranja al pasar el ratón */
+        }
+        .vod-item img {
+            width: 100%;
+            height: 270px; /* Tamaño de póster vertical */
+            object-fit: cover;
+            display: block;
+        }
+        .vod-info {
+            padding: 10px;
+            text-align: center;
+        }
+        .vod-info .title {
+            font-size: 1em;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .vod-info .year {
+            font-size: 0.8em;
+            color: #aaa;
+            margin-top: 5px;
+        }
         
-        /* === SECCIÓN BUSCAR (Debe ser `flex` o `block` cuando está activo) === */
+        /* === SECCIÓN BUSCAR (Estilo Cuadrícula de resultados - Pluto TV like) === */
         #search-display {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding-top: 50px;
+            padding-top: 20px;
             overflow-y: auto; 
             padding-bottom: 20px;
         }
+        #search-container { 
+            width: 90%; max-width: 600px; margin-bottom: 20px; 
+        }
+        #search-input {
+            width: 100%; padding: 12px; font-size: 1.1em; background: var(--bg-medium); border: 2px solid #333; border-radius: 8px; color: var(--text-color); outline: none; transition: border-color 0.2s; box-sizing: border-box;
+        }
+        #search-input:focus { border-color: var(--primary-color); }
+        #search-results-message { margin-top: 10px; color: #aaa; font-size: 1em; display: none; text-align: center; }
+
+        /* Cuadrícula para la búsqueda (como las categorías de VOD de Pluto TV) */
         #search-results-grid {
             width: 90%;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 10px;
+            gap: 15px;
             justify-content: start;
         }
+        /* Ajuste del canal en la grilla de búsqueda */
         #search-results-grid .tv-channel {
              flex-direction: row; 
              border-left: 5px solid transparent;
+             background: var(--bg-medium); /* Fondo más sólido en la grilla */
+             border-radius: 6px;
+        }
+        #search-results-grid .tv-channel:hover {
+             background: var(--selection-bg);
         }
         #search-results-grid .tv-channel-description {
             display: none; 
         }
+
 
         /* =======================================
         ADAPTACIÓN A MÓVILES (MEDIA QUERY)
@@ -250,27 +301,24 @@
             #platform-logo span { display: none; }
             #main-nav { margin-left: 10px; gap: 10px; }
             #tv-player-container-wrapper { height: var(--player-height-mobile); }
-
             #player-controls { opacity: 1 !important; }
 
             /* En Móvil, la guía ocupa todo el espacio inferior */
-            #live-display {
-                flex-direction: column; 
-            }
-
+            #live-display { flex-direction: column; }
             #channel-guide-list {
                 flex: 1 1 100%; 
                 border-right: none;
                 padding: 10px;
-                height: 100%; /* Ocupa la altura del padre */
+                height: 100%; 
             }
-
-            #epg-detail-view {
-                display: none; 
+            #epg-detail-view { display: none; }
+            #search-display { padding-top: 20px; }
+            
+            #vod-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Reducir tamaño de póster */
             }
-
-            #search-display {
-                padding-top: 20px;
+            .vod-item img {
+                height: 190px;
             }
         }
     </style>
@@ -325,8 +373,38 @@
             </div>
 
             <div id="ondemand-display" class="content-display">
-                <h1>🎬 ON DEMAND</h1>
-                <p>Explora nuestro catálogo de películas y series.</p>
+                <h2 style="color: var(--primary-color); border-bottom: 2px solid #444; padding-bottom: 5px; margin-bottom: 20px; width: 100%;">🎬 Películas y Series</h2>
+                <div id="vod-grid">
+                    <div class="vod-item" onclick="alert('Reproduciendo Película Clásica (VOD)')">
+                        <img src="https://via.placeholder.com/180x270?text=Pelicula+Clasica" alt="Póster de Película Clásica">
+                        <div class="vod-info">
+                            <div class="title">Clásico Intemporal</div>
+                            <div class="year">2005</div>
+                        </div>
+                    </div>
+                    <div class="vod-item" onclick="alert('Reproduciendo Serie de Aventuras (VOD)')">
+                        <img src="https://via.placeholder.com/180x270?text=Serie+Aventura" alt="Póster de Serie de Aventuras">
+                        <div class="vod-info">
+                            <div class="title">Aventura Épica (S1)</div>
+                            <div class="year">2023</div>
+                        </div>
+                    </div>
+                    <div class="vod-item" onclick="alert('Reproduciendo Documental (VOD)')">
+                        <img src="https://via.placeholder.com/180x270?text=Documental" alt="Póster de Documental">
+                        <div class="vod-info">
+                            <div class="title">La Tierra Oculta</div>
+                            <div class="year">2024</div>
+                        </div>
+                    </div>
+                    <div class="vod-item" onclick="alert('Reproduciendo Comedia (VOD)')">
+                        <img src="https://via.placeholder.com/180x270?text=Comedia" alt="Póster de Comedia">
+                        <div class="vod-info">
+                            <div class="title">Risas al Atardecer</div>
+                            <div class="year">2022</div>
+                        </div>
+                    </div>
+                    </div>
+                <p style="text-align: center; color: #777; margin-top: 30px;">Pronto podrás cargar tu propio catálogo VOD aquí.</p>
             </div>
 
             <div id="search-display" class="content-display">
@@ -370,16 +448,14 @@
         // ====================
         // Variables y Elementos del DOM
         // ====================
-        const channelGuideList = document.getElementById("channel-guide-list"); // Nueva guía vertical
+        const channelGuideList = document.getElementById("channel-guide-list"); 
         const navButtons = document.querySelectorAll('#main-nav button');
         const contentDisplays = document.querySelectorAll('.content-display');
         
-        // Elementos de la búsqueda
         const searchInput = document.getElementById("search-input");
         const searchResultsGrid = document.getElementById("search-results-grid");
         const searchResultsMessage = document.getElementById("search-results-message");
 
-        // Elementos de reproducción
         const playerVideo = document.getElementById("tv-player-video");
         const playerIframe = document.getElementById("tv-player-iframe");
         const volumeSlider = document.getElementById("volume-slider");
@@ -398,15 +474,14 @@
             document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
 
             // 2. Gestionar la visibilidad de la sección de contenido inferior
-            contentDisplays.forEach(display => display.classList.remove('active'));
+            contentDisplays.forEach(display => {
+                display.classList.remove('active');
+                display.style.display = 'none'; // Asegurar que desaparece
+            });
             const activeDisplay = document.getElementById(`${sectionId}-display`);
             
-            // Usamos un pequeño truco para asegurar que se muestre como flex/block
-            if (sectionId === 'live') {
-                activeDisplay.style.display = 'flex';
-            } else if (sectionId === 'ondemand' || sectionId === 'search') {
-                activeDisplay.style.display = 'flex'; // Mantener como flex para centrar/alinear
-            }
+            // Usamos display:flex para las secciones activas
+            activeDisplay.style.display = 'flex';
             activeDisplay.classList.add('active');
 
 
@@ -416,18 +491,23 @@
                 filterChannels(searchInput.value || '');
             }
             
-            // 4. Manejo especial para LIVE 
+            // 4. Manejo especial para LIVE (asegurar que la guía esté visible y el canal seleccionado)
             if (sectionId === 'live') {
                 renderChannels(channels, channelGuideList); 
                 const currentEl = channelGuideList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
                 if(currentEl) currentEl.classList.add("tv-channel-selected");
                 scrollToChannel(currentChannelIndex, channelGuideList);
             }
+            
+            // 5. ONDEMAND: Renderizar el placeholder si es necesario
+            if (sectionId === 'ondemand') {
+                // Aquí podrías cargar dinámicamente tu contenido VOD
+                console.log("Cargando catálogo On Demand...");
+            }
         }
 
         navButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                // Asegurarse de que se usa el data-section del botón
                 showSection(e.currentTarget.dataset.section);
             });
         });
