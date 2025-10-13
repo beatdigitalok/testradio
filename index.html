@@ -93,7 +93,7 @@
         }
         #tv-player-container:hover #player-controls { opacity: 1; }
         #player-controls button {
-            /* Iconos más transparentes */
+            /* Estilo Minimalista/Transparente */
             background: rgba(255, 255, 255, 0.1); 
             border: 1px solid rgba(255, 255, 255, 0.3); 
             color: var(--text-color); 
@@ -105,10 +105,20 @@
             border-radius: 50%; 
             cursor: pointer; 
             transition: background 0.2s, border-color 0.2s;
+            display: flex; /* Para centrar el SVG */
+            align-items: center;
+            justify-content: center;
         }
         #player-controls button:hover {
             background: rgba(255, 255, 255, 0.2);
             border-color: var(--primary-color);
+        }
+        /* ESTILO SVG: Asegura que el icono sea blanco */
+        #player-controls button svg {
+            fill: var(--text-color); /* Blanco */
+            width: 18px; 
+            height: 18px;
+            display: block;
         }
         
         /* INFO CANAL (Similar a barra de info de canal) */
@@ -146,7 +156,7 @@
             display: flex;
         }
 
-        /* === SECCIÓN LIVE (Guía vertical a la izquierda - Pluto TV style) === */
+        /* === SECCIÓN LIVE (Guía vertical a la izquierda) === */
         #live-display {
             display: flex;
             flex-direction: row;
@@ -175,7 +185,7 @@
         .tv-channel:hover { background: var(--selection-bg); }
         .tv-channel-selected {
             background: var(--selection-bg) !important; 
-            border-left-color: var(--primary-color) !important; /* Indicador naranja */
+            border-left-color: var(--primary-color) !important; 
         }
         .tv-channel-content { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
         .tv-channel img { max-height: 25px; width: 45px; object-fit: contain; background: black; padding: 2px; border-radius: 2px; }
@@ -202,7 +212,7 @@
             font-size: 1.5em;
         }
         
-        /* === SECCIÓN ON DEMAND (Estilo Cuadrícula de VOD) === */
+        /* === SECCIÓN ON DEMAND === */
         #ondemand-display {
             display: flex; 
             flex-direction: column;
@@ -226,11 +236,11 @@
         }
         .vod-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(255, 136, 0, 0.3); /* Sombra naranja al pasar el ratón */
+            box-shadow: 0 8px 15px rgba(255, 136, 0, 0.3); 
         }
         .vod-item img {
             width: 100%;
-            height: 270px; /* Tamaño de póster vertical */
+            height: 270px; 
             object-fit: cover;
             display: block;
         }
@@ -251,7 +261,7 @@
             margin-top: 5px;
         }
         
-        /* === SECCIÓN BUSCAR (Estilo Cuadrícula de resultados - Pluto TV like) === */
+        /* === SECCIÓN BUSCAR === */
         #search-display {
             display: flex;
             flex-direction: column;
@@ -270,7 +280,6 @@
         #search-input:focus { border-color: var(--primary-color); }
         #search-results-message { margin-top: 10px; color: #aaa; font-size: 1em; display: none; text-align: center; }
 
-        /* Cuadrícula para la búsqueda (como las categorías de VOD de Pluto TV) */
         #search-results-grid {
             width: 90%;
             display: grid;
@@ -278,11 +287,10 @@
             gap: 15px;
             justify-content: start;
         }
-        /* Ajuste del canal en la grilla de búsqueda */
         #search-results-grid .tv-channel {
              flex-direction: row; 
              border-left: 5px solid transparent;
-             background: var(--bg-medium); /* Fondo más sólido en la grilla */
+             background: var(--bg-medium); 
              border-radius: 6px;
         }
         #search-results-grid .tv-channel:hover {
@@ -303,7 +311,6 @@
             #tv-player-container-wrapper { height: var(--player-height-mobile); }
             #player-controls { opacity: 1 !important; }
 
-            /* En Móvil, la guía ocupa todo el espacio inferior */
             #live-display { flex-direction: column; }
             #channel-guide-list {
                 flex: 1 1 100%; 
@@ -315,7 +322,7 @@
             #search-display { padding-top: 20px; }
             
             #vod-grid {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Reducir tamaño de póster */
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
             }
             .vod-item img {
                 height: 190px;
@@ -348,14 +355,19 @@
                 </div>
 
                 <div id="player-controls">
-                    <button id="btn-play">▶️</button>
-                    <button id="btn-pause">⏸️</button>
+                    <button id="btn-play">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> </button>
+                    <button id="btn-pause">
+                        <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg> </button>
                     <div id="volume-control">
-                        <button id="btn-mute">🔊</button>
+                        <button id="btn-mute">
+                            <svg viewBox="0 0 24 24" id="volume-icon"><path d="M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.98 7-4.72 7-8.77s-2.99-7.79-7-8.77z"/></svg>
+                        </button>
                         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
                     </div>
                     <div style="flex-grow: 1;"></div> 
-                    <button id="btn-fullscreen">⛶</button>
+                    <button id="btn-fullscreen">
+                        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg> </button>
                 </div>
             </div>
         </div>
@@ -403,7 +415,7 @@
                             <div class="year">2022</div>
                         </div>
                     </div>
-                    </div>
+                </div>
                 <p style="text-align: center; color: #777; margin-top: 30px;">Pronto podrás cargar tu propio catálogo VOD aquí.</p>
             </div>
 
@@ -460,6 +472,8 @@
         const playerIframe = document.getElementById("tv-player-iframe");
         const volumeSlider = document.getElementById("volume-slider");
         const infoBox = document.getElementById("channel-info");
+        const btnMute = document.getElementById("btn-mute");
+        const volumeIconSVG = document.querySelector('#btn-mute svg path'); // Referencia al path del icono de volumen
         
         let currentChannelIndex = 0;
         let hls, dash;
@@ -476,11 +490,10 @@
             // 2. Gestionar la visibilidad de la sección de contenido inferior
             contentDisplays.forEach(display => {
                 display.classList.remove('active');
-                display.style.display = 'none'; // Asegurar que desaparece
+                display.style.display = 'none'; 
             });
             const activeDisplay = document.getElementById(`${sectionId}-display`);
             
-            // Usamos display:flex para las secciones activas
             activeDisplay.style.display = 'flex';
             activeDisplay.classList.add('active');
 
@@ -491,7 +504,7 @@
                 filterChannels(searchInput.value || '');
             }
             
-            // 4. Manejo especial para LIVE (asegurar que la guía esté visible y el canal seleccionado)
+            // 4. Manejo especial para LIVE (vuelve a la lista)
             if (sectionId === 'live') {
                 renderChannels(channels, channelGuideList); 
                 const currentEl = channelGuideList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
@@ -501,7 +514,6 @@
             
             // 5. ONDEMAND: Renderizar el placeholder si es necesario
             if (sectionId === 'ondemand') {
-                // Aquí podrías cargar dinámicamente tu contenido VOD
                 console.log("Cargando catálogo On Demand...");
             }
         }
@@ -602,13 +614,11 @@
             
             document.querySelectorAll('.tv-channel-selected').forEach(el => el.classList.remove("tv-channel-selected"));
             
-            // Actualizar selección en la guía LIVE
             const selectedLiveEl = channelGuideList.querySelector(`[data-channel-index="${idx}"]`);
             if (selectedLiveEl) {
                 selectedLiveEl.classList.add("tv-channel-selected");
                 scrollToChannel(idx, channelGuideList);
             }
-            // Actualizar selección en la grilla de BÚSQUEDA
             const selectedSearchEl = searchResultsGrid.querySelector(`[data-channel-index="${idx}"]`);
             if (selectedSearchEl) {
                 selectedSearchEl.classList.add("tv-channel-selected");
@@ -645,6 +655,9 @@
                 }
                 document.getElementById("player-controls").style.display = 'flex';
             }
+            
+            // Forzar el estado de volumen al cambiar de canal para asegurar que el icono es correcto
+            updateVolume(playerVideo.volume);
         }
 
         function scrollToChannel(idx, container) {
@@ -658,12 +671,23 @@
         // ====================
         // Controles de Volumen y Teclado
         // ====================
-        const btnMute = document.getElementById("btn-mute");
+        
         function updateVolume(newVolume) {
             playerVideo.volume = newVolume;
             volumeSlider.value = newVolume;
             playerVideo.muted = newVolume === 0;
-            btnMute.textContent = newVolume === 0 ? '🔇' : '🔊';
+            
+            // Lógica para cambiar el icono MUTE/UNMUTE usando SVG paths
+            if (newVolume === 0 || playerVideo.muted) {
+                // Mute (Altavoz con barra cruzada)
+                volumeIconSVG.setAttribute('d', 'M16 7.5L14.7 6.2 12 8.9 9.3 6.2 8 7.5 10.7 10 8 12.5 9.3 13.8 12 11.1 14.7 13.8 16 12.5 13.3 10zM3 9v6h4l5 5V4L7 9z');
+            } else if (newVolume < 0.5) {
+                // Volumen bajo (Altavoz con una onda)
+                volumeIconSVG.setAttribute('d', 'M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4z');
+            } else {
+                // Volumen alto (Altavoz con dos ondas)
+                volumeIconSVG.setAttribute('d', 'M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.98 7-4.72 7-8.77s-2.99-7.79-7-8.77z');
+            }
         }
         
         volumeSlider.oninput = (e) => {
@@ -674,10 +698,14 @@
 
         btnMute.onclick = () => {
             if (playerVideo.muted || playerVideo.volume === 0) {
+                // Desmutear
                 let vol = lastVolume > 0 ? lastVolume : 0.5;
+                playerVideo.muted = false;
                 updateVolume(vol);
             } else {
+                // Mutear
                 lastVolume = playerVideo.volume;
+                playerVideo.muted = true;
                 updateVolume(0);
             }
         };
@@ -768,17 +796,22 @@
             
             // Intentar reproducir el primer canal al cargar
             playChannel(0); 
+            
+            // El navegador a menudo fuerza el muteo en autoplay, ajustamos el icono
+            playerVideo.addEventListener('volumechange', () => {
+                updateVolume(playerVideo.volume);
+            });
 
-            // Manejo de autoplay fallido (silenciar y reintentar si es necesario)
             playerVideo.addEventListener('play', () => {
-                if(playerVideo.muted) {
-                    playerVideo.muted = false; 
-                    updateVolume(lastVolume);
-                }
+                // Si el navegador permite el play, aseguramos el estado de volumen correcto.
+                updateVolume(playerVideo.volume);
             });
             playerVideo.addEventListener('error', (e) => {
                 console.error("Error de reproducción:", e);
             });
+            
+            // Inicializar el icono de volumen
+            updateVolume(volumeSlider.value);
         });
     </script>
 </body>
