@@ -539,4 +539,406 @@
         // ====================
         const channels = [
             {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png", playing: "Programación en vivo", description: "Espectáculos, chismes y entrevistas."}, 
-            {name: "Bloomberg", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Bloomberg_TV.svg", url
+            {name: "Bloomberg", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Bloomberg_TV.svg", url: "https://liveprodusphoenixeast.akamaized.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8", type: "hls", playing: "Noticias financieras", description: "Análisis de mercados globales 24/7."},
+            {name: "Canal 22", logo: "https://i.imgur.com/R4wXVxf.png", url: "https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8", type: "hls", playing: "Cultura y Arte", description: "Lo mejor del cine, teatro y danza."},
+            {name: "AMC", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/AMC_logo_2019.svg", url: "https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8", type: "hls", playing: "Películas y Series Clásicas", description: "Westerns, dramas y clásicos de culto."},
+            {name: "Argentinisima", logo: "https://www.argentinisimatv.com.ar/favicon.ico", url: "https://stream1.sersat.com/hls/argentinisima.m3u8", type: "hls", playing: "Música Folklórica", description: "Raíces y tradiciones argentinas."},
+            {name: "Canal de la Ciudad", logo: "https://www.buenosaires.gob.ar/sites/gcaba/files/favicon_0.ico", url: "https://www.youtube.com/embed/VHCnqfdX-t0?si=IdP5kIMZ1_9wP_m4&autoplay=1", type: "youtube", playing: "Noticias de Buenos Aires", description: "Información local y servicios."},
+            {name: "El Trece", logo: "https://i.imgur.com/TrgBAdA.png", url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8", type: "hls", playing: "Telenovelas y Noticieros", description: "Grandes éxitos de la televisión."},
+            {name: "Magic Kids", logo: "https://i.imgur.com/CMImqQY.png", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", type: "hls", playing: "Dibujos Animados (Retro)", description: "La nostalgia de los 90s."},
+            {name: "NET TV", logo: "https://i.imgur.com/IhJ0BjF.png", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", type: "hls", playing: "Magazine y entretenimiento", description: "Programas de actualidad y moda."},
+            {name:"5tv", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8", logo:"https://i.imgur.com/mSn7ACs.png", playing: "Noticiero Central", description: "Noticias desde el centro del país."},
+            {name:"13Max Television", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8", logo:"https://i.imgur.com/QvF4lT.png", playing: "Deportes", description: "Transmisiones deportivas locales."},
+            {name:"Aire de Santa Fe", type:"hls", url:"https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8", logo:"https://i.imgur.com/60vSWW0.png", playing: "Programas Locales", description: "Información y cultura santafesina."},
+            {name:"AlternaTV", type:"hls", url:"https://alternatv.ar/stream/hls/live.m3u8", logo:"https://alternatv.ar/alternatv.png", playing: "Canal Independiente", description: "Contenido alternativo y experimental."},
+            {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor", description: "Noticias y pruebas de autos."},
+            {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven", description: "Videos musicales y tendencias."},
+            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVu.png", playing: "Variedades", description: "Programas misceláneos y entretenimiento."},
+        ];
+
+        // ====================
+        // Variables y Elementos del DOM
+        // ====================
+        const channelGuideList = document.getElementById("channel-guide-list"); 
+        const navButtons = document.querySelectorAll('#main-nav button');
+        const contentDisplays = document.querySelectorAll('.content-display');
+        
+        const searchInput = document.getElementById("search-input");
+        const searchResultsGrid = document.getElementById("search-results-grid");
+        const searchResultsMessage = document.getElementById("search-results-message");
+
+        const playerVideo = document.getElementById("tv-player-video");
+        const playerIframe = document.getElementById("tv-player-iframe");
+        const volumeSlider = document.getElementById("volume-slider");
+        const infoBox = document.getElementById("channel-info");
+        const btnMute = document.getElementById("btn-mute");
+        const volumeIconSVG = document.querySelector('#btn-mute svg path');
+        
+        const sideMenuOverlay = document.getElementById('side-menu-overlay');
+        const sideMenu = document.getElementById('side-menu');
+        
+        let currentChannelIndex = 0;
+        let hls, dash;
+        let lastVolume = 0.5; 
+
+        // ====================
+        // Funcionalidad Menú Lateral (Hamburguesa)
+        // ====================
+        function toggleMenu(force) {
+            const isOpen = sideMenuOverlay.classList.contains('open');
+            const shouldOpen = force !== undefined ? force : !isOpen;
+            
+            if (shouldOpen) {
+                sideMenuOverlay.classList.add('open');
+                sideMenu.focus();
+                document.body.style.overflow = 'hidden'; 
+            } else {
+                sideMenuOverlay.classList.remove('open');
+                document.body.style.overflow = ''; 
+            }
+        }
+        
+        // Cerrar menú al hacer clic fuera
+        sideMenuOverlay.addEventListener('click', (e) => {
+            if (e.target.id === 'side-menu-overlay') {
+                toggleMenu(false);
+            }
+        });
+
+        // ====================
+        // Funcionalidad de Navegación
+        // ====================
+        function showSection(sectionId) {
+            
+            // 1. Gestionar la pestaña activa en el HEADER
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            const headerBtn = document.querySelector(`#main-nav [data-section="${sectionId}"]`);
+            if (headerBtn) headerBtn.classList.add('active');
+            
+            // 2. Gestionar la pestaña activa en el MENÚ LATERAL
+            document.querySelectorAll('#side-menu a[data-section]').forEach(link => link.classList.remove('active'));
+            const menuLink = document.querySelector(`#side-menu a[data-section="${sectionId}"]`);
+            if (menuLink) menuLink.classList.add('active');
+
+
+            // 3. Gestionar la visibilidad de la sección de contenido inferior
+            contentDisplays.forEach(display => {
+                display.classList.remove('active');
+                display.style.display = 'none'; 
+            });
+            const activeDisplay = document.getElementById(`${sectionId}-display`);
+            activeDisplay.style.display = 'flex';
+            activeDisplay.classList.add('active');
+
+
+            // 4. Manejo especial para la búsqueda
+            if (sectionId === 'search') {
+                searchInput.focus();
+                filterChannels(searchInput.value || '');
+            }
+            
+            // 5. Manejo especial para LIVE (vuelve a la lista)
+            if (sectionId === 'live') {
+                renderChannels(channels, channelGuideList); 
+                const currentEl = channelGuideList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
+                if(currentEl) currentEl.classList.add("tv-channel-selected");
+                scrollToChannel(currentChannelIndex, channelGuideList);
+            }
+        }
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                showSection(e.currentTarget.dataset.section);
+            });
+        });
+
+        // ====================
+        // Funcionalidad de Búsqueda
+        // ====================
+        function filterChannels(searchTerm) {
+            searchTerm = searchTerm.toLowerCase().trim();
+            const resultsContainer = searchResultsGrid;
+            resultsContainer.innerHTML = '';
+            searchResultsMessage.style.display = 'none';
+
+            if (searchTerm.length === 0) {
+                searchResultsMessage.textContent = 'Escribe para encontrar canales...';
+                searchResultsMessage.style.display = 'block';
+                return;
+            }
+
+            const filteredChannels = channels.filter(ch => 
+                ch.name.toLowerCase().includes(searchTerm) || 
+                (ch.playing && ch.playing.toLowerCase().includes(searchTerm)) ||
+                (ch.description && ch.description.toLowerCase().includes(searchTerm))
+            );
+
+            if (filteredChannels.length === 0) {
+                searchResultsMessage.textContent = `No se encontraron resultados para "${searchTerm}".`;
+                searchResultsMessage.style.display = 'block';
+            } else {
+                renderChannels(filteredChannels, resultsContainer);
+                
+                const selectedEl = resultsContainer.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
+                if (selectedEl) selectedEl.classList.add("tv-channel-selected");
+            }
+        }
+        
+        searchInput.addEventListener('input', () => {
+            filterChannels(searchInput.value);
+        });
+
+        // ====================
+        // Funciones de Reproducción y Canales
+        // ====================
+
+        function renderChannels(list, container) {
+             container.innerHTML = ''; 
+             
+             list.forEach((ch) => {
+                const originalIndex = channels.findIndex(c => c.name === ch.name); 
+
+                const div = document.createElement("div");
+                div.className = "tv-channel";
+                div.setAttribute('tabindex', 0); 
+                div.setAttribute('data-channel-index', originalIndex); 
+                div.innerHTML = `
+                    <div class="tv-channel-content">
+                        <img src="${ch.logo}" alt="${ch.name}">
+                        <div class="tv-channel-info">
+                            <span class="name" title="${ch.name}">${ch.name}</span>
+                        </div>
+                    </div>
+                    ${container === channelGuideList ? `<div class="tv-channel-description">${ch.description || ch.playing || 'En vivo'}</div>` : ''}
+                `;
+                div.addEventListener("click", () => playChannel(originalIndex));
+                div.addEventListener("keydown", (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        playChannel(originalIndex);
+                    }
+                });
+                container.appendChild(div);
+            });
+        }
+        
+        function playChannel(idx) {
+            currentChannelIndex = idx;
+            const ch = channels[idx];
+            
+            if (hls) { hls.destroy(); hls = null; }
+            if (dash) { dash.reset(); dash = null; }
+
+            playerVideo.style.display = "none";
+            playerIframe.style.display = "none";
+            playerVideo.pause();
+            playerIframe.src = "";
+
+            document.getElementById('channel-logo').src = ch.logo;
+            document.getElementById('channel-name').textContent = ch.name;
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+            
+            document.querySelectorAll('.tv-channel-selected').forEach(el => el.classList.remove("tv-channel-selected"));
+            
+            const selectedLiveEl = channelGuideList.querySelector(`[data-channel-index="${idx}"]`);
+            if (selectedLiveEl) {
+                selectedLiveEl.classList.add("tv-channel-selected");
+                scrollToChannel(idx, channelGuideList);
+            }
+            const selectedSearchEl = searchResultsGrid.querySelector(`[data-channel-index="${idx}"]`);
+            if (selectedSearchEl) {
+                selectedSearchEl.classList.add("tv-channel-selected");
+            }
+
+
+            // Configurar y mostrar el reproductor correcto
+            if (ch.type === "youtube") {
+                playerIframe.style.display = "block";
+                const urlWithParams = ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0&rel=0";
+                playerIframe.src = urlWithParams;
+                document.getElementById("player-controls").style.display = 'none';
+            } else if (ch.type === "dash") {
+                playerVideo.style.display = "block";
+                dash = dashjs.MediaPlayer().create();
+                dash.initialize(playerVideo, ch.url, true);
+                playerVideo.volume = volumeSlider.value;
+                playerVideo.play().catch(e => console.error("Autoplay bloqueado (DASH):", e));
+                document.getElementById("player-controls").style.display = 'flex';
+            } else { // HLS o MP4 nativo
+                playerVideo.style.display = "block";
+                if (Hls.isSupported()) {
+                    hls = new Hls();
+                    hls.loadSource(ch.url);
+                    hls.attachMedia(playerVideo);
+                    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                        playerVideo.volume = volumeSlider.value;
+                        playerVideo.play().catch(e => console.error("Autoplay bloqueado (HLS):", e));
+                    });
+                } else {
+                    playerVideo.src = ch.url;
+                    playerVideo.volume = volumeSlider.value;
+                    playerVideo.play().catch(e => console.error("Autoplay bloqueado (Nativo):", e));
+                }
+                document.getElementById("player-controls").style.display = 'flex';
+            }
+            
+            updateVolume(playerVideo.volume);
+        }
+
+        function scrollToChannel(idx, container) {
+            const channelEl = container.querySelector(`[data-channel-index="${idx}"]`);
+            if (channelEl) {
+                const offset = channelEl.offsetTop - (container.offsetHeight / 2) + (channelEl.offsetHeight / 2);
+                container.scrollTo({ top: offset, behavior: 'smooth' });
+            }
+        }
+        
+        // ====================
+        // Controles de Volumen
+        // ====================
+        
+        function updateVolume(newVolume) {
+            playerVideo.volume = newVolume;
+            volumeSlider.value = newVolume;
+            playerVideo.muted = newVolume === 0;
+            
+            // Lógica para cambiar el icono MUTE/UNMUTE usando SVG paths
+            if (newVolume === 0 || playerVideo.muted) {
+                // Mute (Altavoz con barra cruzada)
+                volumeIconSVG.setAttribute('d', 'M16 7.5L14.7 6.2 12 8.9 9.3 6.2 8 7.5 10.7 10 8 12.5 9.3 13.8 12 11.1 14.7 13.8 16 12.5 13.3 10zM3 9v6h4l5 5V4L7 9z');
+            } else if (newVolume < 0.5) {
+                // Volumen bajo (Altavoz con una onda)
+                volumeIconSVG.setAttribute('d', 'M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4z');
+            } else {
+                // Volumen alto (Altavoz con dos ondas)
+                volumeIconSVG.setAttribute('d', 'M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.98 7-4.72 7-8.77s-2.99-7.79-7-8.77z');
+            }
+        }
+        
+        volumeSlider.oninput = (e) => {
+            const newVolume = parseFloat(e.target.value);
+            updateVolume(newVolume);
+            lastVolume = newVolume > 0 ? newVolume : 0.5;
+        };
+
+        btnMute.onclick = () => {
+            if (playerVideo.muted || playerVideo.volume === 0) {
+                let vol = lastVolume > 0 ? lastVolume : 0.5;
+                playerVideo.muted = false;
+                updateVolume(vol);
+            } else {
+                lastVolume = playerVideo.volume;
+                playerVideo.muted = true;
+                updateVolume(0);
+            }
+        };
+
+        document.getElementById("btn-play").onclick = () => { 
+            if (playerVideo.style.display === "block") playerVideo.play().catch(()=>{}); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+        };
+        document.getElementById("btn-pause").onclick = () => { 
+            if (playerVideo.style.display === "block") playerVideo.pause(); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+        };
+        document.getElementById("btn-fullscreen").onclick = () => {
+            const container = document.getElementById("tv-player-container");
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            }
+        };
+
+        // Navegación por teclado (Flechas)
+        document.addEventListener("keydown", e => {
+            const currentSection = document.querySelector('#main-nav button.active')?.dataset.section || 'live';
+            
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault(); 
+                
+                let container;
+                
+                if (currentSection === 'live') {
+                    container = channelGuideList;
+                } else if (currentSection === 'search') {
+                    container = searchResultsGrid;
+                } else {
+                    return; 
+                }
+                
+                const visibleChannelElements = Array.from(container.querySelectorAll('.tv-channel'));
+                
+                if (visibleChannelElements.length > 0) {
+                    const selectedEl = visibleChannelElements.find(el => parseInt(el.dataset.channelIndex) === currentChannelIndex);
+                    let currentIndex = selectedEl ? visibleChannelElements.indexOf(selectedEl) : -1;
+
+                    if (currentIndex === -1) {
+                         currentIndex = e.key === "ArrowDown" ? 0 : visibleChannelElements.length - 1;
+                    } else {
+                        currentIndex = e.key === "ArrowDown" 
+                            ? (currentIndex + 1) % visibleChannelElements.length
+                            : (currentIndex - 1 + visibleChannelElements.length) % visibleChannelElements.length;
+                    }
+                    
+                    const nextOriginalIndex = parseInt(visibleChannelElements[currentIndex].dataset.channelIndex);
+
+                    playChannel(nextOriginalIndex);
+                }
+            }
+            
+            // Control de volumen con flechas izquierda/derecha
+            if (playerVideo.style.display === "block" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+                 e.preventDefault(); 
+                 const step = 0.05;
+                 let currentVolume = parseFloat(volumeSlider.value);
+                 if (e.key === "ArrowRight") {
+                     currentVolume = Math.min(1, currentVolume + step);
+                 } else {
+                     currentVolume = Math.max(0, currentVolume - step);
+                 }
+                 updateVolume(currentVolume);
+
+                 infoBox.classList.add("show");
+                 clearTimeout(infoBox.timeout);
+                 infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+            }
+        });
+
+
+        // ====================
+        // Inicialización
+        // ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Iniciar en la sección EN VIVO
+            showSection('live');
+            
+            // Intentar reproducir el primer canal al cargar
+            playChannel(0); 
+            
+            playerVideo.addEventListener('volumechange', () => {
+                updateVolume(playerVideo.volume);
+            });
+
+            playerVideo.addEventListener('play', () => {
+                updateVolume(playerVideo.volume);
+            });
+            playerVideo.addEventListener('error', (e) => {
+                console.error("Error de reproducción:", e);
+            });
+            
+            // Inicializar el icono de volumen y la lista lateral del menú
+            updateVolume(volumeSlider.value);
+            
+            // Marcar "TV en vivo" como activo al inicio en el menú lateral
+            document.querySelector('#side-menu a[data-section="live"]').classList.add('active');
+        });
+    </script>
+</body>
+</html>
