@@ -32,11 +32,11 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
+            overflow: hidden; /* Evita el scroll general de la página */
         }
 
         /* =======================================
-        HEADER SUPERIOR (Mantenido)
+        HEADER SUPERIOR
         ======================================= */
         #main-header {
             height: var(--header-height);
@@ -91,9 +91,8 @@
         }
         #tv-player-container:hover #player-controls { opacity: 1; }
         #player-controls button {
-            /* Estilo Minimalista/Transparente */
-            background: rgba(255, 255, 255, 0.05); /* Muy sutil */
-            border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil */
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
             color: var(--text-color); 
             font-size: 1.1em; 
             width: 38px; 
@@ -108,8 +107,6 @@
             background: rgba(255, 255, 255, 0.15);
             border-color: var(--primary-color);
         }
-        
-        /* INFO CANAL (Mantenido con ajuste de logo) */
         #channel-info { 
             position: absolute; bottom: 65px; left: 20px; display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 6px; font-size: 1.2em; font-weight: bold; opacity: 0; transition: opacity 0.5s; z-index: 100; pointer-events: none;
         }
@@ -119,39 +116,48 @@
         }
 
         /* =======================================
-        CONTENIDO INFERIOR (EPG y Secciones)
+        CONTENIDO INFERIOR (Ajuste clave aquí)
         ======================================= */
+        #main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
         #content-section-wrapper {
             flex-grow: 1; 
             background-color: var(--bg-dark);
-            overflow: hidden; /* Las secciones internas manejan el scroll */
+            overflow: hidden; /* El contenedor padre NO debe scrollear */
             position: relative;
         }
+        
+        /* CORRECCIÓN: Los hijos ocupan el 100% del padre */
         .content-display {
             width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            overflow: hidden; /* Contenido interno maneja su propio scroll */
+            height: 100%; 
+            /* Se ha eliminado position: absolute */
+            overflow: hidden; /* Controlamos el overflow de cada sección */
             display: none;
             box-sizing: border-box;
         }
         .content-display.active {
-            display: flex; /* Usamos flex para la sección LIVE */
+            display: flex; /* La sección LIVE es flex por defecto */
         }
 
         /* === SECCIÓN LIVE (Guía vertical a la izquierda) === */
         #live-display {
             display: flex;
             flex-direction: row;
+            width: 100%; 
+            height: 100%;
         }
         
         /* Contenedor de la Guía de Canales (Vertical Estrecha) */
         #channel-guide-list {
             flex: 0 0 var(--guide-narrow-width); /* Ancho fijo para la guía */
             background-color: var(--bg-medium);
-            overflow-y: auto;
+            overflow-y: auto; /* Permite scroll solo en la guía */
             border-right: 1px solid #333;
             padding: 10px 0;
         }
@@ -164,7 +170,7 @@
             transition: background 0.2s;
             border-left: 3px solid transparent;
             display: flex;
-            flex-direction: column; /* Apilar descripción */
+            flex-direction: column; 
         }
         .tv-channel:hover { background: #2a2a2a; }
         .tv-channel-selected {
@@ -175,7 +181,6 @@
         .tv-channel img { max-height: 25px; width: 45px; object-fit: contain; background: black; padding: 2px; border-radius: 2px; }
         .tv-channel-info { flex-grow: 1; overflow: hidden; }
         .tv-channel-info .name { font-size: 0.9em; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        /* Descripción para EPG */
         .tv-channel-description { 
             font-size: 0.75em; 
             color: #aaa; 
@@ -183,7 +188,7 @@
             white-space: nowrap; 
             overflow: hidden; 
             text-overflow: ellipsis; 
-            padding-left: 55px; /* Alineación con el texto del canal */
+            padding-left: 55px;
         }
         
         /* Contenedor de la Guía EPG Detallada (Futuro) */
@@ -198,7 +203,7 @@
             font-size: 1.5em;
         }
         
-        /* === SECCIÓN ON DEMAND === */
+        /* === SECCIÓN ON DEMAND (Debe ser `flex` o `block` cuando está activo) === */
         #ondemand-display {
             display: flex;
             flex-direction: column;
@@ -206,24 +211,22 @@
             justify-content: center;
             font-size: 2em;
             color: #777;
-            overflow-y: auto; /* Permitir scroll en la sección */
+            overflow-y: auto;
+            /* Añadir padding para que el contenido no se pegue al borde */
+            padding: 20px; 
+            box-sizing: border-box;
         }
         
-        /* === SECCIÓN BUSCAR (Mantenida) === */
+        /* === SECCIÓN BUSCAR (Debe ser `flex` o `block` cuando está activo) === */
         #search-display {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             padding-top: 50px;
-            overflow-y: auto; /* Permitir scroll en la sección */
+            overflow-y: auto; 
+            padding-bottom: 20px;
         }
-        #search-container { width: 90%; max-width: 600px; margin-bottom: 30px; }
-        #search-input {
-            width: 100%; padding: 15px; font-size: 1.2em; background: var(--bg-medium); border: 2px solid #333; border-radius: 8px; color: var(--text-color); outline: none; transition: border-color 0.2s; box-sizing: border-box;
-        }
-        #search-input:focus { border-color: var(--primary-color); }
-        #search-results-message { margin-top: 20px; color: #aaa; font-size: 1.1em; display: none; text-align: center; }
         #search-results-grid {
             width: 90%;
             display: grid;
@@ -231,16 +234,13 @@
             gap: 10px;
             justify-content: start;
         }
-        
-        /* Ajustar el estilo del canal en la grilla de búsqueda (usamos el mismo CSS del canal, pero en grilla) */
         #search-results-grid .tv-channel {
-             flex-direction: row; /* Volver a horizontal en la grilla */
+             flex-direction: row; 
              border-left: 5px solid transparent;
         }
         #search-results-grid .tv-channel-description {
-            display: none; /* Ocultar la descripción en la vista de resultados de búsqueda */
+            display: none; 
         }
-
 
         /* =======================================
         ADAPTACIÓN A MÓVILES (MEDIA QUERY)
@@ -251,32 +251,22 @@
             #main-nav { margin-left: 10px; gap: 10px; }
             #tv-player-container-wrapper { height: var(--player-height-mobile); }
 
-            /* Controles más grandes en móvil y siempre visibles */
-            #player-controls {
-                height: 40px; 
-                padding: 0 10px;
-                opacity: 1 !important; 
-            }
-            #player-controls button {
-                width: 35px; height: 35px; line-height: 35px; font-size: 1.1em;
-            }
-            #volume-control { display: none; }
-            #channel-info { bottom: 50px; font-size: 1em; }
+            #player-controls { opacity: 1 !important; }
 
-            /* En Móvil, la guía y el EPG NO se dividen lateralmente, sino que uno cubre al otro.
-               Simplificamos: la Guía de Canales ocupa el 100% del espacio inferior. */
+            /* En Móvil, la guía ocupa todo el espacio inferior */
             #live-display {
-                flex-direction: column; /* Apilados verticalmente */
+                flex-direction: column; 
             }
 
             #channel-guide-list {
-                flex: 1 1 100%; /* Ocupa todo el ancho */
+                flex: 1 1 100%; 
                 border-right: none;
                 padding: 10px;
+                height: 100%; /* Ocupa la altura del padre */
             }
 
             #epg-detail-view {
-                display: none; /* Ocultamos la vista EPG detallada en móvil para simplificar */
+                display: none; 
             }
 
             #search-display {
@@ -369,7 +359,6 @@
             {name: "Magic Kids", logo: "https://i.imgur.com/CMImqQY.png", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", type: "hls", playing: "Dibujos Animados (Retro)", description: "La nostalgia de los 90s."},
             {name: "NET TV", logo: "https://i.imgur.com/IhJ0BjF.png", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", type: "hls", playing: "Magazine y entretenimiento", description: "Programas de actualidad y moda."},
             {name:"5tv", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8", logo:"https://i.imgur.com/mSn7ACs.png", playing: "Noticiero Central", description: "Noticias desde el centro del país."},
-            // Otros canales... (Se mantienen con sus descripciones añadidas)
             {name:"13Max Television", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8", logo:"https://i.imgur.com/QvF4lT.png", playing: "Deportes", description: "Transmisiones deportivas locales."},
             {name:"Aire de Santa Fe", type:"hls", url:"https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8", logo:"https://i.imgur.com/60vSWW0.png", playing: "Programas Locales", description: "Información y cultura santafesina."},
             {name:"AlternaTV", type:"hls", url:"https://alternatv.ar/stream/hls/live.m3u8", logo:"https://alternatv.ar/alternatv.png", playing: "Canal Independiente", description: "Contenido alternativo y experimental."},
@@ -410,7 +399,16 @@
 
             // 2. Gestionar la visibilidad de la sección de contenido inferior
             contentDisplays.forEach(display => display.classList.remove('active'));
-            document.getElementById(`${sectionId}-display`).classList.add('active');
+            const activeDisplay = document.getElementById(`${sectionId}-display`);
+            
+            // Usamos un pequeño truco para asegurar que se muestre como flex/block
+            if (sectionId === 'live') {
+                activeDisplay.style.display = 'flex';
+            } else if (sectionId === 'ondemand' || sectionId === 'search') {
+                activeDisplay.style.display = 'flex'; // Mantener como flex para centrar/alinear
+            }
+            activeDisplay.classList.add('active');
+
 
             // 3. Manejo especial para la búsqueda
             if (sectionId === 'search') {
@@ -418,7 +416,7 @@
                 filterChannels(searchInput.value || '');
             }
             
-            // 4. Manejo especial para LIVE (asegurar que la guía principal esté visible y actualizada)
+            // 4. Manejo especial para LIVE 
             if (sectionId === 'live') {
                 renderChannels(channels, channelGuideList); 
                 const currentEl = channelGuideList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
@@ -429,7 +427,8 @@
 
         navButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                showSection(e.target.dataset.section);
+                // Asegurarse de que se usa el data-section del botón
+                showSection(e.currentTarget.dataset.section);
             });
         });
 
@@ -458,10 +457,8 @@
                 searchResultsMessage.textContent = `No se encontraron resultados para "${searchTerm}".`;
                 searchResultsMessage.style.display = 'block';
             } else {
-                // Renderizar los canales filtrados en la cuadrícula de búsqueda
                 renderChannels(filteredChannels, resultsContainer);
                 
-                // Asegurarse de que el canal actualmente seleccionado se marque
                 const selectedEl = resultsContainer.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
                 if (selectedEl) selectedEl.classList.add("tv-channel-selected");
             }
@@ -475,11 +472,6 @@
         // Funciones de Reproducción y Canales
         // ====================
 
-        /**
-         * Crea elementos de canal y los añade a un contenedor.
-         * @param {Array} list - Lista de canales a renderizar.
-         * @param {HTMLElement} container - Contenedor donde se insertarán los elementos.
-         */
         function renderChannels(list, container) {
              container.innerHTML = ''; 
              
@@ -522,31 +514,30 @@
             playerVideo.pause();
             playerIframe.src = "";
 
-            // Actualizar y mostrar info del canal
             document.getElementById('channel-logo').src = ch.logo;
             document.getElementById('channel-name').textContent = ch.name;
             infoBox.classList.add("show");
             clearTimeout(infoBox.timeout);
             infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
             
-            // Quitar y poner la clase de selección en la guía principal y en los resultados de búsqueda
             document.querySelectorAll('.tv-channel-selected').forEach(el => el.classList.remove("tv-channel-selected"));
             
+            // Actualizar selección en la guía LIVE
             const selectedLiveEl = channelGuideList.querySelector(`[data-channel-index="${idx}"]`);
             if (selectedLiveEl) {
                 selectedLiveEl.classList.add("tv-channel-selected");
                 scrollToChannel(idx, channelGuideList);
             }
+            // Actualizar selección en la grilla de BÚSQUEDA
             const selectedSearchEl = searchResultsGrid.querySelector(`[data-channel-index="${idx}"]`);
             if (selectedSearchEl) {
                 selectedSearchEl.classList.add("tv-channel-selected");
             }
 
 
-            // 6. Configurar y mostrar el reproductor correcto
+            // Configurar y mostrar el reproductor correcto
             if (ch.type === "youtube") {
                 playerIframe.style.display = "block";
-                // Asegurar autoplay, mutear al inicio si el navegador lo requiere
                 const urlWithParams = ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0&rel=0";
                 playerIframe.src = urlWithParams;
                 document.getElementById("player-controls").style.display = 'none';
@@ -585,7 +576,7 @@
         }
         
         // ====================
-        // Controles de Volumen y Teclado (Mejorado para navegación)
+        // Controles de Volumen y Teclado
         // ====================
         const btnMute = document.getElementById("btn-mute");
         function updateVolume(newVolume) {
@@ -646,7 +637,7 @@
                 } else if (currentSection === 'search') {
                     container = searchResultsGrid;
                 } else {
-                    return; // No hay navegación de canales en On Demand
+                    return; 
                 }
                 
                 const visibleChannelElements = Array.from(container.querySelectorAll('.tv-channel'));
@@ -655,7 +646,6 @@
                     const selectedEl = visibleChannelElements.find(el => parseInt(el.dataset.channelIndex) === currentChannelIndex);
                     let currentIndex = selectedEl ? visibleChannelElements.indexOf(selectedEl) : -1;
 
-                    // Si no está visible o seleccionado, intentar seleccionar el primero o último
                     if (currentIndex === -1) {
                          currentIndex = e.key === "ArrowDown" ? 0 : visibleChannelElements.length - 1;
                     } else {
@@ -693,8 +683,6 @@
         // Inicialización
         // ====================
         document.addEventListener('DOMContentLoaded', () => {
-            // Renderiza la lista completa en la guía principal
-            renderChannels(channels, channelGuideList); 
             // Iniciar en la sección EN VIVO
             showSection('live');
             
@@ -704,13 +692,12 @@
             // Manejo de autoplay fallido (silenciar y reintentar si es necesario)
             playerVideo.addEventListener('play', () => {
                 if(playerVideo.muted) {
-                    playerVideo.muted = false; // Intenta desmutear si el usuario ya hizo clic
+                    playerVideo.muted = false; 
                     updateVolume(lastVolume);
                 }
             });
             playerVideo.addEventListener('error', (e) => {
                 console.error("Error de reproducción:", e);
-                // Aquí podrías intentar cambiar a un canal de fallback
             });
         });
     </script>
