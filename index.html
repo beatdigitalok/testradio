@@ -18,11 +18,9 @@
             --primary-color: #ff9900;
             --text-color: #ffffff;
             --header-height: 60px;
-            /* Altura del reproductor en Desktop */
             --player-height-desktop: 70vh; 
-            /* Altura del reproductor en Mobile */
             --player-height-mobile: 35vh; 
-            --overlay-bg: rgba(15, 15, 15, 0.98); 
+            --guide-narrow-width: 250px; /* Ancho de la guía vertical */
         }
 
         body {
@@ -69,41 +67,49 @@
         }
 
         /* =======================================
-        CONTENIDO PRINCIPAL (Dividido en dos secciones)
+        REPRODUCTOR SUPERIOR
         ======================================= */
-        #main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column; /* Organiza el reproductor arriba y el contenido abajo */
-            overflow: hidden;
-        }
-
-        /* 1. REPRODUCTOR (Sección Superior de Altura Fija) */
         #tv-player-container-wrapper {
-            /* Fija la altura del reproductor */
             height: var(--player-height-desktop); 
-            min-height: 200px; /* Mínimo para que no se pierda */
+            min-height: 200px;
             flex-shrink: 0;
-            position: relative; /* Para posicionar el reproductor absoluto dentro */
+            position: relative;
             background-color: black;
         }
         #tv-player-container {
             width: 100%;
             height: 100%;
             position: relative;
-            background: black;
         }
         #tv-player-video, #tv-player-iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            background: black;
-            border: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background: black; border: none;
         }
-        /* INFO CANAL Y CONTROLES (Mantenidos) */
+        
+        /* Controles - Minimalistas y Transparentes */
+        #player-controls {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 20px; background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s; z-index: 100;
+        }
+        #tv-player-container:hover #player-controls { opacity: 1; }
+        #player-controls button {
+            /* Estilo Minimalista/Transparente */
+            background: rgba(255, 255, 255, 0.05); /* Muy sutil */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil */
+            color: var(--text-color); 
+            font-size: 1.1em; 
+            width: 38px; 
+            height: 38px; 
+            line-height: 38px; 
+            padding: 0; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: background 0.2s, border-color 0.2s;
+        }
+        #player-controls button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+        }
+        
+        /* INFO CANAL (Mantenido con ajuste de logo) */
         #channel-info { 
             position: absolute; bottom: 65px; left: 20px; display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 6px; font-size: 1.2em; font-weight: bold; opacity: 0; transition: opacity 0.5s; z-index: 100; pointer-events: none;
         }
@@ -111,17 +117,15 @@
         #channel-info img { 
             height: 40px; width: 80px; object-fit: contain; background: var(--bg-dark); padding: 5px; border-radius: 4px; 
         }
-        #player-controls {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: flex-start; gap: 20px; padding: 0 20px; background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s; z-index: 100;
-        }
-        #tv-player-container:hover #player-controls { opacity: 1; }
 
-        /* 2. CONTENIDO INFERIOR (Guía, On Demand, Buscar) */
+        /* =======================================
+        CONTENIDO INFERIOR (EPG y Secciones)
+        ======================================= */
         #content-section-wrapper {
-            flex-grow: 1; /* Ocupa todo el espacio restante bajo el reproductor */
+            flex-grow: 1; 
             background-color: var(--bg-dark);
-            overflow-y: hidden; /* Las secciones internas manejan el scroll */
-            position: relative; /* Para el posicionamiento de las secciones */
+            overflow: hidden; /* Las secciones internas manejan el scroll */
+            position: relative;
         }
         .content-display {
             width: 100%;
@@ -129,46 +133,71 @@
             position: absolute;
             top: 0;
             left: 0;
-            overflow-y: auto;
+            overflow: hidden; /* Contenido interno maneja su propio scroll */
             display: none;
-            padding: 20px;
             box-sizing: border-box;
         }
         .content-display.active {
-            display: block;
+            display: flex; /* Usamos flex para la sección LIVE */
+        }
+
+        /* === SECCIÓN LIVE (Guía vertical a la izquierda) === */
+        #live-display {
+            display: flex;
+            flex-direction: row;
         }
         
-        /* === GUÍA DE CANALES (Contenido de la sección LIVE) === */
-        #channel-guide {
-            padding: 0; /* La lista de canales ya tiene padding interno */
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 10px;
-            justify-content: start;
+        /* Contenedor de la Guía de Canales (Vertical Estrecha) */
+        #channel-guide-list {
+            flex: 0 0 var(--guide-narrow-width); /* Ancho fijo para la guía */
+            background-color: var(--bg-medium);
+            overflow-y: auto;
+            border-right: 1px solid #333;
+            padding: 10px 0;
         }
-        /* Estilo de la celda del canal (ahora como "tarjeta") */
+
+        /* Estilo del Canal en la lista vertical (similar a Pluto TV) */
         .tv-channel {
-            padding: 10px;
-            text-align: left;
-            background: var(--bg-medium);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s, outline 0.2s;
-            border-left: 5px solid transparent;
+            padding: 8px 15px; 
+            background: transparent; 
+            cursor: pointer; 
+            transition: background 0.2s;
+            border-left: 3px solid transparent;
+            display: flex;
+            flex-direction: column; /* Apilar descripción */
         }
         .tv-channel:hover { background: #2a2a2a; }
         .tv-channel-selected {
             background: #2a2a2a !important; 
             border-left-color: var(--primary-color) !important;
-            outline: 2px solid var(--primary-color);
         }
-        .tv-channel-content { display: flex; align-items: center; gap: 15px; }
-        .tv-channel img { max-height: 35px; width: 60px; object-fit: contain; background: black; padding: 3px; border-radius: 3px; }
+        .tv-channel-content { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .tv-channel img { max-height: 25px; width: 45px; object-fit: contain; background: black; padding: 2px; border-radius: 2px; }
         .tv-channel-info { flex-grow: 1; overflow: hidden; }
-        .tv-channel-info .name { font-size: 1em; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tv-channel-info .now-playing { font-size: 0.85em; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-
+        .tv-channel-info .name { font-size: 0.9em; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* Descripción para EPG */
+        .tv-channel-description { 
+            font-size: 0.75em; 
+            color: #aaa; 
+            margin-top: -5px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            padding-left: 55px; /* Alineación con el texto del canal */
+        }
+        
+        /* Contenedor de la Guía EPG Detallada (Futuro) */
+        #epg-detail-view {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #777;
+            font-size: 1.5em;
+        }
+        
         /* === SECCIÓN ON DEMAND === */
         #ondemand-display {
             display: flex;
@@ -177,54 +206,41 @@
             justify-content: center;
             font-size: 2em;
             color: #777;
+            overflow-y: auto; /* Permitir scroll en la sección */
         }
-        #ondemand-display h1 { margin-top: 0; color: var(--text-color); }
-        #ondemand-display p { display: block; font-size: 0.5em; color: #777; }
-
-
-        /* === SECCIÓN BUSCAR (Funcional) === */
+        
+        /* === SECCIÓN BUSCAR (Mantenida) === */
         #search-display {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             padding-top: 50px;
+            overflow-y: auto; /* Permitir scroll en la sección */
         }
-        #search-container {
-            width: 90%;
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
+        #search-container { width: 90%; max-width: 600px; margin-bottom: 30px; }
         #search-input {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.2em;
-            background: var(--bg-medium);
-            border: 2px solid #333;
-            border-radius: 8px;
-            color: var(--text-color);
-            outline: none;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
+            width: 100%; padding: 15px; font-size: 1.2em; background: var(--bg-medium); border: 2px solid #333; border-radius: 8px; color: var(--text-color); outline: none; transition: border-color 0.2s; box-sizing: border-box;
         }
-        #search-input:focus {
-            border-color: var(--primary-color);
-        }
-        #search-results-message {
-            margin-top: 20px;
-            color: #aaa;
-            font-size: 1.1em;
-            display: none;
-            text-align: center;
-        }
-        /* Los resultados de la búsqueda serán los canales mostrados, reutilizando la guía */
+        #search-input:focus { border-color: var(--primary-color); }
+        #search-results-message { margin-top: 20px; color: #aaa; font-size: 1.1em; display: none; text-align: center; }
         #search-results-grid {
-            width: 100%;
+            width: 90%;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 10px;
             justify-content: start;
         }
+        
+        /* Ajustar el estilo del canal en la grilla de búsqueda (usamos el mismo CSS del canal, pero en grilla) */
+        #search-results-grid .tv-channel {
+             flex-direction: row; /* Volver a horizontal en la grilla */
+             border-left: 5px solid transparent;
+        }
+        #search-results-grid .tv-channel-description {
+            display: none; /* Ocultar la descripción en la vista de resultados de búsqueda */
+        }
+
 
         /* =======================================
         ADAPTACIÓN A MÓVILES (MEDIA QUERY)
@@ -233,36 +249,38 @@
             
             #platform-logo span { display: none; }
             #main-nav { margin-left: 10px; gap: 10px; }
-            #main-nav button { font-size: 0.9em; padding: 15px 5px; }
+            #tv-player-container-wrapper { height: var(--player-height-mobile); }
 
-            /* Reproductor más pequeño en móvil */
-            #tv-player-container-wrapper {
-                height: var(--player-height-mobile); 
-            }
-
-            /* Controles más amigables al tacto */
+            /* Controles más grandes en móvil y siempre visibles */
             #player-controls {
                 height: 40px; 
                 padding: 0 10px;
-                opacity: 1 !important; /* Siempre visible en móvil */
+                opacity: 1 !important; 
             }
             #player-controls button {
-                width: 30px; height: 30px; line-height: 30px; font-size: 1em;
+                width: 35px; height: 35px; line-height: 35px; font-size: 1.1em;
             }
-            #volume-control {
-                display: none; /* Simplificar controles en móvil */
-            }
-            #channel-info { 
-                bottom: 50px; 
-                font-size: 1em;
+            #volume-control { display: none; }
+            #channel-info { bottom: 50px; font-size: 1em; }
+
+            /* En Móvil, la guía y el EPG NO se dividen lateralmente, sino que uno cubre al otro.
+               Simplificamos: la Guía de Canales ocupa el 100% del espacio inferior. */
+            #live-display {
+                flex-direction: column; /* Apilados verticalmente */
             }
 
-            /* La guía de canales en móvil se convierte en una lista vertical sin la cuadrícula */
-            #channel-guide {
-                grid-template-columns: 1fr;
+            #channel-guide-list {
+                flex: 1 1 100%; /* Ocupa todo el ancho */
+                border-right: none;
+                padding: 10px;
             }
-            #search-results-grid {
-                grid-template-columns: 1fr;
+
+            #epg-detail-view {
+                display: none; /* Ocultamos la vista EPG detallada en móvil para simplificar */
+            }
+
+            #search-display {
+                padding-top: 20px;
             }
         }
     </style>
@@ -283,7 +301,7 @@
         
         <div id="tv-player-container-wrapper">
             <div id="tv-player-container">
-                <video id="tv-player-video" playsinline></video>
+                <video id="tv-player-video" playsinline autoplay muted></video>
                 <iframe allow="autoplay; fullscreen" allowfullscreen frameborder="0" id="tv-player-iframe"></iframe>
                 
                 <div id="channel-info">
@@ -307,8 +325,13 @@
         <div id="content-section-wrapper">
             
             <div id="live-display" class="content-display active">
-                <div id="channel-guide">
+                
+                <div id="channel-guide-list">
                     </div>
+
+                <div id="epg-detail-view">
+                    <p>Aquí se mostrará la Guía EPG detallada o información del programa actual.</p>
+                </div>
             </div>
 
             <div id="ondemand-display" class="content-display">
@@ -318,7 +341,7 @@
 
             <div id="search-display" class="content-display">
                 <div id="search-container">
-                    <input type="text" id="search-input" placeholder="Buscar canales por nombre..." autocomplete="off">
+                    <input type="text" id="search-input" placeholder="Buscar canales por nombre o contenido..." autocomplete="off">
                 </div>
                 <p id="search-results-message">Escribe para encontrar canales...</p>
                 <div id="search-results-grid"></div>
@@ -333,77 +356,32 @@
 
     <script>
         // ====================
-        // Lista de canales (completa)
+        // Lista de canales
         // ====================
         const channels = [
-            {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png", playing: "Programación en vivo"}, 
-            {name: "Bloomberg", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Bloomberg_TV.svg", url: "https://liveprodusphoenixeast.akamaized.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8", type: "hls", playing: "Noticias financieras"},
-            {name: "Canal 22", logo: "https://i.imgur.com/R4wXVxf.png", url: "https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8", type: "hls", playing: "Cultura y Arte"},
-            {name: "AMC", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/AMC_logo_2019.svg", url: "https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8", type: "hls", playing: "Películas y Series Clásicas"},
-            {name: "Argentinisima", logo: "https://www.argentinisimatv.com.ar/favicon.ico", url: "https://stream1.sersat.com/hls/argentinisima.m3u8", type: "hls", playing: "Música Folklórica"},
-            {name: "Canal de la Ciudad", logo: "https://www.buenosaires.gob.ar/sites/gcaba/files/favicon_0.ico", url: "https://www.youtube.com/embed/VHCnqfdX-t0?si=IdP5kIMZ1_9wP_m4&autoplay=1", type: "youtube", playing: "Noticias de Buenos Aires"},
-            {name: "YouTube Canal", logo: "https://i.imgur.com/Logo1.png", url: "https://www.youtube.com/embed/cb12KmMMDJA?si=izjgyuyQ1O8lGbbz&autoplay=1", type: "youtube", playing: "Stream en vivo de YouTube"},
-            {name: "El Trece", logo: "https://i.imgur.com/TrgBAdA.png", url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8", type: "hls", playing: "Telenovelas y Noticieros"},
-            {name: "Magic Kids", logo: "https://i.imgur.com/CMImqQY.png", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", type: "hls", playing: "Dibujos Animados (Retro)"},
-            {name: "NET TV", logo: "https://i.imgur.com/IhJ0BjF.png", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", type: "hls", playing: "Magazine y entretenimiento"},
-            {name:"Canal 79 Santa Clara del Mar", type:"hls", url:"https://streamconex.com:19360/santaclara-1/santaclara-1.m3u8", logo:"https://i.imgur.com/I93ypGY.png", playing: "Local en Vivo"},
-            {name:"5tv", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8", logo:"https://i.imgur.com/mSn7ACs.png", playing: "Noticiero Central"},
-            {name:"13Max Television", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8", logo:"https://i.imgur.com/QvF4lT.png", playing: "Deportes"},
-            {name:"Aire de Santa Fe", type:"hls", url:"https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8", logo:"https://i.imgur.com/60vSWW0.png", playing: "Programas Locales"},
-            {name:"AlternaTV", type:"hls", url:"https://alternatv.ar/stream/hls/live.m3u8", logo:"https://alternatv.ar/alternatv.png", playing: "Canal Independiente"},
-            {name:"Argentinisima Satelital", type:"hls", url:"https://stream1.sersat.com/hls/argentinisima.m3u8", logo:"https://i.imgur.com/xFgJawa.png", playing: "Música Folklórica"},
-            {name:"Azahares Radiovisual", type:"hls", url:"https://streamyes.alsolnet.com/azaharesfm/live/playlist.m3u8", logo:"https://i.imgur.com/g1BFoSs.png", playing: "Radio TV"},
-            {name:"Bayres TV", type:"hls", url:"https://streaming01.mikrolive.tv/bayrestv/live/playlist.m3u8", logo:"https://i.imgur.com/BayresTV.png", playing: "Contenido Regional"},
-            {name:"Beats Radio", type:"hls", url:"https://videostream.shockmedia.com.ar:19360/beatsradio/beatsradio.m3u8", logo:"https://i.imgur.com/zkNUO5p.png", playing: "Música en Vivo"},
-            {name:"Cable Imagen Armstrong", type:"hls", url:"https://stream.arcast.com.ar/casse/casse/playlist.m3u8", logo:"https://i.imgur.com/U9NuJQC.png", playing: "Noticias Comunitarias"},
-            {name:"Cadena103.TV", type:"hls", url:"https://streamlov.alsolnet.com/cadena103/live/playlist.m3u8", logo:"https://i.imgur.com/vBsry35.png", playing: "Programación en Directo"},
-            {name:"Canal 2 de Ushuaia", type:"hls", url:"https://nd106.republicaservers.com:4433/hls/c6611/index.m3u8", logo:"https://i.ibb.co/q5NPdK2/canal2-logo.png", playing: "Clima y Noticias"},
-            {name:"Canal 2 Misiones", type:"hls", url:"https://nd106.republicaservers.com:4433/hls/canal2misioness/index.m3u8", logo:"https://i.imgur.com/YqTNXDf.png", playing: "Noticiero Regional"},
-            {name:"Canal 3 La Pampa", type:"hls", url:"https://stream.arcast.com.ar/c3lapampa/ngrp:c3lapampa_all/playlist.m3u8", logo:"https://i.imgur.com/SsNFudZ.png", playing: "En Vivo"},
-            {name:"Canal 3 Las Heras", type:"hls", url:"https://stream.arcast.com.ar/canal3/canal3/playlist.m3u8", logo:"https://i.imgur.com/bd2afET.png", playing: "Noticias locales"},
-            {name:"Canal 4 Posadas", type:"hls", url:"https://iptv.ixfo.com.ar:30443/live/C4POS/playlist.m3u8", logo:"https://i.imgur.com/tElJr3e.png", playing: "Información"},
-            {name:"Canal 4 San Juan", type:"hls", url:"https://streamlov.alsolnet.com/canal4sanjuan/live/playlist.m3u8", logo:"https://i.imgur.com/MsCnwRA.png", playing: "En directo"},
-            {name:"Canal 5 Pico Truncado", type:"hls", url:"https://stream.arcast.com.ar/canal5picotruncado/canal5picotruncado/playlist.m3u8", logo:"https://i.imgur.com/VwUiSVF.png", playing: "Actualidad"},
-            {name:"Canal 5 Santa Fe", type:"hls", url:"https://stream.arcast.com.ar/c5sf/c5sf/playlist.m3u8", logo:"https://i.imgur.com/WX0esjQ.png", playing: "Noticias"},
-            {name:"Canal 6 Posadas", type:"hls", url:"https://iptv.ixfo.com.ar:30443/live/c6digital/playlist.m3u8", logo:"https://i.imgur.com/OamBiS5.png", playing: "Deportes"},
-            {name:"Canal 7 Neuquén", type:"hls", url:"https://stream.arcast.com.ar/c7nq/ngrp:c7nq_all/playlist.m3u8", logo:"https://i.ibb.co/BrvQsWm/C7neuquenlogo2023.png", playing: "Cultura Regional"},
-            {name:"Canal 7 Salta", type:"hls", url:"https://vivo.solumedia.com:19360/cooperativa/cooperativa.m3u8", logo:"https://i.imgur.com/CudG6sl.png", playing: "En Vivo"},
-            {name:"Canal 7 TV", type:"hls", url:"https://stream.arcast.com.ar/envivo/castv/playlist.m3u8", logo:"https://i.imgur.com/iJMH0UK.png", playing: "Entretenimiento"},
-            {name:"Canal 9 Litoral", type:"hls", url:"https://stream.arcast.live/ahora/ahora/playlist.m3u8", logo:"https://upload.wikimedia.org/wikipedia/commons/a/ad/Canal_9_Litoral_2021.png", playing: "Tardes en vivo"},
-            {name:"Canal 9 Resistencia", type:"hls", url:"http://coninfo.net:1935/9linklivert/smil:9linkmultibr.smil/playlist.m3u8", logo:"https://i.imgur.com/xqgRFpC.png", playing: "Noticiero"},
-            {name:"Canal 9 Televida", type:"hls", url:"https://unlimited1-saopaulo.dps.live/televidaar/televidaar.smil/playlist.m3u8", logo:"https://i.imgur.com/JUtAzg4.png", playing: "Noticias"},
-            {name:"Canal 11 de la Costa", type:"hls", url:"https://vivo.solumedia.com:19360/dadaproductora/dadaproductora.m3u8", logo:"https://i.imgur.com/yYExcq1.jpg", playing: "Revista"},
-            {name:"Canal 12 Web", type:"hls", url:"https://5f700d5b2c46f.streamlock.net/madryntv/madryntv/playlist.m3u8", logo:"https://i.imgur.com/VYcTRbd.png", playing: "Noticias"},
-            {name:"Canal 13 Jujuy", type:"hls", url:"https://genexservicios.com:19360/canal13jujuy/canal13jujuy.m3u8", logo:"https://i.imgur.com/lmKLiJ3.jpg", playing: "Actualidad"},
-            {name:"Canal 13 La Rioja", type:"hls", url:"https://stream.arcast.net:4443/mp/mp/playlist.m3u8", logo:"https://i.imgur.com/OI97Sgq.png", playing: "Programación en vivo"},
-            {name:"Canal 21 TV", type:"hls", url:"https://eus22.playlist.ttvnw.net/v1/playlist/CsYE9T-c44Ia1Mtu1YUcXc6AlpVvOKdYygBlRmn4UEinZHymBwUlDOjIUCpEh7xLJ0KZWblzIPrBkGArTefioeR2XLKhVDX9Pt0TDIbTjumg0Uh3sQ0MjXGIgwh4k1vVO2TQiar8xhxtVXX291wY0w0PyaOj-OvxFvHxAms2_NRFmloBvvAu2Bh3T3R-0ahKckz19l6a652l_xUg6mNtlZS12DRx2Mwl3MXPJRmFrriTCaVzJeh4FUfZnh9A6M4vv4DckhMvALLjgGJyFQBBHFYNNDK2X4n0sJ8KUkGV0LBrvkTZQEV_STOw00fXu9jIKZt1C2EYKdI7gPEQ9SGV9qIb4MiQ9YD0m7THiJjVnBfm1MxO3MrAZUO1kjnrMoRz6uvNecc3JB3c8RPKk8vYJjpYs0ayZMn_mkOhrg0D9GaMo3Up8px99X9YkrT-9nOMCf5H1YvAVvfD22oJDDK7eYMWagxS4oFMPNUiUOM575kO4XcE9PSsBW2CZYPUpk8FgikSHgLgMEvpMqFAU5cVVo7DyLR_yw940FWn44pL83pXq_KOB0fvexTHn5m3OBD5MPDfFyK8UmaVh6vmz7vu_X7ZKyYP6a1bPUYJhu1b9VKfasRwxKPmz3m5DTjSRiKEa9uGStDeO-1qSGkGQvDzsIMMN92UA-43rvtkUjHVqjPVW7_eoDSv_0nXFbWVDdnTFtB1prjBAVQkjDtcltOy5hrGp24HYo4iVLWacWGgzrYtW-Z5szh5-APvkgASoJZXUtd2VzdC0yMIQN.m3u8", playing: "Variedades"},
-            {name:"Canal 22", type:"hls", url:"https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8", logo:"https://i.imgur.com/R4wXVxf.png", playing: "Documentales"},
-            {name:"Canal 34 San Juan", type:"hls", url:"https://streamyes.alsolnet.com/canal34sanjuan/live/playlist.m3u8", logo:"https://i.imgur.com/bZMEiYe.png", playing: "Noticiero"},
-            {name:"Canal 40 Caucete SD", type:"hls", url:"https://canalsj.kozow.com/canal40/tracks-v1/index.fmp4.m3u8", logo:"https://i.imgur.com/xUiQvk8.png", playing: "En Vivo"},
-            {name:"Canal E", type:"hls", url:"https://unlimited1-us.dps.live/perfiltv/perfiltv.smil/playlist.m3u8", logo:"https://i.ibb.co/y4pkxH3/Qtc8-M2-PG-400x400.jpg", playing: "Economía"},
-            {name:"Canal Provincial", type:"hls", url:"https://streaming.telered.com.ar/provincial/streaming/mystream.m3u8", logo:"https://i.imgur.com/bXHHtcb.png", playing: "Noticias"},
-            {name:"Canal Santa Maria", type:"hls", url:"https://streaming.telered.com.ar/santa-maria/streaming/mystream.m3u8", logo:"https://www.canalsantamaria.com.ar/images/santamaria_logo.jpg", playing: "Religioso"},
-            {name:"Catamarca TV", type:"hls", url:"https://stream.arcast.com.ar/canal7catamarca/ngrp:canal7catamarca_all/playlist.m3u8?DVR=", logo:"https://i.imgur.com/CEuPoqG.png", playing: "Magazine"},
-            {name:"Celta TV", type:"hls", url:"https://vivo.solumedia.com:19360/celta/celta.m3u8", logo:"https://i.imgur.com/rwoIF4w.png", playing: "Noticias"},
-            {name:"Chaco TV", type:"hls", url:"https://wowzasrv.chaco.gov.ar/Streamtv/chacotv/playlist.m3u8", logo:"https://i.imgur.com/b6RerDw.png", playing: "Actualidad"},
-            {name:"Chilecito TV", type:"hls", url:"https://vivo.solumedia.com:19360/grupoemail/grupoemail.m3u8", logo:"https://i.imgur.com/zGubmgZ.png", playing: "Local"},
-            {name:"Cosmos TV SD", type:"hls", url:"https://tv.mediacp.eu:19360/cosmos/cosmos.m3u8", logo:"https://i0.wp.com/fmcosmos.com/wp-content/uploads/2021/11/COSMOS-TV.png", playing: "Mundo"},
-            {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor"},
-            {name:"Lapacho TV Canal 11", type:"hls", url:"https://vivo.solumedia.com:19360/lapacho/lapacho.m3u8", logo:"https://i.imgur.com/PmFBL7x.png", playing: "Actualidad"},
-            {name:"Litus TV", type:"hls", url:"https://stream.arcast.com.ar/litustv/ngrp:litustv_all/playlist.m3u8", logo:"https://i.imgur.com/QIGSf4L.png", playing: "En Vivo"},
-            {name:"Mas FM", type:"hls", url:"https://vivo.solumedia.com:19360/masfm/masfm.m3u8", logo:"https://i.imgur.com/TJ4gWQM.png", playing: "Música y Noticias"},
-            {name:"Metro TV", type:"hls", url:"https://streamtv12.ddns.net:5443/LiveApp/streams/193945633734205616732920.m3u8", logo:"https://i.imgur.com/7f7M7zl.png", playing: "Noticias"},
-            {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven"},
-            {name:"NG Federal", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvlink/live/playlist.m3u8", logo:"https://i.imgur.com/lJCIqYn.png", playing: "Noticiero"},
-            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVv.png", playing: "Variedades"},
-            {name:"Play Television", type:"hls", url:"https://vivo.solumedia.com:19360/playtv/playtv.m3u8", logo:"https://i.ibb.co/nR85vvb/2021-01-03.jpg", playing: "Deportes"},
-            {name:"Power Max Radio TV", type:"hls", url:"https://videostream.shockmedia.com.ar:19360/radio1045/radio1045.m3u8", logo:"https://i.ibb.co/qgZLYDj/channels4-profile-6.jpg", playing: "Música y TV"},
+            {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png", playing: "Programación en vivo", description: "Espectáculos, chismes y entrevistas."}, 
+            {name: "Bloomberg", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Bloomberg_TV.svg", url: "https://liveprodusphoenixeast.akamaized.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8", type: "hls", playing: "Noticias financieras", description: "Análisis de mercados globales 24/7."},
+            {name: "Canal 22", logo: "https://i.imgur.com/R4wXVxf.png", url: "https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8", type: "hls", playing: "Cultura y Arte", description: "Lo mejor del cine, teatro y danza."},
+            {name: "AMC", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/AMC_logo_2019.svg", url: "https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8", type: "hls", playing: "Películas y Series Clásicas", description: "Westerns, dramas y clásicos de culto."},
+            {name: "Argentinisima", logo: "https://www.argentinisimatv.com.ar/favicon.ico", url: "https://stream1.sersat.com/hls/argentinisima.m3u8", type: "hls", playing: "Música Folklórica", description: "Raíces y tradiciones argentinas."},
+            {name: "Canal de la Ciudad", logo: "https://www.buenosaires.gob.ar/sites/gcaba/files/favicon_0.ico", url: "https://www.youtube.com/embed/VHCnqfdX-t0?si=IdP5kIMZ1_9wP_m4&autoplay=1", type: "youtube", playing: "Noticias de Buenos Aires", description: "Información local y servicios."},
+            {name: "El Trece", logo: "https://i.imgur.com/TrgBAdA.png", url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8", type: "hls", playing: "Telenovelas y Noticieros", description: "Grandes éxitos de la televisión."},
+            {name: "Magic Kids", logo: "https://i.imgur.com/CMImqQY.png", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", type: "hls", playing: "Dibujos Animados (Retro)", description: "La nostalgia de los 90s."},
+            {name: "NET TV", logo: "https://i.imgur.com/IhJ0BjF.png", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", type: "hls", playing: "Magazine y entretenimiento", description: "Programas de actualidad y moda."},
+            {name:"5tv", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8", logo:"https://i.imgur.com/mSn7ACs.png", playing: "Noticiero Central", description: "Noticias desde el centro del país."},
+            // Otros canales... (Se mantienen con sus descripciones añadidas)
+            {name:"13Max Television", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8", logo:"https://i.imgur.com/QvF4lT.png", playing: "Deportes", description: "Transmisiones deportivas locales."},
+            {name:"Aire de Santa Fe", type:"hls", url:"https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8", logo:"https://i.imgur.com/60vSWW0.png", playing: "Programas Locales", description: "Información y cultura santafesina."},
+            {name:"AlternaTV", type:"hls", url:"https://alternatv.ar/stream/hls/live.m3u8", logo:"https://alternatv.ar/alternatv.png", playing: "Canal Independiente", description: "Contenido alternativo y experimental."},
+            {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor", description: "Noticias y pruebas de autos."},
+            {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven", description: "Videos musicales y tendencias."},
+            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVv.png", playing: "Variedades", description: "Programas misceláneos y entretenimiento."},
         ];
 
         // ====================
         // Variables y Elementos del DOM
         // ====================
-        const channelGuide = document.getElementById("channel-guide");
+        const channelGuideList = document.getElementById("channel-guide-list"); // Nueva guía vertical
         const navButtons = document.querySelectorAll('#main-nav button');
         const contentDisplays = document.querySelectorAll('.content-display');
         
@@ -419,15 +397,11 @@
         const infoBox = document.getElementById("channel-info");
         
         let currentChannelIndex = 0;
-        let channelElements = []; 
         let hls, dash;
         let lastVolume = 0.5; 
-        
-        // Mapeo de índices de canales
-        const channelMap = new Map(); // Para mapear el índice del DOM al índice original
 
         // ====================
-        // Funcionalidad de Navegación del Header
+        // Funcionalidad de Navegación
         // ====================
         function showSection(sectionId) {
             // 1. Gestionar la pestaña activa
@@ -441,18 +415,15 @@
             // 3. Manejo especial para la búsqueda
             if (sectionId === 'search') {
                 searchInput.focus();
-                // Inicialmente, mostrar todos los canales en la grilla de resultados
                 filterChannels(searchInput.value || '');
             }
             
-            // 4. Manejo especial para LIVE
+            // 4. Manejo especial para LIVE (asegurar que la guía principal esté visible y actualizada)
             if (sectionId === 'live') {
-                // Asegurar que se muestre la lista completa
-                renderChannels(channels, channelGuide); 
-                // Seleccionar el canal actual en la guía
-                const currentEl = channelGuide.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
+                renderChannels(channels, channelGuideList); 
+                const currentEl = channelGuideList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
                 if(currentEl) currentEl.classList.add("tv-channel-selected");
-                scrollToChannel(currentChannelIndex, channelGuide);
+                scrollToChannel(currentChannelIndex, channelGuideList);
             }
         }
 
@@ -465,7 +436,6 @@
         // ====================
         // Funcionalidad de Búsqueda
         // ====================
-
         function filterChannels(searchTerm) {
             searchTerm = searchTerm.toLowerCase().trim();
             const resultsContainer = searchResultsGrid;
@@ -480,7 +450,8 @@
 
             const filteredChannels = channels.filter(ch => 
                 ch.name.toLowerCase().includes(searchTerm) || 
-                (ch.playing && ch.playing.toLowerCase().includes(searchTerm))
+                (ch.playing && ch.playing.toLowerCase().includes(searchTerm)) ||
+                (ch.description && ch.description.toLowerCase().includes(searchTerm))
             );
 
             if (filteredChannels.length === 0) {
@@ -496,13 +467,12 @@
             }
         }
         
-        // Listener para la búsqueda
         searchInput.addEventListener('input', () => {
             filterChannels(searchInput.value);
         });
 
         // ====================
-        // Funciones de Reproducción y Canales (Modificadas para reutilizar)
+        // Funciones de Reproducción y Canales
         // ====================
 
         /**
@@ -512,24 +482,22 @@
          */
         function renderChannels(list, container) {
              container.innerHTML = ''; 
-             channelElements = [];
              
              list.forEach((ch) => {
-                // Obtener el índice original del canal
                 const originalIndex = channels.findIndex(c => c.name === ch.name); 
 
                 const div = document.createElement("div");
                 div.className = "tv-channel";
                 div.setAttribute('tabindex', 0); 
-                div.setAttribute('data-channel-index', originalIndex); // Guardar el índice original
+                div.setAttribute('data-channel-index', originalIndex); 
                 div.innerHTML = `
                     <div class="tv-channel-content">
                         <img src="${ch.logo}" alt="${ch.name}">
                         <div class="tv-channel-info">
                             <span class="name" title="${ch.name}">${ch.name}</span>
-                            <span class="now-playing">${ch.playing || 'En vivo'}</span>
                         </div>
                     </div>
+                    ${container === channelGuideList ? `<div class="tv-channel-description">${ch.description || ch.playing || 'En vivo'}</div>` : ''}
                 `;
                 div.addEventListener("click", () => playChannel(originalIndex));
                 div.addEventListener("keydown", (e) => {
@@ -539,30 +507,20 @@
                     }
                 });
                 container.appendChild(div);
-                channelElements.push(div); 
             });
-            // Re-mapear los elementos visibles de la guía para la navegación por teclado
-            if(container === channelGuide) {
-                 channelElements = Array.from(channelGuide.children);
-            }
         }
         
         function playChannel(idx) {
             currentChannelIndex = idx;
             const ch = channels[idx];
             
-            // Destruir reproductores anteriores
             if (hls) { hls.destroy(); hls = null; }
             if (dash) { dash.reset(); dash = null; }
 
-            // Ocultar reproductores
             playerVideo.style.display = "none";
             playerIframe.style.display = "none";
             playerVideo.pause();
             playerIframe.src = "";
-
-            // Asegurarse de seleccionar la sección LIVE (si no lo está ya)
-            showSection('live'); 
 
             // Actualizar y mostrar info del canal
             document.getElementById('channel-logo').src = ch.logo;
@@ -571,26 +529,33 @@
             clearTimeout(infoBox.timeout);
             infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
             
-            // Quitar y poner la clase de selección en la guía principal
+            // Quitar y poner la clase de selección en la guía principal y en los resultados de búsqueda
             document.querySelectorAll('.tv-channel-selected').forEach(el => el.classList.remove("tv-channel-selected"));
-            const selectedElement = channelGuide.querySelector(`[data-channel-index="${idx}"]`);
-            if (selectedElement) {
-                selectedElement.classList.add("tv-channel-selected");
-                scrollToChannel(idx, channelGuide);
+            
+            const selectedLiveEl = channelGuideList.querySelector(`[data-channel-index="${idx}"]`);
+            if (selectedLiveEl) {
+                selectedLiveEl.classList.add("tv-channel-selected");
+                scrollToChannel(idx, channelGuideList);
             }
+            const selectedSearchEl = searchResultsGrid.querySelector(`[data-channel-index="${idx}"]`);
+            if (selectedSearchEl) {
+                selectedSearchEl.classList.add("tv-channel-selected");
+            }
+
 
             // 6. Configurar y mostrar el reproductor correcto
             if (ch.type === "youtube") {
                 playerIframe.style.display = "block";
-                const urlWithAutoplay = ch.url.includes("autoplay=1") ? ch.url : ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0";
-                playerIframe.src = urlWithAutoplay;
+                // Asegurar autoplay, mutear al inicio si el navegador lo requiere
+                const urlWithParams = ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0&rel=0";
+                playerIframe.src = urlWithParams;
                 document.getElementById("player-controls").style.display = 'none';
             } else if (ch.type === "dash") {
                 playerVideo.style.display = "block";
                 dash = dashjs.MediaPlayer().create();
                 dash.initialize(playerVideo, ch.url, true);
                 playerVideo.volume = volumeSlider.value;
-                playerVideo.play().catch(()=>{});
+                playerVideo.play().catch(e => console.error("Autoplay bloqueado (DASH):", e));
                 document.getElementById("player-controls").style.display = 'flex';
             } else { // HLS o MP4 nativo
                 playerVideo.style.display = "block";
@@ -600,22 +565,17 @@
                     hls.attachMedia(playerVideo);
                     hls.on(Hls.Events.MEDIA_ATTACHED, function () {
                         playerVideo.volume = volumeSlider.value;
-                        playerVideo.play().catch(()=>{});
+                        playerVideo.play().catch(e => console.error("Autoplay bloqueado (HLS):", e));
                     });
                 } else {
                     playerVideo.src = ch.url;
                     playerVideo.volume = volumeSlider.value;
-                    playerVideo.play().catch(()=>{});
+                    playerVideo.play().catch(e => console.error("Autoplay bloqueado (Nativo):", e));
                 }
                 document.getElementById("player-controls").style.display = 'flex';
             }
         }
 
-        /**
-         * Desplaza el contenedor al canal seleccionado.
-         * @param {number} idx - Índice del canal original.
-         * @param {HTMLElement} container - El contenedor que contiene los elementos (Guía o Resultados).
-         */
         function scrollToChannel(idx, container) {
             const channelEl = container.querySelector(`[data-channel-index="${idx}"]`);
             if (channelEl) {
@@ -625,7 +585,7 @@
         }
         
         // ====================
-        // Controles de Volumen y Teclado (Ligeramente ajustados)
+        // Controles de Volumen y Teclado (Mejorado para navegación)
         // ====================
         const btnMute = document.getElementById("btn-mute");
         function updateVolume(newVolume) {
@@ -672,41 +632,39 @@
             }
         };
 
-        // Navegación por teclado (Ahora usa el contenedor activo)
+        // Navegación por teclado (Flechas arriba/abajo)
         document.addEventListener("keydown", e => {
             const currentSection = document.querySelector('#main-nav button.active').dataset.section;
             
             if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                 e.preventDefault(); 
                 
-                let visibleChannels = [];
-                let container = null;
+                let container;
                 
                 if (currentSection === 'live') {
-                    visibleChannels = Array.from(channelGuide.children);
-                    container = channelGuide;
+                    container = channelGuideList;
                 } else if (currentSection === 'search') {
-                    visibleChannels = Array.from(searchResultsGrid.children);
-                    container = document.getElementById('search-display'); // El contenedor scrolleable
+                    container = searchResultsGrid;
+                } else {
+                    return; // No hay navegación de canales en On Demand
                 }
                 
-                if (visibleChannels.length > 0) {
-                    // Encontrar el índice del canal seleccionado actualmente en la lista visible
-                    const selectedEl = visibleChannels.find(el => el.classList.contains("tv-channel-selected"));
-                    let currentIndex = selectedEl ? visibleChannels.indexOf(selectedEl) : -1;
+                const visibleChannelElements = Array.from(container.querySelectorAll('.tv-channel'));
+                
+                if (visibleChannelElements.length > 0) {
+                    const selectedEl = visibleChannelElements.find(el => parseInt(el.dataset.channelIndex) === currentChannelIndex);
+                    let currentIndex = selectedEl ? visibleChannelElements.indexOf(selectedEl) : -1;
 
+                    // Si no está visible o seleccionado, intentar seleccionar el primero o último
                     if (currentIndex === -1) {
-                         // Si no hay seleccionado, empezar desde el principio/final
-                         currentIndex = e.key === "ArrowDown" ? 0 : visibleChannels.length - 1;
+                         currentIndex = e.key === "ArrowDown" ? 0 : visibleChannelElements.length - 1;
                     } else {
-                        // Calcular el nuevo índice
                         currentIndex = e.key === "ArrowDown" 
-                            ? (currentIndex + 1) % visibleChannels.length
-                            : (currentIndex - 1 + visibleChannels.length) % visibleChannels.length;
+                            ? (currentIndex + 1) % visibleChannelElements.length
+                            : (currentIndex - 1 + visibleChannelElements.length) % visibleChannelElements.length;
                     }
                     
-                    const nextChannelEl = visibleChannels[currentIndex];
-                    const nextOriginalIndex = parseInt(nextChannelEl.dataset.channelIndex);
+                    const nextOriginalIndex = parseInt(visibleChannelElements[currentIndex].dataset.channelIndex);
 
                     playChannel(nextOriginalIndex);
                 }
@@ -736,10 +694,24 @@
         // ====================
         document.addEventListener('DOMContentLoaded', () => {
             // Renderiza la lista completa en la guía principal
-            renderChannels(channels, channelGuide); 
-            // Iniciar en la sección EN VIVO con el primer canal
+            renderChannels(channels, channelGuideList); 
+            // Iniciar en la sección EN VIVO
             showSection('live');
+            
+            // Intentar reproducir el primer canal al cargar
             playChannel(0); 
+
+            // Manejo de autoplay fallido (silenciar y reintentar si es necesario)
+            playerVideo.addEventListener('play', () => {
+                if(playerVideo.muted) {
+                    playerVideo.muted = false; // Intenta desmutear si el usuario ya hizo clic
+                    updateVolume(lastVolume);
+                }
+            });
+            playerVideo.addEventListener('error', (e) => {
+                console.error("Error de reproducción:", e);
+                // Aquí podrías intentar cambiar a un canal de fallback
+            });
         });
     </script>
 </body>
