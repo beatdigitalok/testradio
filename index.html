@@ -15,13 +15,15 @@
         :root {
             --bg-dark: #0f0f0f;
             --bg-medium: #1c1c1c;
+            --bg-light: #2a2a2a; /* Nuevo para el menú lateral */
             --primary-color: #ff8800; /* Naranja más vivo, similar a Pluto TV */
             --text-color: #ffffff;
             --header-height: 60px;
             --player-height-desktop: 70vh; 
             --player-height-mobile: 35vh; 
             --guide-narrow-width: 250px; 
-            --selection-bg: #333333; /* Fondo de selección más oscuro */
+            --menu-width: 280px; /* Ancho del menú lateral */
+            --selection-bg: #333333; 
         }
 
         body {
@@ -37,7 +39,7 @@
         }
 
         /* =======================================
-        HEADER SUPERIOR
+        HEADER SUPERIOR y MENÚ HAMBURGUESA
         ======================================= */
         #main-header {
             height: var(--header-height);
@@ -50,15 +52,40 @@
             z-index: 1000;
             flex-shrink: 0;
         }
+        #header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Espacio entre el menú y el logo */
+        }
+        
+        /* Botón de Menú (Hamburguesa) */
+        #menu-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        #menu-toggle-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        #menu-toggle-btn svg { fill: var(--text-color); width: 24px; height: 24px; }
+
         #platform-logo {
             font-size: 1.5em;
             font-weight: 900;
             color: var(--primary-color);
             letter-spacing: 1px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            margin-right: 20px;
         }
         #platform-logo span { color: var(--text-color); font-weight: 400; }
-        #main-nav { display: flex; gap: 25px; flex-grow: 1; margin-left: 50px; }
+        
+        /* Navegación principal (Oculta en móvil) */
+        #main-nav { display: flex; gap: 25px; flex-grow: 1; margin-left: 30px; }
         #main-nav button {
             background: none; border: none; color: var(--text-color); font-size: 1.1em; font-weight: 700; padding: 10px 0; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap;
         }
@@ -68,8 +95,75 @@
             content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: var(--primary-color); border-radius: 2px;
         }
 
+        /* Menú Lateral Desplegable */
+        #side-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            display: none;
+        }
+        #side-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--menu-width);
+            height: 100%;
+            background-color: var(--bg-light);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-out;
+            z-index: 1002;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        #side-menu-overlay.open #side-menu { transform: translateX(0); }
+        #side-menu-overlay.open { display: block; }
+
+        .menu-nav-item {
+            display: block;
+            padding: 15px 10px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-bottom: 1px solid #333;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
+        }
+        .menu-nav-item:hover, .menu-nav-item.active {
+            background-color: var(--selection-bg);
+            color: var(--primary-color);
+        }
+        .menu-nav-item:first-child { 
+             color: var(--primary-color);
+             font-size: 1.5em; 
+             pointer-events: none;
+             border-bottom: 2px solid var(--primary-color);
+             margin-bottom: 10px;
+        }
+        .menu-footer {
+            margin-top: auto; /* Empuja el footer hacia abajo */
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        .menu-footer a, .menu-footer p {
+            display: block;
+            color: #999;
+            font-size: 0.85em;
+            padding: 5px 0;
+            text-decoration: none;
+        }
+        .menu-footer a:hover { color: var(--primary-color); }
+
+
         /* =======================================
-        REPRODUCTOR SUPERIOR (Controles Minimalistas)
+        REPRODUCTOR SUPERIOR (Controles)
         ======================================= */
         #tv-player-container-wrapper {
             height: var(--player-height-desktop); 
@@ -78,236 +172,139 @@
             position: relative;
             background-color: black;
         }
-        #tv-player-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        #tv-player-video, #tv-player-iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background: black; border: none;
-        }
+        /* ... (resto del CSS del reproductor) ... */
         
-        /* Controles - Minimalistas y Transparentes */
+        /* Controles de Volumen - Alineación Vertical MEJORADA */
+        #volume-control {
+            display: flex;
+            align-items: center; /* Alinea verticalmente el botón y el slider */
+            gap: 10px;
+        }
+        #volume-slider {
+            width: 80px;
+            height: 4px; /* Hilo más delgado */
+            cursor: pointer;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            /* Asegura que el slider no tome espacio innecesario */
+            margin: 0; 
+            padding: 0;
+        }
+        /* Estilos del thumb (el circulito) */
+        #volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--primary-color);
+            border: 2px solid var(--text-color);
+            border-radius: 50%;
+        }
+        #volume-slider::-moz-range-thumb {
+            border: none;
+            width: 14px;
+            height: 14px;
+            background: var(--primary-color);
+            border: 2px solid var(--text-color);
+            border-radius: 50%;
+        }
+        /* ... (resto del CSS de los controles) ... */
+
         #player-controls {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 20px; background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s; z-index: 100;
         }
         #tv-player-container:hover #player-controls { opacity: 1; }
         #player-controls button {
-            /* Estilo Minimalista/Transparente */
             background: rgba(255, 255, 255, 0.1); 
             border: 1px solid rgba(255, 255, 255, 0.3); 
             color: var(--text-color); 
-            font-size: 1.1em; 
             width: 38px; 
             height: 38px; 
-            line-height: 38px; 
-            padding: 0; 
             border-radius: 50%; 
             cursor: pointer; 
             transition: background 0.2s, border-color 0.2s;
-            display: flex; /* Para centrar el SVG */
+            display: flex; 
             align-items: center;
             justify-content: center;
+            flex-shrink: 0; /* Evita que los botones se achiquen */
         }
         #player-controls button:hover {
             background: rgba(255, 255, 255, 0.2);
             border-color: var(--primary-color);
         }
-        /* ESTILO SVG: Asegura que el icono sea blanco */
         #player-controls button svg {
-            fill: var(--text-color); /* Blanco */
+            fill: var(--text-color); 
             width: 18px; 
             height: 18px;
             display: block;
         }
-        
-        /* INFO CANAL (Similar a barra de info de canal) */
-        #channel-info { 
-            position: absolute; bottom: 65px; left: 20px; display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 6px; font-size: 1.2em; font-weight: bold; opacity: 0; transition: opacity 0.5s; z-index: 100; pointer-events: none;
-        }
-        #channel-info.show { opacity: 1; }
-        #channel-info img { 
-            height: 40px; width: 80px; object-fit: contain; background: var(--bg-dark); padding: 5px; border-radius: 4px; 
-        }
 
         /* =======================================
-        CONTENIDO INFERIOR
+        GUÍA DE CANALES (Ajustes de estilo)
         ======================================= */
-        #main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        #content-section-wrapper {
-            flex-grow: 1; 
-            background-color: var(--bg-dark);
-            overflow: hidden; 
-            position: relative;
-        }
-        .content-display {
-            width: 100%;
-            height: 100%; 
-            overflow: hidden; 
-            display: none;
-            box-sizing: border-box;
-        }
-        .content-display.active {
-            display: flex;
-        }
-
-        /* === SECCIÓN LIVE (Guía vertical a la izquierda) === */
-        #live-display {
-            display: flex;
-            flex-direction: row;
-            width: 100%; 
-            height: 100%;
-        }
-        
         #channel-guide-list {
             flex: 0 0 var(--guide-narrow-width); 
             background-color: var(--bg-medium);
             overflow-y: auto; 
             border-right: 1px solid #333;
-            padding: 10px 0;
+            padding: 0; /* Eliminamos el padding para usar el padding interno del canal */
         }
 
-        /* Estilo del Canal en la lista vertical */
+        /* Estilo del Canal en la lista vertical MEJORADO */
         .tv-channel {
-            padding: 8px 15px; 
+            padding: 10px 15px; /* Más padding vertical */
             background: transparent; 
             cursor: pointer; 
             transition: background 0.2s;
-            border-left: 3px solid transparent;
+            border-left: 5px solid transparent; /* Más grueso */
             display: flex;
             flex-direction: column; 
+            margin-bottom: 2px; /* Pequeño espacio entre canales */
         }
         .tv-channel:hover { background: var(--selection-bg); }
         .tv-channel-selected {
             background: var(--selection-bg) !important; 
             border-left-color: var(--primary-color) !important; 
         }
-        .tv-channel-content { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-        .tv-channel img { max-height: 25px; width: 45px; object-fit: contain; background: black; padding: 2px; border-radius: 2px; }
-        .tv-channel-info { flex-grow: 1; overflow: hidden; }
-        .tv-channel-info .name { font-size: 0.9em; font-weight: 700; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tv-channel-description { 
-            font-size: 0.75em; 
-            color: #aaa; 
-            margin-top: -5px; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            padding-left: 55px;
-        }
-        
-        #epg-detail-view {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #777;
-            font-size: 1.5em;
-        }
-        
-        /* === SECCIÓN ON DEMAND === */
-        #ondemand-display {
+        .tv-channel-content { 
             display: flex; 
-            flex-direction: column;
-            overflow-y: auto;
-            padding: 20px; 
-            box-sizing: border-box;
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 3px; 
         }
-        #vod-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            padding-top: 10px;
+        .tv-channel img { 
+            max-height: 28px; /* Un poco más grande */
+            width: 50px; /* Un poco más ancho */
+            object-fit: contain; 
+            background: black; 
+            padding: 3px; 
+            border-radius: 4px; 
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); /* Sombra para resaltar el logo */
         }
-        .vod-item {
-            cursor: pointer;
-            background: var(--bg-medium);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
+        .tv-channel-info .name { 
+            font-size: 1em; /* Un poco más grande */
+            font-weight: 700; 
+            color: var(--text-color); 
         }
-        .vod-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(255, 136, 0, 0.3); 
-        }
-        .vod-item img {
-            width: 100%;
-            height: 270px; 
-            object-fit: cover;
-            display: block;
-        }
-        .vod-info {
-            padding: 10px;
-            text-align: center;
-        }
-        .vod-info .title {
-            font-size: 1em;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .vod-info .year {
-            font-size: 0.8em;
-            color: #aaa;
-            margin-top: 5px;
+        .tv-channel-description { 
+            font-size: 0.78em; /* Un poco más grande */
+            color: #aaa; 
+            margin-top: 0; 
+            padding-left: 60px; /* Alineado con el nombre */
         }
         
-        /* === SECCIÓN BUSCAR === */
-        #search-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 20px;
-            overflow-y: auto; 
-            padding-bottom: 20px;
-        }
-        #search-container { 
-            width: 90%; max-width: 600px; margin-bottom: 20px; 
-        }
-        #search-input {
-            width: 100%; padding: 12px; font-size: 1.1em; background: var(--bg-medium); border: 2px solid #333; border-radius: 8px; color: var(--text-color); outline: none; transition: border-color 0.2s; box-sizing: border-box;
-        }
-        #search-input:focus { border-color: var(--primary-color); }
-        #search-results-message { margin-top: 10px; color: #aaa; font-size: 1em; display: none; text-align: center; }
-
-        #search-results-grid {
-            width: 90%;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            justify-content: start;
-        }
-        #search-results-grid .tv-channel {
-             flex-direction: row; 
-             border-left: 5px solid transparent;
-             background: var(--bg-medium); 
-             border-radius: 6px;
-        }
-        #search-results-grid .tv-channel:hover {
-             background: var(--selection-bg);
-        }
-        #search-results-grid .tv-channel-description {
-            display: none; 
-        }
-
-
         /* =======================================
         ADAPTACIÓN A MÓVILES (MEDIA QUERY)
         ======================================= */
         @media (max-width: 768px) {
             
+            #main-nav { display: none; } /* Ocultar nav principal en móvil */
+            #header-left { margin-right: auto; } /* Centra el logo si no hay nav */
+            
+            /* Menú lateral cubre casi toda la pantalla */
+            #side-menu { width: 85%; }
+            
             #platform-logo span { display: none; }
-            #main-nav { margin-left: 10px; gap: 10px; }
             #tv-player-container-wrapper { height: var(--player-height-mobile); }
             #player-controls { opacity: 1 !important; }
 
@@ -319,21 +316,37 @@
                 height: 100%; 
             }
             #epg-detail-view { display: none; }
-            #search-display { padding-top: 20px; }
-            
-            #vod-grid {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-            }
-            .vod-item img {
-                height: 190px;
-            }
         }
     </style>
 </head>
 <body>
 
+    <div id="side-menu-overlay">
+        <div id="side-menu">
+            <a class="menu-nav-item">VER AHORA</a>
+            <a class="menu-nav-item" data-section="live" onclick="showSection('live'); toggleMenu(false);">TV en vivo</a>
+            <a class="menu-nav-item" data-section="ondemand" onclick="showSection('ondemand'); toggleMenu(false);">On Demand</a>
+            <a class="menu-nav-item" data-section="search" onclick="showSection('search'); toggleMenu(false);">Buscar</a>
+
+            <div class="menu-footer">
+                <a href="#">Acerca De Beat Digital</a>
+                <a href="#">Soporte</a>
+                <a href="#">Legal</a>
+                <a href="#">Términos de Uso</a>
+                <a href="#">Política de privacidad</a>
+                <p>© 2025 beat digital . Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </div>
+
+
     <header id="main-header">
-        <div id="platform-logo">BEAT <span>DIGITAL TV</span></div>
+        <div id="header-left">
+            <button id="menu-toggle-btn" aria-label="Menú principal" onclick="toggleMenu()">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            </button>
+            <div id="platform-logo">BEAT <span>DIGITAL TV</span></div>
+        </div>
         
         <nav id="main-nav">
             <button id="nav-live" class="active" data-section="live">📺 ETV EN VIVO</button>
@@ -380,7 +393,7 @@
                     </div>
 
                 <div id="epg-detail-view">
-                    <p>Aquí se mostrará la Guía EPG detallada o información del programa actual.</p>
+                    <p style="color: #777; padding: 20px;">Guía EPG detallada o información del programa actual.</p>
                 </div>
             </div>
 
@@ -473,48 +486,76 @@
         const volumeSlider = document.getElementById("volume-slider");
         const infoBox = document.getElementById("channel-info");
         const btnMute = document.getElementById("btn-mute");
-        const volumeIconSVG = document.querySelector('#btn-mute svg path'); // Referencia al path del icono de volumen
+        const volumeIconSVG = document.querySelector('#btn-mute svg path');
+        
+        const sideMenuOverlay = document.getElementById('side-menu-overlay');
+        const sideMenu = document.getElementById('side-menu');
         
         let currentChannelIndex = 0;
         let hls, dash;
         let lastVolume = 0.5; 
 
         // ====================
+        // Funcionalidad Menú Lateral (Hamburguesa)
+        // ====================
+        function toggleMenu(force) {
+            const isOpen = sideMenuOverlay.classList.contains('open');
+            const shouldOpen = force !== undefined ? force : !isOpen;
+            
+            if (shouldOpen) {
+                sideMenuOverlay.classList.add('open');
+                sideMenu.focus();
+                document.body.style.overflow = 'hidden'; // Evita el scroll del fondo
+            } else {
+                sideMenuOverlay.classList.remove('open');
+                document.body.style.overflow = ''; // Restaura el scroll
+            }
+        }
+        
+        // Cerrar menú al hacer clic fuera
+        sideMenuOverlay.addEventListener('click', (e) => {
+            if (e.target.id === 'side-menu-overlay') {
+                toggleMenu(false);
+            }
+        });
+
+        // ====================
         // Funcionalidad de Navegación
         // ====================
         function showSection(sectionId) {
-            // 1. Gestionar la pestaña activa
+            // 1. Gestionar la pestaña activa en el HEADER
             navButtons.forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            const headerBtn = document.querySelector(`#main-nav [data-section="${sectionId}"]`);
+            if (headerBtn) headerBtn.classList.add('active');
+            
+            // 2. Gestionar la pestaña activa en el MENÚ LATERAL
+            document.querySelectorAll('#side-menu a[data-section]').forEach(link => link.classList.remove('active'));
+            const menuLink = document.querySelector(`#side-menu a[data-section="${sectionId}"]`);
+            if (menuLink) menuLink.classList.add('active');
 
-            // 2. Gestionar la visibilidad de la sección de contenido inferior
+
+            // 3. Gestionar la visibilidad de la sección de contenido inferior
             contentDisplays.forEach(display => {
                 display.classList.remove('active');
                 display.style.display = 'none'; 
             });
             const activeDisplay = document.getElementById(`${sectionId}-display`);
-            
             activeDisplay.style.display = 'flex';
             activeDisplay.classList.add('active');
 
 
-            // 3. Manejo especial para la búsqueda
+            // 4. Manejo especial para la búsqueda
             if (sectionId === 'search') {
                 searchInput.focus();
                 filterChannels(searchInput.value || '');
             }
             
-            // 4. Manejo especial para LIVE (vuelve a la lista)
+            // 5. Manejo especial para LIVE (vuelve a la lista)
             if (sectionId === 'live') {
                 renderChannels(channels, channelGuideList); 
                 const currentEl = channelGuideList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
                 if(currentEl) currentEl.classList.add("tv-channel-selected");
                 scrollToChannel(currentChannelIndex, channelGuideList);
-            }
-            
-            // 5. ONDEMAND: Renderizar el placeholder si es necesario
-            if (sectionId === 'ondemand') {
-                console.log("Cargando catálogo On Demand...");
             }
         }
 
@@ -523,6 +564,8 @@
                 showSection(e.currentTarget.dataset.section);
             });
         });
+
+        // ... (el resto de las funciones: filterChannels, renderChannels, playChannel, scrollToChannel) ...
 
         // ====================
         // Funcionalidad de Búsqueda
@@ -656,7 +699,6 @@
                 document.getElementById("player-controls").style.display = 'flex';
             }
             
-            // Forzar el estado de volumen al cambiar de canal para asegurar que el icono es correcto
             updateVolume(playerVideo.volume);
         }
 
@@ -669,7 +711,7 @@
         }
         
         // ====================
-        // Controles de Volumen y Teclado
+        // Controles de Volumen
         // ====================
         
         function updateVolume(newVolume) {
@@ -698,12 +740,10 @@
 
         btnMute.onclick = () => {
             if (playerVideo.muted || playerVideo.volume === 0) {
-                // Desmutear
                 let vol = lastVolume > 0 ? lastVolume : 0.5;
                 playerVideo.muted = false;
                 updateVolume(vol);
             } else {
-                // Mutear
                 lastVolume = playerVideo.volume;
                 playerVideo.muted = true;
                 updateVolume(0);
@@ -731,9 +771,9 @@
             }
         };
 
-        // Navegación por teclado (Flechas arriba/abajo)
+        // Navegación por teclado (Flechas)
         document.addEventListener("keydown", e => {
-            const currentSection = document.querySelector('#main-nav button.active').dataset.section;
+            const currentSection = document.querySelector('#main-nav button.active')?.dataset.section || 'live';
             
             if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                 e.preventDefault(); 
@@ -797,21 +837,22 @@
             // Intentar reproducir el primer canal al cargar
             playChannel(0); 
             
-            // El navegador a menudo fuerza el muteo en autoplay, ajustamos el icono
             playerVideo.addEventListener('volumechange', () => {
                 updateVolume(playerVideo.volume);
             });
 
             playerVideo.addEventListener('play', () => {
-                // Si el navegador permite el play, aseguramos el estado de volumen correcto.
                 updateVolume(playerVideo.volume);
             });
             playerVideo.addEventListener('error', (e) => {
                 console.error("Error de reproducción:", e);
             });
             
-            // Inicializar el icono de volumen
+            // Inicializar el icono de volumen y la lista lateral del menú
             updateVolume(volumeSlider.value);
+            
+            // Marcar "TV en vivo" como activo al inicio en el menú lateral
+            document.querySelector('#side-menu a[data-section="live"]').classList.add('active');
         });
     </script>
 </body>
