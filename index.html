@@ -6,45 +6,38 @@
     <title>Beat Digital TV - Plataforma de Streaming</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
         /* =======================================
-        VARIABLES y ESTILOS GENERALES (Pluto Style)
+        VARIABLES y ESTILOS GENERALES
         ======================================= */
         :root {
-            --bg-dark: #0f0f0f; /* Casi negro */
-            --bg-medium: #181818; /* Gris oscuro para guías/fondos */
-            --bg-light: #222222;
-            --primary-color: #ff8800; /* Naranja/Amarillo brillante (como la selección de Pluto) */
+            --bg-dark: #0f0f0f;
+            --bg-medium: #1c1c1c;
+            --bg-light: #2a2a2a;
+            --primary-color: #ff8800;
             --text-color: #ffffff;
             --header-height: 60px;
             --player-height-desktop: 70vh; 
             --player-height-mobile: 35vh; 
-            --guide-wide-width: 350px; /* Ancho de guía similar a Pluto */
-            --menu-width: 300px; 
+            --guide-narrow-width: 250px; 
+            --menu-width: 280px; 
             --selection-bg: #333333; 
-            --focus-glow: 0 0 8px rgba(255, 136, 0, 0.7);
         }
 
         body {
-            font-family: 'Montserrat', sans-serif; /* Cambiado a Montserrat */
+            font-family: 'Roboto', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden; 
+            height: 100vh; /* Esencial para que el Flexbox tome toda la altura */
+            overflow: hidden; /* Controlamos el scroll en los hijos */
         }
 
-        /* Ocultar barra de scroll en Webkit (Chrome, Safari) */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-medium); }
-        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ff9933; }
-        
         /* =======================================
         HEADER SUPERIOR y MENÚ HAMBURGUESA
         ======================================= */
@@ -66,8 +59,16 @@
         }
         
         #menu-toggle-btn {
-            background: none; border: none; color: var(--text-color); cursor: pointer; padding: 5px; transition: background 0.2s;
-            display: flex; align-items: center; justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
         }
         #menu-toggle-btn:hover { background: rgba(255, 255, 255, 0.1); }
         #menu-toggle-btn svg { fill: var(--text-color); width: 24px; height: 24px; }
@@ -77,59 +78,86 @@
             font-weight: 900;
             color: var(--primary-color);
             letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            margin-right: 20px;
         }
         #platform-logo span { color: var(--text-color); font-weight: 400; }
         
         #main-nav { display: flex; gap: 25px; flex-grow: 1; margin-left: 30px; }
-        /* ... (Estilos de navegación) ... */
+        #main-nav button {
+            background: none; border: none; color: var(--text-color); font-size: 1.1em; font-weight: 700; padding: 10px 0; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap;
+        }
+        #main-nav button:hover { color: var(--primary-color); }
+        #main-nav button.active { color: var(--primary-color); }
+        #main-nav button.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: var(--primary-color); border-radius: 2px;
+        }
 
         /* Menú Lateral Desplegable */
-        #side-menu-overlay { /* ... */ }
+        #side-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            display: none;
+        }
         #side-menu {
-            /* ... (Propiedades de posición) ... */
+            position: fixed;
+            top: 0;
+            left: 0;
             width: var(--menu-width);
-            background-color: var(--bg-medium); /* Fondo más oscuro */
-            
-        }
-        .menu-nav-header {
+            height: 100%;
+            background-color: var(--bg-light);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-out;
+            z-index: 1002;
+            padding: 20px;
+            box-sizing: border-box;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 10px;
-            color: var(--primary-color);
-            font-size: 1.5em; 
-            font-weight: 900;
-            border-bottom: 2px solid var(--primary-color);
-            margin-bottom: 10px;
+            flex-direction: column;
         }
-        
-        /* Icono de cerrar al lado del título (Mejora solicitada) */
-        #close-menu-btn {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            cursor: pointer;
-            padding: 5px;
-            transition: color 0.2s;
-        }
-        #close-menu-btn:hover {
-            color: var(--primary-color);
-        }
-        #close-menu-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-color);
-        }
+        #side-menu-overlay.open #side-menu { transform: translateX(0); }
+        #side-menu-overlay.open { display: block; }
+
         .menu-nav-item {
+            display: block;
             padding: 15px 10px;
-            font-size: 1.1em;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.2em;
             font-weight: 700;
             border-bottom: 1px solid #333;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
         }
         .menu-nav-item:hover, .menu-nav-item.active {
-            background-color: rgba(255, 136, 0, 0.1); /* Sutil efecto naranja */
+            background-color: var(--selection-bg);
             color: var(--primary-color);
         }
+        .menu-nav-item:first-child { 
+             color: var(--primary-color);
+             font-size: 1.5em; 
+             pointer-events: none;
+             border-bottom: 2px solid var(--primary-color);
+             margin-bottom: 10px;
+        }
+        .menu-footer {
+            margin-top: auto; 
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        .menu-footer a, .menu-footer p {
+            display: block;
+            color: #999;
+            font-size: 0.85em;
+            padding: 5px 0;
+            text-decoration: none;
+        }
+        .menu-footer a:hover { color: var(--primary-color); }
 
 
         /* =======================================
@@ -141,278 +169,208 @@
             flex-shrink: 0;
             position: relative;
             background-color: black;
-            cursor: pointer; /* Indica que es interactivo (play/pause) */
+            display: flex; /* Añadir display flex para centrar el video si no ocupa todo */
+            align-items: center;
+            justify-content: center;
         }
         #tv-player-container {
-            width: 100%; height: 100%; position: relative;
+            width: 100%;
+            height: 100%;
+            position: relative;
         }
         #tv-player-video, #tv-player-iframe {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background: black; border: none;
-            object-fit: contain;
+            object-fit: contain; /* Asegura que el video se centre y se ajuste sin recortarse */
         }
         
-        /* Icono de estado de reproducción (Centrado) */
-        #play-status-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none; /* No interfiere con el clic en el contenedor */
-            z-index: 10;
-        }
-        #play-status-icon svg {
-            fill: var(--text-color);
-            width: 40px;
-            height: 40px;
-            transform: translateX(3px); /* Ajuste visual para el icono de play */
-        }
-        #tv-player-container-wrapper:hover #play-status-icon {
-            opacity: 1;
-        }
-        
-        /* Overlay de info canal */
-        #channel-info {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 15px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 5;
-        }
-        #channel-info.show {
-            opacity: 1;
-        }
-        #channel-info img {
-            height: 25px;
-            width: auto;
-            object-fit: contain;
-        }
-        #channel-info span {
-            font-weight: 700;
-            font-size: 1.1em;
-            color: var(--text-color);
-        }
-
-
-        /* Controles flotantes (Pluto no suele tener controles flotantes; los dejamos minimalistas) */
+        /* Controles - Alineación Vertical MEJORADA */
         #player-controls {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 20px; background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s; z-index: 100;
         }
-        #tv-player-container-wrapper:hover #player-controls { opacity: 1; }
+        #tv-player-container:hover #player-controls { opacity: 1; }
         
-        #volume-control { display: flex; align-items: center; gap: 10px; }
-        #volume-slider {
-            width: 80px; height: 4px; cursor: pointer; appearance: none;
-            background: rgba(255, 255, 255, 0.2); border-radius: 2px; margin: 0; padding: 0;
+        #volume-control {
+            display: flex;
+            align-items: center; /* ALINEACIÓN CRUCIAL: Centra el icono con el slider */
+            gap: 10px;
         }
-        /* ... (Estilos de thumb para el slider) ... */
+        #volume-slider {
+            width: 80px;
+            height: 4px;
+            cursor: pointer;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 0; 
+            padding: 0;
+        }
+        #volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--primary-color);
+            border: 2px solid var(--text-color);
+            border-radius: 50%;
+        }
+        #volume-slider::-moz-range-thumb {
+            border: none;
+            width: 14px;
+            height: 14px;
+            background: var(--primary-color);
+            border: 2px solid var(--text-color);
+            border-radius: 50%;
+        }
+        /* ... (otros estilos de controles y SVGs) ... */
         #player-controls button {
-            background: none; 
-            border: none; 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
             color: var(--text-color); 
             width: 38px; 
             height: 38px; 
             border-radius: 50%; 
             cursor: pointer; 
+            transition: background 0.2s, border-color 0.2s;
             display: flex; 
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            flex-shrink: 0; 
         }
         #player-controls button:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+        #player-controls button svg {
+            fill: var(--text-color); 
+            width: 18px; 
+            height: 18px;
+            display: block;
         }
 
-
         /* =======================================
-        CONTENIDO INFERIOR (Guía Estilo Pluto TV)
+        CONTENIDO INFERIOR (CORRECCIÓN DE ALTURA)
         ======================================= */
         #main-content {
-            flex-grow: 1; 
+            flex-grow: 1; /* CLAVE: Ocupa todo el espacio vertical restante */
             display: flex;
             flex-direction: column;
-            overflow: hidden; 
+            overflow: hidden; /* Evita que el scroll sea global */
         }
         #content-section-wrapper {
             flex-grow: 1; 
             background-color: var(--bg-dark);
             overflow: hidden; 
             position: relative;
-            display: flex; 
+            display: flex; /* CLAVE: Contenedor directo de la guía y el EPG/VOD */
         }
-
-        /* === SECCIÓN LIVE (Guía ancha, tipo Pluto) === */
-        #live-display {
-            display: flex;
-            flex-direction: column; /* Cambiamos a columna para que la guía ocupe todo el ancho */
-            width: 100%; 
-            height: 100%;
-            overflow: hidden;
-        }
-        
-        /* Bar horizontal de navegación/filtros (similar a las categorías de Pluto) */
-        #guide-nav-bar {
-            height: 45px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            background-color: var(--bg-medium);
-            border-bottom: 1px solid #333;
-            overflow-x: auto;
-        }
-        .guide-filter-btn {
-            background: none;
-            border: none;
-            color: #ccc;
-            padding: 8px 15px;
-            margin-right: 10px;
-            font-weight: 700;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .guide-filter-btn:hover, .guide-filter-btn.active {
-            color: var(--primary-color);
-            box-shadow: 0 2px 0 0 var(--primary-color);
-        }
-        
-        /* Contenedor principal de la guía EPG */
-        #epg-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: row; /* La guía y los detalles van en fila aquí */
-            overflow: hidden;
-        }
-
-        /* GUÍA DE CANALES (Vertical, ahora MÁS ancha para Pluto Style) */
-        #channel-guide-list {
-            flex: 0 0 var(--guide-wide-width); /* Más ancha para el estilo Pluto */
-            background-color: var(--bg-medium);
-            overflow-y: auto; 
-            border-right: 1px solid #333;
-            padding: 10px 0; 
+        .content-display {
+            width: 100%;
+            height: 100%; /* Ahora toma el 100% de la altura de #content-section-wrapper */
+            overflow: hidden; 
+            display: none;
             box-sizing: border-box;
         }
-        
-        /* Estilo del Canal (Mejorado para Pluto) */
-        .tv-channel {
-            padding: 8px 15px; /* Más compacto */
-            transition: background 0.2s, box-shadow 0.2s;
-            border-left: 5px solid transparent; 
-            margin-bottom: 0; /* Sin margen */
+        .content-display.active {
+            display: flex;
         }
-        .tv-channel:hover { background: var(--bg-light); }
+
+        /* === SECCIÓN LIVE (Guía vertical a la izquierda) === */
+        #live-display {
+            display: flex;
+            flex-direction: row;
+            width: 100%; 
+            height: 100%;
+        }
+        
+        #channel-guide-list {
+            flex: 0 0 var(--guide-narrow-width); 
+            background-color: var(--bg-medium);
+            overflow-y: auto; /* Permite el scroll de la lista de canales */
+            border-right: 1px solid #333;
+            padding: 0; 
+        }
+        
+        /* Estilo del Canal en la lista vertical */
+        .tv-channel {
+            padding: 10px 15px; 
+            background: transparent; 
+            cursor: pointer; 
+            transition: background 0.2s;
+            border-left: 5px solid transparent; 
+            display: flex;
+            flex-direction: column; 
+            margin-bottom: 2px; 
+        }
+        .tv-channel:hover { background: var(--selection-bg); }
         .tv-channel-selected {
             background: var(--selection-bg) !important; 
             border-left-color: var(--primary-color) !important; 
-            box-shadow: var(--focus-glow); 
-            outline: none;
         }
-        .tv-channel-content { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 3px; }
+        .tv-channel-content { display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }
         .tv-channel img { 
-            max-height: 25px; 
-            width: auto; 
+            max-height: 28px; 
+            width: 50px; 
             object-fit: contain; 
-            background: transparent; 
-            padding: 0; 
-            box-shadow: none; 
+            background: black; 
+            padding: 3px; 
+            border-radius: 4px; 
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); 
         }
-        .tv-channel-info { flex-grow: 1; }
         .tv-channel-info .name { 
-            font-size: 1.05em; 
+            font-size: 1em; 
             font-weight: 700; 
             color: var(--text-color); 
         }
         .tv-channel-description { 
-            font-size: 0.75em; 
+            font-size: 0.78em; 
             color: #aaa; 
+            margin-top: 0; 
+            padding-left: 60px; 
             white-space: nowrap; 
             overflow: hidden; 
             text-overflow: ellipsis;
         }
-        .channel-number {
-            font-size: 0.9em;
-            color: #888;
-            flex-shrink: 0;
-            width: 30px;
-            text-align: right;
-        }
 
-        /* Vista EPG Detallada (Timeline - Placeholder) */
-        #epg-detail-view {
-            flex-grow: 1;
-            overflow-x: auto; /* Scroll horizontal para el timeline */
-            padding: 10px 20px;
-            box-sizing: border-box;
-            white-space: nowrap;
-        }
-        
-        /* === SECCIÓN BUSCAR (Estilo Lista de Canales) === */
-        #search-display {
+        /* === SECCIÓN ON DEMAND / BUSCAR === */
+        #ondemand-display, #search-display {
             flex-direction: column;
-            overflow-y: auto; 
+            overflow-y: auto; /* Permite el scroll si el contenido es largo */
             padding: 20px; 
             box-sizing: border-box;
         }
         
-        /* Estilo de la Caja de Búsqueda (Similar a la interfaz de Pluto) */
-        #search-container {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        #search-input {
-            width: 100%;
-            max-width: 500px;
-            padding: 12px 20px;
-            font-size: 1.1em;
-            border: 2px solid var(--selection-bg);
-            border-radius: 25px;
-            background-color: var(--bg-medium);
-            color: var(--text-color);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        #search-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: var(--focus-glow);
-            outline: none;
-        }
-        
-        /* Resultados de Búsqueda (Usando el mismo estilo de lista de canales para la consistencia de Pluto) */
-        #search-results-list {
-            display: flex;
-            flex-direction: column;
-        }
-        .search-result-channel {
-             /* Reutiliza el estilo .tv-channel */
-             border-left: 5px solid transparent; 
-             margin-bottom: 5px;
-        }
-        .search-result-channel:hover { background: var(--bg-light); }
-        .search-result-channel.tv-channel-selected {
-            background: var(--selection-bg) !important; 
-            border-left-color: var(--primary-color) !important; 
-        }
-        
-        #search-results-message {
-            color: #aaa;
+        /* ... (resto de estilos VOD/SEARCH) ... */
+        #vod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
             padding-top: 10px;
         }
+        .vod-item {
+            cursor: pointer;
+            background: var(--bg-medium);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .vod-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(255, 136, 0, 0.3); 
+        }
+        .vod-item img {
+            width: 100%;
+            height: 270px; 
+            object-fit: cover;
+            display: block;
+        }
+        #search-results-grid {
+            width: 90%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            justify-content: start;
+        }
+
 
         /* =======================================
         ADAPTACIÓN A MÓVILES (MEDIA QUERY)
@@ -428,40 +386,40 @@
             #tv-player-container-wrapper { height: var(--player-height-mobile); }
             #player-controls { opacity: 1 !important; }
 
-            /* MÓVIL: La guía se muestra con scroll vertical */
+            /* CORRECCIÓN MÓVIL: La guía es ahora vertical/horizontal en la parte inferior */
             #live-display { flex-direction: column; }
-            
-            #epg-container { flex-direction: column; overflow-y: auto; }
-            
             #channel-guide-list {
-                flex: 1 1 auto; 
-                width: 100%;
+                flex: 1 1 100%; 
                 border-right: none;
                 padding: 10px;
-                /* Usar guía horizontal scrollable si no hay espacio, pero la dejamos vertical aquí */
+                height: auto; /* Permitir que la lista crezca o se encoja automáticamente */
             }
-            #epg-detail-view { display: none; } /* Ocultar timeline en móvil para simplificar */
+            #epg-detail-view { display: none; }
             
-            /* ... (Estilos VOD/SEARCH) ... */
+            #vod-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+            }
+            .vod-item img {
+                height: 190px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div id="side-menu-overlay" onclick="toggleMenu(false)">
-        <div id="side-menu" onclick="event.stopPropagation()">
-            <div class="menu-nav-header">
-                BEAT DIGITAL TV
-                <button id="close-menu-btn" aria-label="Cerrar menú" onclick="toggleMenu(false)">
-                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </button>
-            </div>
-            <a class="menu-nav-item" data-section="live" onclick="showSection('live'); toggleMenu(false);">📺 TV en vivo</a>
-            <a class="menu-nav-item" data-section="ondemand" onclick="showSection('ondemand'); toggleMenu(false);">🎬 On Demand</a>
-            <a class="menu-nav-item" data-section="search" onclick="showSection('search'); toggleMenu(false);">🔎 Buscar</a>
+    <div id="side-menu-overlay">
+        <div id="side-menu">
+            <a class="menu-nav-item">VER AHORA</a>
+            <a class="menu-nav-item" data-section="live" onclick="showSection('live'); toggleMenu(false);">TV en vivo</a>
+            <a class="menu-nav-item" data-section="ondemand" onclick="showSection('ondemand'); toggleMenu(false);">On Demand</a>
+            <a class="menu-nav-item" data-section="search" onclick="showSection('search'); toggleMenu(false);">Buscar</a>
 
             <div class="menu-footer">
                 <a href="#">Acerca De Beat Digital</a>
+                <a href="#">Soporte</a>
+                <a href="#">Legal</a>
+                <a href="#">Términos de Uso</a>
+                <a href="#">Política de privacidad</a>
                 <p>© 2025 beat digital . Todos los derechos reservados.</p>
             </div>
         </div>
@@ -477,9 +435,9 @@
         </div>
         
         <nav id="main-nav">
-            <button id="nav-live" class="active" data-section="live">TV EN VIVO</button>
-            <button id="nav-ondemand" data-section="ondemand">ON DEMAND</button>
-            <button id="nav-search" data-section="search">BUSCAR</button>
+            <button id="nav-live" class="active" data-section="live">📺 ETV EN VIVO</button>
+            <button id="nav-ondemand" data-section="ondemand">🎬 ON DEMAND</button>
+            <button id="nav-search" data-section="search">🔎 BUSCAR</button>
         </nav>
     </header>
 
@@ -487,12 +445,8 @@
         
         <div id="tv-player-container-wrapper">
             <div id="tv-player-container">
-                <video id="tv-player-video" playsinline muted></video>
+                <video id="tv-player-video" playsinline autoplay muted></video>
                 <iframe allow="autoplay; fullscreen" allowfullscreen frameborder="0" id="tv-player-iframe"></iframe>
-                
-                <div id="play-status-icon">
-                    <svg viewBox="0 0 24 24"><path id="play-status-path" d="M8 5v14l11-7z"/></svg>
-                </div>
                 
                 <div id="channel-info">
                     <img alt="Logo" id="channel-logo" src="" />
@@ -501,11 +455,9 @@
 
                 <div id="player-controls">
                     <button id="btn-play">
-                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 
-                    </button>
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> </button>
                     <button id="btn-pause">
-                        <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>
-                    </button>
+                        <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg> </button>
                     <div id="volume-control">
                         <button id="btn-mute">
                             <svg viewBox="0 0 24 24" id="volume-icon"><path d="M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.98 7-4.72 7-8.77s-2.99-7.79-7-8.77z"/></svg>
@@ -514,8 +466,7 @@
                     </div>
                     <div style="flex-grow: 1;"></div> 
                     <button id="btn-fullscreen">
-                        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-                    </button>
+                        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg> </button>
                 </div>
             </div>
         </div>
@@ -523,20 +474,12 @@
         <div id="content-section-wrapper">
             
             <div id="live-display" class="content-display active">
-                <div id="guide-nav-bar">
-                    <button class="guide-filter-btn active">TODOS LOS CANALES</button>
-                    <button class="guide-filter-btn">Noticias</button>
-                    <button class="guide-filter-btn">Películas</button>
-                    <button class="guide-filter-btn">Deportes</button>
-                </div>
                 
-                <div id="epg-container">
-                    <div id="channel-guide-list">
-                        </div>
-
-                    <div id="epg-detail-view">
-                        <p style="color: #777; padding: 20px;">Timeline EPG de 24 horas (Próximamente).</p>
+                <div id="channel-guide-list">
                     </div>
+
+                <div id="epg-detail-view">
+                    <p style="color: #777; padding: 20px;">Guía EPG detallada o información del programa actual.</p>
                 </div>
             </div>
 
@@ -572,6 +515,7 @@
                         </div>
                     </div>
                 </div>
+                <p style="text-align: center; color: #777; margin-top: 30px;">Pronto podrás cargar tu propio catálogo VOD aquí.</p>
             </div>
 
             <div id="search-display" class="content-display">
@@ -579,8 +523,7 @@
                     <input type="text" id="search-input" placeholder="Buscar canales por nombre o contenido..." autocomplete="off">
                 </div>
                 <p id="search-results-message">Escribe para encontrar canales...</p>
-                <div id="search-results-list">
-                    </div>
+                <div id="search-results-grid"></div>
             </div>
 
         </div>
@@ -595,46 +538,51 @@
         // Lista de canales
         // ====================
         const channels = [
-            {id: 1, name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png", playing: "Programación en vivo", description: "Espectáculos, chismes y entrevistas."}, 
-            {id: 2, name: "Bloomberg", type: "hls", url: "https://liveprodusphoenixeast.akamaized.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Bloomberg_TV.svg", playing: "Noticias financieras", description: "Análisis de mercados globales 24/7."},
-            {id: 3, name: "Canal 22", type: "hls", url: "https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8", logo: "https://i.imgur.com/R4wXVxf.png", playing: "Cultura y Arte", description: "Lo mejor del cine, teatro y danza."},
-            {id: 4, name: "AMC", type: "hls", url: "https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/AMC_logo_2019.svg", playing: "Películas y Series Clásicas", description: "Westerns, dramas y clásicos de culto."},
-            {id: 5, name: "Argentinisima", type: "hls", url: "https://stream1.sersat.com/hls/argentinisima.m3u8", logo: "https://www.argentinisimatv.com.ar/favicon.ico", playing: "Música Folklórica", description: "Raíces y tradiciones argentinas."},
-            {id: 6, name: "Canal de la Ciudad", type: "youtube", url: "https://www.youtube.com/embed/VHCnqfdX-t0?si=IdP5kIMZ1_9wP_m4", logo: "https://www.buenosaires.gob.ar/sites/gcaba/files/favicon_0.ico", playing: "Noticias de Buenos Aires", description: "Información local y servicios."},
-            {id: 7, name: "El Trece", type: "hls", url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8", logo: "https://i.imgur.com/TrgBAdA.png", playing: "Telenovelas y Noticieros", description: "Grandes éxitos de la televisión."},
-            {id: 8, name: "Magic Kids", type: "hls", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", logo: "https://i.imgur.com/CMImqQY.png", playing: "Dibujos Animados (Retro)", description: "La nostalgia de los 90s."},
-            {id: 9, name: "NET TV", type: "hls", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", logo: "https://i.imgur.com/IhJ0BjF.png", playing: "Magazine y entretenimiento", description: "Programas de actualidad y moda."},
+            {name:"Ciudad Magazine", type:"hls", url:"https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", logo:"https://i.imgur.com/V1xZV72.png", playing: "Programación en vivo", description: "Espectáculos, chismes y entrevistas."}, 
+            {name: "Bloomberg", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Bloomberg_TV.svg", url: "https://liveprodusphoenixeast.akamaized.net/USPhx-HD/Channel-TX-USPhx-AWS-virginia-1/Source-USPhx-16k-1-s6lk2-BP-07-02-81ykIWnsMsg_live.m3u8", type: "hls", playing: "Noticias financieras", description: "Análisis de mercados globales 24/7."},
+            {name: "Canal 22", logo: "https://i.imgur.com/R4wXVxf.png", url: "https://5f700d5b2c46f.streamlock.net/canal22/canal22/playlist.m3u8", type: "hls", playing: "Cultura y Arte", description: "Lo mejor del cine, teatro y danza."},
+            {name: "AMC", logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/AMC_logo_2019.svg", url: "https://amc-amcespanol-1-us.vizio.wurl.tv/playlist.m3u8", type: "hls", playing: "Películas y Series Clásicas", description: "Westerns, dramas y clásicos de culto."},
+            {name: "Argentinisima", logo: "https://www.argentinisimatv.com.ar/favicon.ico", url: "https://stream1.sersat.com/hls/argentinisima.m3u8", type: "hls", playing: "Música Folklórica", description: "Raíces y tradiciones argentinas."},
+            {name: "Canal de la Ciudad", logo: "https://www.buenosaires.gob.ar/sites/gcaba/files/favicon_0.ico", url: "https://www.youtube.com/embed/VHCnqfdX-t0?si=IdP5kIMZ1_9wP_m4&autoplay=1", type: "youtube", playing: "Noticias de Buenos Aires", description: "Información local y servicios."},
+            {name: "El Trece", logo: "https://i.imgur.com/TrgBAdA.png", url: "https://livetrx01.vodgc.net/eltrecetv/index.m3u8", type: "hls", playing: "Telenovelas y Noticieros", description: "Grandes éxitos de la televisión."},
+            {name: "Magic Kids", logo: "https://i.imgur.com/CMImqQY.png", url: "https://magicstream.ddns.net/magicstream/stream.m3u8", type: "hls", playing: "Dibujos Animados (Retro)", description: "La nostalgia de los 90s."},
+            {name: "NET TV", logo: "https://i.imgur.com/IhJ0BjF.png", url: "https://unlimited1-us.dps.live/nettv/nettv.smil/playlist.m3u8", type: "hls", playing: "Magazine y entretenimiento", description: "Programas de actualidad y moda."},
+            {name:"5tv", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/tvcinco/live1/playlist.m3u8", logo:"https://i.imgur.com/mSn7ACs.png", playing: "Noticiero Central", description: "Noticias desde el centro del país."},
+            {name:"13Max Television", type:"hls", url:"https://617c5175c970b.streamlock.net:4444/13maxhd/live13maxtvnuevo_720p/playlist.m3u8", logo:"https://i.imgur.com/QvF4lT.png", playing: "Deportes", description: "Transmisiones deportivas locales."},
+            {name:"Aire de Santa Fe", type:"hls", url:"https://unlimited1-us.dps.live/airedesantafetv/airedesantafetv.smil/playlist.m3u8", logo:"https://i.imgur.com/60vSWW0.png", playing: "Programas Locales", description: "Información y cultura santafesina."},
+            {name:"AlternaTV", type:"hls", url:"https://alternatv.ar/stream/hls/live.m3u8", logo:"https://alternatv.ar/alternatv.png", playing: "Canal Independiente", description: "Contenido alternativo y experimental."},
+            {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor", description: "Noticias y pruebas de autos."},
+            {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven", description: "Videos musicales y tendencias."},
+            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVu.png", playing: "Variedades", description: "Programas misceláneos y entretenimiento."},
         ];
-
-        // Asignar índice para mantener el orden original
-        channels.forEach((ch, index) => ch.index = index);
 
         // ====================
         // Variables y Elementos del DOM
         // ====================
         const channelGuideList = document.getElementById("channel-guide-list"); 
+        const navButtons = document.querySelectorAll('#main-nav button');
+        const contentDisplays = document.querySelectorAll('.content-display');
+        
         const searchInput = document.getElementById("search-input");
-        const searchResultsList = document.getElementById("search-results-list"); // Cambiado a lista
+        const searchResultsGrid = document.getElementById("search-results-grid");
         const searchResultsMessage = document.getElementById("search-results-message");
 
-        const playerWrapper = document.getElementById("tv-player-container-wrapper");
         const playerVideo = document.getElementById("tv-player-video");
         const playerIframe = document.getElementById("tv-player-iframe");
-        const playStatusIcon = document.getElementById("play-status-icon");
-        const playStatusPath = document.getElementById("play-status-path");
         const volumeSlider = document.getElementById("volume-slider");
         const infoBox = document.getElementById("channel-info");
         const btnMute = document.getElementById("btn-mute");
         const volumeIconSVG = document.querySelector('#btn-mute svg path');
         
         const sideMenuOverlay = document.getElementById('side-menu-overlay');
+        const sideMenu = document.getElementById('side-menu');
         
         let currentChannelIndex = 0;
         let hls, dash;
         let lastVolume = 0.5; 
 
         // ====================
-        // Funcionalidad Menú Lateral
+        // Funcionalidad Menú Lateral (Hamburguesa)
         // ====================
         function toggleMenu(force) {
             const isOpen = sideMenuOverlay.classList.contains('open');
@@ -642,6 +590,7 @@
             
             if (shouldOpen) {
                 sideMenuOverlay.classList.add('open');
+                sideMenu.focus();
                 document.body.style.overflow = 'hidden'; 
             } else {
                 sideMenuOverlay.classList.remove('open');
@@ -649,52 +598,71 @@
             }
         }
         
+        // Cerrar menú al hacer clic fuera
+        sideMenuOverlay.addEventListener('click', (e) => {
+            if (e.target.id === 'side-menu-overlay') {
+                toggleMenu(false);
+            }
+        });
+
         // ====================
-        // Funcionalidad de Navegación y Búsqueda
+        // Funcionalidad de Navegación
         // ====================
         function showSection(sectionId) {
             
-            document.querySelectorAll('#main-nav button, #side-menu a[data-section]').forEach(el => el.classList.remove('active'));
-            document.querySelector(`#main-nav [data-section="${sectionId}"]`)?.classList.add('active');
-            document.querySelector(`#side-menu a[data-section="${sectionId}"]`)?.classList.add('active');
+            // 1. Gestionar la pestaña activa en el HEADER
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            const headerBtn = document.querySelector(`#main-nav [data-section="${sectionId}"]`);
+            if (headerBtn) headerBtn.classList.add('active');
+            
+            // 2. Gestionar la pestaña activa en el MENÚ LATERAL
+            document.querySelectorAll('#side-menu a[data-section]').forEach(link => link.classList.remove('active'));
+            const menuLink = document.querySelector(`#side-menu a[data-section="${sectionId}"]`);
+            if (menuLink) menuLink.classList.add('active');
 
-            document.querySelectorAll('.content-display').forEach(display => {
+
+            // 3. Gestionar la visibilidad de la sección de contenido inferior
+            contentDisplays.forEach(display => {
                 display.classList.remove('active');
                 display.style.display = 'none'; 
             });
             const activeDisplay = document.getElementById(`${sectionId}-display`);
-            if(activeDisplay) {
-                activeDisplay.style.display = 'flex';
-                activeDisplay.classList.add('active');
-            }
+            activeDisplay.style.display = 'flex';
+            activeDisplay.classList.add('active');
 
 
+            // 4. Manejo especial para la búsqueda
             if (sectionId === 'search') {
                 searchInput.focus();
                 filterChannels(searchInput.value || '');
             }
             
+            // 5. Manejo especial para LIVE (vuelve a la lista)
             if (sectionId === 'live') {
-                renderChannels(channels, channelGuideList, true); 
+                renderChannels(channels, channelGuideList); 
                 const currentEl = channelGuideList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
                 if(currentEl) currentEl.classList.add("tv-channel-selected");
                 scrollToChannel(currentChannelIndex, channelGuideList);
             }
         }
 
-        document.querySelectorAll('#main-nav button').forEach(button => {
+        navButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 showSection(e.currentTarget.dataset.section);
             });
         });
 
+        // ====================
+        // Funcionalidad de Búsqueda
+        // ====================
         function filterChannels(searchTerm) {
             searchTerm = searchTerm.toLowerCase().trim();
-            searchResultsList.innerHTML = '';
+            const resultsContainer = searchResultsGrid;
+            resultsContainer.innerHTML = '';
             searchResultsMessage.style.display = 'none';
 
             if (searchTerm.length === 0) {
-                searchResultsMessage.textContent = 'Escribe para encontrar canales por nombre o contenido.';
+                searchResultsMessage.textContent = 'Escribe para encontrar canales...';
                 searchResultsMessage.style.display = 'block';
                 return;
             }
@@ -709,9 +677,9 @@
                 searchResultsMessage.textContent = `No se encontraron resultados para "${searchTerm}".`;
                 searchResultsMessage.style.display = 'block';
             } else {
-                renderChannels(filteredChannels, searchResultsList, false);
-                // Resaltar el canal actualmente en reproducción
-                const selectedEl = searchResultsList.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
+                renderChannels(filteredChannels, resultsContainer);
+                
+                const selectedEl = resultsContainer.querySelector(`[data-channel-index="${currentChannelIndex}"]`);
                 if (selectedEl) selectedEl.classList.add("tv-channel-selected");
             }
         }
@@ -721,32 +689,27 @@
         });
 
         // ====================
-        // Funciones de Reproducción (Play/Pause y Autoplay)
+        // Funciones de Reproducción y Canales
         // ====================
 
-        function renderChannels(list, container, showIndex) {
+        function renderChannels(list, container) {
              container.innerHTML = ''; 
              
-             list.forEach((ch, i) => {
-                const originalIndex = ch.index; 
+             list.forEach((ch) => {
+                const originalIndex = channels.findIndex(c => c.name === ch.name); 
 
                 const div = document.createElement("div");
-                div.className = "tv-channel search-result-channel"; 
+                div.className = "tv-channel";
                 div.setAttribute('tabindex', 0); 
                 div.setAttribute('data-channel-index', originalIndex); 
-                
-                // Usar el ID del canal como número si no hay índice
-                const channelNumber = showIndex ? `<span class="channel-number">${ch.id}</span>` : '';
-
                 div.innerHTML = `
                     <div class="tv-channel-content">
-                        ${channelNumber}
                         <img src="${ch.logo}" alt="${ch.name}">
                         <div class="tv-channel-info">
                             <span class="name" title="${ch.name}">${ch.name}</span>
-                            <div class="tv-channel-description">${ch.description || ch.playing || 'En vivo'}</div>
                         </div>
                     </div>
+                    ${container === channelGuideList ? `<div class="tv-channel-description">${ch.description || ch.playing || 'En vivo'}</div>` : ''}
                 `;
                 div.addEventListener("click", () => playChannel(originalIndex));
                 div.addEventListener("keydown", (e) => {
@@ -759,7 +722,7 @@
             });
         }
         
-        function playChannel(idx, forceAutoplay = false) {
+        function playChannel(idx) {
             currentChannelIndex = idx;
             const ch = channels[idx];
             
@@ -771,20 +734,23 @@
             playerVideo.pause();
             playerIframe.src = "";
 
-            // Actualizar info del canal
             document.getElementById('channel-logo').src = ch.logo;
             document.getElementById('channel-name').textContent = ch.name;
             infoBox.classList.add("show");
             clearTimeout(infoBox.timeout);
             infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
             
-            // Actualizar selección en las guías
             document.querySelectorAll('.tv-channel-selected').forEach(el => el.classList.remove("tv-channel-selected"));
-            document.querySelectorAll(`[data-channel-index="${idx}"]`).forEach(el => el.classList.add("tv-channel-selected"));
             
-            // Scroll a la posición en la guía principal
             const selectedLiveEl = channelGuideList.querySelector(`[data-channel-index="${idx}"]`);
-            if (selectedLiveEl) scrollToChannel(idx, channelGuideList);
+            if (selectedLiveEl) {
+                selectedLiveEl.classList.add("tv-channel-selected");
+                scrollToChannel(idx, channelGuideList);
+            }
+            const selectedSearchEl = searchResultsGrid.querySelector(`[data-channel-index="${idx}"]`);
+            if (selectedSearchEl) {
+                selectedSearchEl.classList.add("tv-channel-selected");
+            }
 
 
             // Configurar y mostrar el reproductor correcto
@@ -793,73 +759,33 @@
                 const urlWithParams = ch.url + (ch.url.includes("?") ? "&" : "?") + "autoplay=1&mute=0&rel=0";
                 playerIframe.src = urlWithParams;
                 document.getElementById("player-controls").style.display = 'none';
-                updatePlayStatus(true); // Asumimos Play en Iframe
-            } else { 
+            } else if (ch.type === "dash") {
                 playerVideo.style.display = "block";
-                document.getElementById("player-controls").style.display = 'flex';
+                dash = dashjs.MediaPlayer().create();
+                dash.initialize(playerVideo, ch.url, true);
                 playerVideo.volume = volumeSlider.value;
-
+                playerVideo.play().catch(e => console.error("Autoplay bloqueado (DASH):", e));
+                document.getElementById("player-controls").style.display = 'flex';
+            } else { // HLS o MP4 nativo
+                playerVideo.style.display = "block";
                 if (Hls.isSupported()) {
                     hls = new Hls();
                     hls.loadSource(ch.url);
                     hls.attachMedia(playerVideo);
                     hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                        if (forceAutoplay) playerVideo.play().catch(() => updatePlayStatus(false));
-                        updatePlayStatus(playerVideo.paused === false);
+                        playerVideo.volume = volumeSlider.value;
+                        playerVideo.play().catch(e => console.error("Autoplay bloqueado (HLS):", e));
                     });
-                    hls.on(Hls.Events.ERROR, function (event, data) {
-                        if (data.fatal) {
-                            console.error("HLS Fatal Error:", data);
-                            updatePlayStatus(false, true); // Mostrar error
-                        }
-                    });
-                } else if (playerVideo.canPlayType('application/vnd.apple.mpegurl')) {
-                    playerVideo.src = ch.url;
-                    if (forceAutoplay) playerVideo.play().catch(() => updatePlayStatus(false));
-                    updatePlayStatus(playerVideo.paused === false);
                 } else {
-                     // Intento de DASH si no es HLS
-                     if (ch.type === "dash") {
-                        dash = dashjs.MediaPlayer().create();
-                        dash.initialize(playerVideo, ch.url, true);
-                        if (forceAutoplay) playerVideo.play().catch(() => updatePlayStatus(false));
-                        updatePlayStatus(playerVideo.paused === false);
-                     } else {
-                        playerVideo.src = ch.url;
-                        if (forceAutoplay) playerVideo.play().catch(() => updatePlayStatus(false));
-                        updatePlayStatus(playerVideo.paused === false);
-                     }
+                    playerVideo.src = ch.url;
+                    playerVideo.volume = volumeSlider.value;
+                    playerVideo.play().catch(e => console.error("Autoplay bloqueado (Nativo):", e));
                 }
+                document.getElementById("player-controls").style.display = 'flex';
             }
+            
             updateVolume(playerVideo.volume);
         }
-
-        // Click en el reproductor para Play/Pause (Mejora solicitada)
-        playerWrapper.addEventListener('click', () => {
-            if (playerVideo.style.display === "block") {
-                if (playerVideo.paused) {
-                    playerVideo.play().catch(()=>{});
-                } else {
-                    playerVideo.pause();
-                }
-            }
-            // Si es iframe de YouTube, no hacemos nada con JS, el control es interno.
-        });
-
-        playerVideo.addEventListener('play', () => updatePlayStatus(true));
-        playerVideo.addEventListener('pause', () => updatePlayStatus(false));
-        playerVideo.addEventListener('error', () => updatePlayStatus(false, true));
-
-        function updatePlayStatus(isPlaying, isError = false) {
-             if (isPlaying) {
-                 playStatusPath.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Icono Pause
-                 playStatusIcon.style.opacity = '0';
-             } else {
-                 playStatusPath.setAttribute('d', 'M8 5v14l11-7z'); // Icono Play
-                 playStatusIcon.style.opacity = isError ? '1' : playerWrapper.matches(':hover') ? '1' : '0';
-             }
-        }
-        
 
         function scrollToChannel(idx, container) {
             const channelEl = container.querySelector(`[data-channel-index="${idx}"]`);
@@ -878,12 +804,15 @@
             volumeSlider.value = newVolume;
             playerVideo.muted = newVolume === 0;
             
-            // Lógica para cambiar el icono MUTE/UNMUTE
+            // Lógica para cambiar el icono MUTE/UNMUTE usando SVG paths
             if (newVolume === 0 || playerVideo.muted) {
+                // Mute (Altavoz con barra cruzada)
                 volumeIconSVG.setAttribute('d', 'M16 7.5L14.7 6.2 12 8.9 9.3 6.2 8 7.5 10.7 10 8 12.5 9.3 13.8 12 11.1 14.7 13.8 16 12.5 13.3 10zM3 9v6h4l5 5V4L7 9z');
             } else if (newVolume < 0.5) {
+                // Volumen bajo (Altavoz con una onda)
                 volumeIconSVG.setAttribute('d', 'M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4z');
             } else {
+                // Volumen alto (Altavoz con dos ondas)
                 volumeIconSVG.setAttribute('d', 'M3 9v6h4l5 5V4L7 9zM16.5 10c0-1.77-1-3.23-2.5-4v8c1.5-.77 2.5-2.23 2.5-4zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.98 7-4.72 7-8.77s-2.99-7.79-7-8.77z');
             }
         }
@@ -906,24 +835,108 @@
             }
         };
 
+        document.getElementById("btn-play").onclick = () => { 
+            if (playerVideo.style.display === "block") playerVideo.play().catch(()=>{}); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+        };
+        document.getElementById("btn-pause").onclick = () => { 
+            if (playerVideo.style.display === "block") playerVideo.pause(); 
+            infoBox.classList.add("show");
+            clearTimeout(infoBox.timeout);
+            infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+        };
+        document.getElementById("btn-fullscreen").onclick = () => {
+            const container = document.getElementById("tv-player-container");
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            }
+        };
+
+        // Navegación por teclado (Flechas)
+        document.addEventListener("keydown", e => {
+            const currentSection = document.querySelector('#main-nav button.active')?.dataset.section || 'live';
+            
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                e.preventDefault(); 
+                
+                let container;
+                
+                if (currentSection === 'live') {
+                    container = channelGuideList;
+                } else if (currentSection === 'search') {
+                    container = searchResultsGrid;
+                } else {
+                    return; 
+                }
+                
+                const visibleChannelElements = Array.from(container.querySelectorAll('.tv-channel'));
+                
+                if (visibleChannelElements.length > 0) {
+                    const selectedEl = visibleChannelElements.find(el => parseInt(el.dataset.channelIndex) === currentChannelIndex);
+                    let currentIndex = selectedEl ? visibleChannelElements.indexOf(selectedEl) : -1;
+
+                    if (currentIndex === -1) {
+                         currentIndex = e.key === "ArrowDown" ? 0 : visibleChannelElements.length - 1;
+                    } else {
+                        currentIndex = e.key === "ArrowDown" 
+                            ? (currentIndex + 1) % visibleChannelElements.length
+                            : (currentIndex - 1 + visibleChannelElements.length) % visibleChannelElements.length;
+                    }
+                    
+                    const nextOriginalIndex = parseInt(visibleChannelElements[currentIndex].dataset.channelIndex);
+
+                    playChannel(nextOriginalIndex);
+                }
+            }
+            
+            // Control de volumen con flechas izquierda/derecha
+            if (playerVideo.style.display === "block" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+                 e.preventDefault(); 
+                 const step = 0.05;
+                 let currentVolume = parseFloat(volumeSlider.value);
+                 if (e.key === "ArrowRight") {
+                     currentVolume = Math.min(1, currentVolume + step);
+                 } else {
+                     currentVolume = Math.max(0, currentVolume - step);
+                 }
+                 updateVolume(currentVolume);
+
+                 infoBox.classList.add("show");
+                 clearTimeout(infoBox.timeout);
+                 infoBox.timeout = setTimeout(()=>infoBox.classList.remove("show"), 3000);
+            }
+        });
+
 
         // ====================
         // Inicialización
         // ====================
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Iniciar en la sección EN VIVO
+            // Iniciar en la sección EN VIVO
             showSection('live');
             
-            // 2. Autoplay: Reproducir el primer canal al cargar (Mejora solicitada)
-            // Usamos 'true' para forzar el intento de Autoplay
-            playChannel(0, true); 
+            // Intentar reproducir el primer canal al cargar
+            playChannel(0); 
             
             playerVideo.addEventListener('volumechange', () => {
                 updateVolume(playerVideo.volume);
             });
+
+            playerVideo.addEventListener('play', () => {
+                updateVolume(playerVideo.volume);
+            });
+            playerVideo.addEventListener('error', (e) => {
+                console.error("Error de reproducción:", e);
+            });
             
             // Inicializar el icono de volumen y la lista lateral del menú
             updateVolume(volumeSlider.value);
+            
+            // Marcar "TV en vivo" como activo al inicio en el menú lateral
             document.querySelector('#side-menu a[data-section="live"]').classList.add('active');
         });
     </script>
