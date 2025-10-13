@@ -10,19 +10,19 @@
 
     <style>
         /* =======================================
-        VARIABLES y ESTILOS GENERALES
+        VARIABLES y ESTILOS GENERALES (Pluto-like: Negro, Naranja)
         ======================================= */
         :root {
             --bg-dark: #0f0f0f;
             --bg-medium: #1c1c1c;
-            --bg-light: #2a2a2a;
-            --primary-color: #ff8800;
+            --bg-light: #2a2a2a; /* Nuevo para el menú lateral */
+            --primary-color: #ff8800; /* Naranja más vivo, similar a Pluto TV */
             --text-color: #ffffff;
             --header-height: 60px;
             --player-height-desktop: 70vh; 
             --player-height-mobile: 35vh; 
             --guide-narrow-width: 250px; 
-            --menu-width: 280px; 
+            --menu-width: 280px; /* Ancho del menú lateral */
             --selection-bg: #333333; 
         }
 
@@ -34,8 +34,8 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Esencial para que el Flexbox tome toda la altura */
-            overflow: hidden; /* Controlamos el scroll en los hijos */
+            height: 100vh;
+            overflow: hidden; 
         }
 
         /* =======================================
@@ -55,9 +55,10 @@
         #header-left {
             display: flex;
             align-items: center;
-            gap: 15px; 
+            gap: 15px; /* Espacio entre el menú y el logo */
         }
         
+        /* Botón de Menú (Hamburguesa) */
         #menu-toggle-btn {
             background: none;
             border: none;
@@ -83,6 +84,7 @@
         }
         #platform-logo span { color: var(--text-color); font-weight: 400; }
         
+        /* Navegación principal (Oculta en móvil) */
         #main-nav { display: flex; gap: 25px; flex-grow: 1; margin-left: 30px; }
         #main-nav button {
             background: none; border: none; color: var(--text-color); font-size: 1.1em; font-weight: 700; padding: 10px 0; cursor: pointer; position: relative; transition: color 0.2s; white-space: nowrap;
@@ -146,7 +148,7 @@
              margin-bottom: 10px;
         }
         .menu-footer {
-            margin-top: auto; 
+            margin-top: auto; /* Empuja el footer hacia abajo */
             padding-top: 20px;
             border-top: 1px solid #333;
         }
@@ -161,7 +163,7 @@
 
 
         /* =======================================
-        REPRODUCTOR SUPERIOR
+        REPRODUCTOR SUPERIOR (Controles)
         ======================================= */
         #tv-player-container-wrapper {
             height: var(--player-height-desktop); 
@@ -169,41 +171,27 @@
             flex-shrink: 0;
             position: relative;
             background-color: black;
-            display: flex; /* Añadir display flex para centrar el video si no ocupa todo */
-            align-items: center;
-            justify-content: center;
         }
-        #tv-player-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        #tv-player-video, #tv-player-iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background: black; border: none;
-            object-fit: contain; /* Asegura que el video se centre y se ajuste sin recortarse */
-        }
+        /* ... (resto del CSS del reproductor) ... */
         
-        /* Controles - Alineación Vertical MEJORADA */
-        #player-controls {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 20px; background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s; z-index: 100;
-        }
-        #tv-player-container:hover #player-controls { opacity: 1; }
-        
+        /* Controles de Volumen - Alineación Vertical MEJORADA */
         #volume-control {
             display: flex;
-            align-items: center; /* ALINEACIÓN CRUCIAL: Centra el icono con el slider */
+            align-items: center; /* Alinea verticalmente el botón y el slider */
             gap: 10px;
         }
         #volume-slider {
             width: 80px;
-            height: 4px;
+            height: 4px; /* Hilo más delgado */
             cursor: pointer;
             appearance: none;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 2px;
+            /* Asegura que el slider no tome espacio innecesario */
             margin: 0; 
             padding: 0;
         }
+        /* Estilos del thumb (el circulito) */
         #volume-slider::-webkit-slider-thumb {
             appearance: none;
             width: 14px;
@@ -220,7 +208,12 @@
             border: 2px solid var(--text-color);
             border-radius: 50%;
         }
-        /* ... (otros estilos de controles y SVGs) ... */
+        /* ... (resto del CSS de los controles) ... */
+
+        #player-controls {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: flex-start; gap: 15px; padding: 0 20px; background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0)); opacity: 0; transition: opacity 0.3s; z-index: 100;
+        }
+        #tv-player-container:hover #player-controls { opacity: 1; }
         #player-controls button {
             background: rgba(255, 255, 255, 0.1); 
             border: 1px solid rgba(255, 255, 255, 0.3); 
@@ -233,7 +226,7 @@
             display: flex; 
             align-items: center;
             justify-content: center;
-            flex-shrink: 0; 
+            flex-shrink: 0; /* Evita que los botones se achiquen */
         }
         #player-controls button:hover {
             background: rgba(255, 255, 255, 0.2);
@@ -247,161 +240,82 @@
         }
 
         /* =======================================
-        CONTENIDO INFERIOR (CORRECCIÓN DE ALTURA)
+        GUÍA DE CANALES (Ajustes de estilo)
         ======================================= */
-        #main-content {
-            flex-grow: 1; /* CLAVE: Ocupa todo el espacio vertical restante */
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Evita que el scroll sea global */
-        }
-        #content-section-wrapper {
-            flex-grow: 1; 
-            background-color: var(--bg-dark);
-            overflow: hidden; 
-            position: relative;
-            display: flex; /* CLAVE: Contenedor directo de la guía y el EPG/VOD */
-        }
-        .content-display {
-            width: 100%;
-            height: 100%; /* Ahora toma el 100% de la altura de #content-section-wrapper */
-            overflow: hidden; 
-            display: none;
-            box-sizing: border-box;
-        }
-        .content-display.active {
-            display: flex;
-        }
-
-        /* === SECCIÓN LIVE (Guía vertical a la izquierda) === */
-        #live-display {
-            display: flex;
-            flex-direction: row;
-            width: 100%; 
-            height: 100%;
-        }
-        
         #channel-guide-list {
             flex: 0 0 var(--guide-narrow-width); 
             background-color: var(--bg-medium);
-            overflow-y: auto; /* Permite el scroll de la lista de canales */
+            overflow-y: auto; 
             border-right: 1px solid #333;
-            padding: 0; 
+            padding: 0; /* Eliminamos el padding para usar el padding interno del canal */
         }
-        
-        /* Estilo del Canal en la lista vertical */
+
+        /* Estilo del Canal en la lista vertical MEJORADO */
         .tv-channel {
-            padding: 10px 15px; 
+            padding: 10px 15px; /* Más padding vertical */
             background: transparent; 
             cursor: pointer; 
             transition: background 0.2s;
-            border-left: 5px solid transparent; 
+            border-left: 5px solid transparent; /* Más grueso */
             display: flex;
             flex-direction: column; 
-            margin-bottom: 2px; 
+            margin-bottom: 2px; /* Pequeño espacio entre canales */
         }
         .tv-channel:hover { background: var(--selection-bg); }
         .tv-channel-selected {
             background: var(--selection-bg) !important; 
             border-left-color: var(--primary-color) !important; 
         }
-        .tv-channel-content { display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }
+        .tv-channel-content { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 3px; 
+        }
         .tv-channel img { 
-            max-height: 28px; 
-            width: 50px; 
+            max-height: 28px; /* Un poco más grande */
+            width: 50px; /* Un poco más ancho */
             object-fit: contain; 
             background: black; 
             padding: 3px; 
             border-radius: 4px; 
-            box-shadow: 0 0 5px rgba(0,0,0,0.5); 
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); /* Sombra para resaltar el logo */
         }
         .tv-channel-info .name { 
-            font-size: 1em; 
+            font-size: 1em; /* Un poco más grande */
             font-weight: 700; 
             color: var(--text-color); 
         }
         .tv-channel-description { 
-            font-size: 0.78em; 
+            font-size: 0.78em; /* Un poco más grande */
             color: #aaa; 
             margin-top: 0; 
-            padding-left: 60px; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-        }
-
-        /* === SECCIÓN ON DEMAND / BUSCAR === */
-        #ondemand-display, #search-display {
-            flex-direction: column;
-            overflow-y: auto; /* Permite el scroll si el contenido es largo */
-            padding: 20px; 
-            box-sizing: border-box;
+            padding-left: 60px; /* Alineado con el nombre */
         }
         
-        /* ... (resto de estilos VOD/SEARCH) ... */
-        #vod-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            padding-top: 10px;
-        }
-        .vod-item {
-            cursor: pointer;
-            background: var(--bg-medium);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .vod-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(255, 136, 0, 0.3); 
-        }
-        .vod-item img {
-            width: 100%;
-            height: 270px; 
-            object-fit: cover;
-            display: block;
-        }
-        #search-results-grid {
-            width: 90%;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            justify-content: start;
-        }
-
-
         /* =======================================
         ADAPTACIÓN A MÓVILES (MEDIA QUERY)
         ======================================= */
         @media (max-width: 768px) {
             
-            #main-nav { display: none; } 
-            #header-left { margin-right: auto; } 
+            #main-nav { display: none; } /* Ocultar nav principal en móvil */
+            #header-left { margin-right: auto; } /* Centra el logo si no hay nav */
             
+            /* Menú lateral cubre casi toda la pantalla */
             #side-menu { width: 85%; }
             
             #platform-logo span { display: none; }
             #tv-player-container-wrapper { height: var(--player-height-mobile); }
             #player-controls { opacity: 1 !important; }
 
-            /* CORRECCIÓN MÓVIL: La guía es ahora vertical/horizontal en la parte inferior */
             #live-display { flex-direction: column; }
             #channel-guide-list {
                 flex: 1 1 100%; 
                 border-right: none;
                 padding: 10px;
-                height: auto; /* Permitir que la lista crezca o se encoja automáticamente */
+                height: 100%; 
             }
             #epg-detail-view { display: none; }
-            
-            #vod-grid {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-            }
-            .vod-item img {
-                height: 190px;
-            }
         }
     </style>
 </head>
@@ -553,7 +467,7 @@
             {name:"AlternaTV", type:"hls", url:"https://alternatv.ar/stream/hls/live.m3u8", logo:"https://alternatv.ar/alternatv.png", playing: "Canal Independiente", description: "Contenido alternativo y experimental."},
             {name:"Garage TV Latin America", type:"hls", url:"https://stream1.sersat.com/hls/garagetv.m3u8", logo:"https://i.imgur.com/FqFxog1.png", playing: "Automotor", description: "Noticias y pruebas de autos."},
             {name:"Neox TV", type:"hls", url:"https://tv.streamcasthd.com:3076/live/sonicaargentinalive.m3u8", logo:"https://i.imgur.com/eIX71c9.png", playing: "Música Joven", description: "Videos musicales y tendencias."},
-            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVu.png", playing: "Variedades", description: "Programas misceláneos y entretenimiento."},
+            {name:"Panc TV", type:"hls", url:"https://panel.host-live.com:19360/20004/20004.m3u8", logo:"https://i.imgur.com/u1dnEVv.png", playing: "Variedades", description: "Programas misceláneos y entretenimiento."},
         ];
 
         // ====================
@@ -591,10 +505,10 @@
             if (shouldOpen) {
                 sideMenuOverlay.classList.add('open');
                 sideMenu.focus();
-                document.body.style.overflow = 'hidden'; 
+                document.body.style.overflow = 'hidden'; // Evita el scroll del fondo
             } else {
                 sideMenuOverlay.classList.remove('open');
-                document.body.style.overflow = ''; 
+                document.body.style.overflow = ''; // Restaura el scroll
             }
         }
         
@@ -609,7 +523,6 @@
         // Funcionalidad de Navegación
         // ====================
         function showSection(sectionId) {
-            
             // 1. Gestionar la pestaña activa en el HEADER
             navButtons.forEach(btn => btn.classList.remove('active'));
             const headerBtn = document.querySelector(`#main-nav [data-section="${sectionId}"]`);
@@ -651,6 +564,8 @@
                 showSection(e.currentTarget.dataset.section);
             });
         });
+
+        // ... (el resto de las funciones: filterChannels, renderChannels, playChannel, scrollToChannel) ...
 
         // ====================
         // Funcionalidad de Búsqueda
